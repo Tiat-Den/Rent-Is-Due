@@ -7,7 +7,7 @@ namespace RentIsDue.Player
     public class PlayerInteractor : MonoBehaviour
     {
         [SerializeField] private float interactionRange = 2f;
-        [SerializeField] private LayerMask interactableLayer;
+        [SerializeField] private LayerMask interactableLayer = ~0; // ~0 means Everything
         
         private IInteractable currentInteractable;
 
