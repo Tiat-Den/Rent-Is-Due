@@ -37,7 +37,7 @@ namespace RentIsDue.Core
             }
         }
 
-        private void CalculateRent()
+        public void CalculateRent()
         {
             currentRent = Mathf.RoundToInt(100 * Mathf.Pow(1.25f, currentDay - 1));
         }
@@ -51,6 +51,11 @@ namespace RentIsDue.Core
                 CalculateRent();
                 Debug.Log($"Next Day: Day {currentDay}. Paid rent.");
                 TimeManager.Instance.ResetToMorning();
+                
+                if (SaveManager.Instance != null)
+                {
+                    SaveManager.Instance.SaveGame();
+                }
             }
             else
             {
