@@ -4,6 +4,10 @@ Tất cả những thay đổi, cập nhật tính năng mới của dự án s�
 
 ## [MVP Development]
 
+### Phase 10 - MVP Polish & Playtest (Hoàn thành)
+- **Thêm mới**: `PauseMenu.cs` quản lý trạng thái đóng băng thời gian của game, cho phép bấm phím ESC để mở Menu tạm dừng với các nút Resume và Quit.
+- **Tổng kết**: Hoàn thành vòng lặp cốt lõi (Core Loop) của dự án. Trò chơi đã sẵn sàng để Build và gửi cho Tester chơi thử.
+
 ### Phase 09 - Save, Load & Game States (Hoàn thành)
 - **Thêm mới**: Lớp dữ liệu `SaveData.cs` để đóng gói thông tin (Ngày, Tiền, Các cấp độ nâng cấp).
 - **Thêm mới**: `SaveManager.cs` xử lý việc lưu và tải dữ liệu dưới dạng file JSON vào thư mục hệ thống (persistentDataPath). Đồng thời tự động áp dụng lại các thông số nâng cấp khi Load.
