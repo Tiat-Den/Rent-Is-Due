@@ -51,11 +51,6 @@ namespace RentIsDue.Core
                 CalculateRent();
                 Debug.Log($"Next Day: Day {currentDay}. Paid rent.");
                 TimeManager.Instance.ResetToMorning();
-                
-                if (SaveManager.Instance != null)
-                {
-                    SaveManager.Instance.SaveGame();
-                }
             }
             else
             {
