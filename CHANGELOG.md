@@ -4,6 +4,11 @@ Tất cả những thay đổi, cập nhật tính năng mới của dự án s�
 
 ## [MVP Development]
 
+### Phase 06 - Selling & Economy (Hoàn thành)
+- **Thêm mới**: Lớp `EconomyManager.cs` lưu trữ số dư tiền tệ, hỗ trợ hàm bán đồ và tính toán giá trị (kết hợp `InventoryManager`).
+- **Thêm mới**: `DealerInteractable.cs` cài đặt giao diện `IInteractable`, đóng vai trò là điểm thu mua (khi nhấn E sẽ bán sạch đồ trong túi).
+- **Thêm mới**: `EconomyUI.cs` vẽ UI hiển thị số dư tài khoản ở góc trên bên phải màn hình.
+
 ### Phase 05 - Loot & Search (Hoàn thành)
 - **Thêm mới**: ScriptableObject `LootTable.cs` để cấu hình danh sách vật phẩm rơi ra với tỉ lệ tương ứng (bao gồm tỉ lệ rơi rỗng/trượt).
 - **Thêm mới**: `SearchableObject.cs` cài đặt giao diện `IInteractable`, mô phỏng hành động "lục lọi" có thời gian chờ (delay) và tự động spawn ra model vật phẩm sau khi lục xong.
