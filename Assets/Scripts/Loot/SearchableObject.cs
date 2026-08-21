@@ -61,7 +61,14 @@ namespace RentIsDue.Loot
             isSearching = true;
             Debug.Log("Searching started...");
             
-            yield return new WaitForSeconds(searchDuration);
+            if (RentIsDue.Shop.UpgradeManager.Instance != null)
+            {
+                yield return new WaitForSeconds(searchDuration * RentIsDue.Shop.UpgradeManager.Instance.SearchSpeedMultiplier);
+            }
+            else
+            {
+                yield return new WaitForSeconds(searchDuration);
+            }
 
             isSearching = false;
             hasBeenSearched = true;
