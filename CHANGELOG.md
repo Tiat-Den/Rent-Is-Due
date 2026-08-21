@@ -4,6 +4,12 @@ Tất cả những thay đổi, cập nhật tính năng mới của dự án s�
 
 ## [MVP Development]
 
+### Phase 04 - Item, Pickup & Inventory (Hoàn thành)
+- **Thêm mới**: ScriptableObject `ItemData.cs` định nghĩa dữ liệu cho vật phẩm (Tên, Độ hiếm, Giá trị, Cân nặng...).
+- **Thêm mới**: Lớp quản lý `InventoryManager.cs` giới hạn túi đồ 8 slot và tải trọng 20kg.
+- **Thêm mới**: `PickupInteractable.cs` cài đặt giao diện `IInteractable`, cho phép nhặt vật thể đưa vào kho và xóa model 3D trên Scene.
+- **Thêm mới**: Lớp hiển thị nhanh `InventoryUI.cs` dùng GUI để hiện danh sách đồ trên màn hình và debug.
+
 ### Phase 03 - Interaction System (Hoàn thành)
 - **Thêm mới**: Interface `IInteractable.cs` làm nền tảng cho mọi vật thể có thể tương tác (nhặt, mở, bán...).
 - **Thêm mới**: Script `PlayerInteractor.cs` tích hợp Input System mới, cho phép dò tìm các vật thể xung quanh và tương tác bằng phím `E`.
