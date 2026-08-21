@@ -4,6 +4,12 @@ Tất cả những thay đổi, cập nhật tính năng mới của dự án s�
 
 ## [MVP Development]
 
+### Phase 09 - Save, Load & Game States (Hoàn thành)
+- **Thêm mới**: Lớp dữ liệu `SaveData.cs` để đóng gói thông tin (Ngày, Tiền, Các cấp độ nâng cấp).
+- **Thêm mới**: `SaveManager.cs` xử lý việc lưu và tải dữ liệu dưới dạng file JSON vào thư mục hệ thống (persistentDataPath). Đồng thời tự động áp dụng lại các thông số nâng cấp khi Load.
+- **Thêm mới**: `SaveUI.cs` vẽ các nút Save/Load ở góc dưới màn hình để test.
+- **Cập nhật**: Sửa `DayManager.cs` để tự động kích hoạt tính năng Auto Save mỗi khi người chơi sống sót qua một ngày mới.
+
 ### Phase 08 - Upgrade & Progression (Hoàn thành)
 - **Thêm mới**: `UpgradeManager.cs` lưu trữ các chỉ số cấp độ nâng cấp (Balo, Tốc độ chạy, Tốc độ lục lọi).
 - **Thêm mới**: `UpgradeInteractable.cs` cài đặt giao diện tương tác để người chơi mở cửa hàng nâng cấp.
