@@ -4,6 +4,10 @@ Tất cả những thay đổi, cập nhật tính năng mới của dự án s�
 
 ## [MVP Development]
 
+### Phase 05 - Loot & Search (Hoàn thành)
+- **Thêm mới**: ScriptableObject `LootTable.cs` để cấu hình danh sách vật phẩm rơi ra với tỉ lệ tương ứng (bao gồm tỉ lệ rơi rỗng/trượt).
+- **Thêm mới**: `SearchableObject.cs` cài đặt giao diện `IInteractable`, mô phỏng hành động "lục lọi" có thời gian chờ (delay) và tự động spawn ra model vật phẩm sau khi lục xong.
+
 ### Phase 04 - Item, Pickup & Inventory (Hoàn thành)
 - **Thêm mới**: ScriptableObject `ItemData.cs` định nghĩa dữ liệu cho vật phẩm (Tên, Độ hiếm, Giá trị, Cân nặng...).
 - **Thêm mới**: Lớp quản lý `InventoryManager.cs` giới hạn túi đồ 8 slot và tải trọng 20kg.
