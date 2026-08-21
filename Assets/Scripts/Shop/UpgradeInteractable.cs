@@ -12,13 +12,13 @@ namespace RentIsDue.Shop
         {
             if (upgradeUI == null)
             {
-                upgradeUI = FindObjectOfType<UpgradeUI>();
+                upgradeUI = FindAnyObjectByType<UpgradeUI>();
             }
         }
 
         public bool CanInteract(PlayerInteractor player)
         {
-            if (upgradeUI == null) upgradeUI = FindObjectOfType<UpgradeUI>();
+            if (upgradeUI == null) upgradeUI = FindAnyObjectByType<UpgradeUI>();
             return upgradeUI != null;
         }
 

@@ -57,7 +57,7 @@ namespace RentIsDue.Shop
                     EconomyManager.Instance.currentMoney -= movementCost;
                     UpgradeManager.Instance.movementLevel++;
                     
-                    PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+                    PlayerMovement playerMovement = FindAnyObjectByType<PlayerMovement>();
                     if (playerMovement != null)
                     {
                         playerMovement.moveSpeed *= 1.1f;
