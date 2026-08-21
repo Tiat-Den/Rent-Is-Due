@@ -54,11 +54,12 @@ namespace RentIsDue.Inventory
                 
                 if (GUILayout.Button("Drop", GUILayout.Width(50)))
                 {
-                    // Drop slightly in front of the player (or camera)
+                    // Drop near the player
                     Vector3 dropPos = transform.position;
-                    if (Camera.main != null)
+                    GameObject player = GameObject.Find("Player");
+                    if (player != null)
                     {
-                        dropPos = Camera.main.transform.position + Camera.main.transform.forward * 1.5f;
+                        dropPos = player.transform.position + player.transform.forward * 1.5f + Vector3.up * 0.5f;
                     }
                     inventoryManager.DropItem(item, dropPos);
                     break; // break to avoid collection modified exception during GUI loop

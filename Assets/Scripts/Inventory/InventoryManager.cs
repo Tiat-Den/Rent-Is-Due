@@ -73,7 +73,12 @@ namespace RentIsDue.Inventory
                 }
                 else
                 {
-                    Debug.LogWarning("Item prefab is null, cannot spawn on drop.");
+                    Debug.LogWarning("Item prefab is null, spawning placeholder.");
+                    GameObject placeholder = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    placeholder.transform.position = dropPosition;
+                    placeholder.transform.localScale = Vector3.one * 0.3f;
+                    PickupInteractable pickup = placeholder.AddComponent<PickupInteractable>();
+                    pickup.itemData = item;
                 }
                 
                 RemoveItem(item);
