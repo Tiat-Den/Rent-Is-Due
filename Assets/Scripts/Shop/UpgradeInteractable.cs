@@ -8,8 +8,17 @@ namespace RentIsDue.Shop
     {
         public UpgradeUI upgradeUI;
 
+        private void Start()
+        {
+            if (upgradeUI == null)
+            {
+                upgradeUI = FindObjectOfType<UpgradeUI>();
+            }
+        }
+
         public bool CanInteract(PlayerInteractor player)
         {
+            if (upgradeUI == null) upgradeUI = FindObjectOfType<UpgradeUI>();
             return upgradeUI != null;
         }
 
