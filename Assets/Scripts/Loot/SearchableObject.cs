@@ -15,6 +15,28 @@ namespace RentIsDue.Loot
         private bool hasBeenSearched = false;
         private bool isSearching = false;
 
+        private void Start()
+        {
+            if (TimeManager.Instance != null)
+            {
+                TimeManager.Instance.OnDayEnded += ResetSearchable;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (TimeManager.Instance != null)
+            {
+                TimeManager.Instance.OnDayEnded -= ResetSearchable;
+            }
+        }
+
+        private void ResetSearchable()
+        {
+            hasBeenSearched = false;
+            isSearching = false;
+        }
+
         public bool CanInteract(PlayerInteractor player)
         {
             return !hasBeenSearched && !isSearching && lootTable != null;
