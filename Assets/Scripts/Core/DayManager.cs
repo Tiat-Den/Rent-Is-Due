@@ -1,0 +1,62 @@
+using UnityEngine;
+using RentIsDue.Economy;
+
+namespace RentIsDue.Core
+{
+    public class DayManager : MonoBehaviour
+    {
+        public static DayManager Instance { get; private set; }
+
+        public int currentDay = 1;
+        public int currentRent { get; private set; }
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+        }
+
+        private void Start()
+        {
+            CalculateRent();
+            if (TimeManager.Instance != null)
+            {
+                TimeManager.Instance.OnDayEnded += HandleDayEnded;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (TimeManager.Instance != null)
+            {
+                TimeManager.Instance.OnDayEnded -= HandleDayEnded;
+            }
+        }
+
+        private void CalculateRent()
+        {
+            currentRent = Mathf.RoundToInt(100 * Mathf.Pow(1.25f, currentDay - 1));
+        }
+
+        private void HandleDayEnded()
+        {
+            if (EconomyManager.Instance.currentMoney >= currentRent)
+            {
+                EconomyManager.Instance.currentMoney -= currentRent;
+                currentDay++;
+                CalculateRent();
+                Debug.Log($"Next Day: Day {currentDay}. Paid rent.");
+                TimeManager.Instance.ResetToMorning();
+            }
+            else
+            {
+                Debug.Log("GAME OVER: Not enough money for rent.");
+                TimeManager.Instance.isTimeRunning = false;
+            }
+        }
+    }
+}
