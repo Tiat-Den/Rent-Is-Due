@@ -13,15 +13,10 @@ namespace RentIsDue.Core
             int day = DayManager.Instance.currentDay;
             int rent = DayManager.Instance.currentRent;
 
-            GUI.Label(new Rect(10, 10, 300, 20), $"Day: {day}");
-            GUI.Label(new Rect(10, 30, 300, 20), $"Time: {timeString}");
-            GUI.Label(new Rect(10, 50, 300, 20), $"Rent Required: ${rent}");
-            
-            if (EconomyManager.Instance != null)
-            {
-                float currentMoney = EconomyManager.Instance.currentMoney;
-                GUI.Label(new Rect(10, 70, 300, 20), $"Money: ${currentMoney}");
-            }
+            float startX = Screen.width / 2f - 75f;
+            GUI.Label(new Rect(startX, 10, 150, 20), $"Day: {day}");
+            GUI.Label(new Rect(startX, 30, 150, 20), $"Time: {timeString}");
+            GUI.Label(new Rect(startX, 50, 150, 20), $"Rent Required: ${rent}");
         }
     }
 }
