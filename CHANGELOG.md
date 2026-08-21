@@ -4,6 +4,11 @@ Tất cả những thay đổi, cập nhật tính năng mới của dự án s�
 
 ## [MVP Development]
 
+### Phase 07 - Time, Rent & Day Cycle (Hoàn thành)
+- **Thêm mới**: `TimeManager.cs` điều khiển thời gian trong game chạy từ 08:00 sáng đến 22:00 đêm.
+- **Thêm mới**: `DayManager.cs` theo dõi ngày hiện tại, tự động tăng tiền thuê nhà theo cấp số nhân (hệ số 1.25) và kiểm tra ví tiền (EconomyManager) vào lúc 22:00 mỗi ngày để quyết định qua ngày hoặc Game Over.
+- **Thêm mới**: `TimeUI.cs` vẽ UI hiển thị thông tin thời gian, ngày hiện tại và số tiền nhà phải nộp lên góc màn hình.
+
 ### Phase 06 - Selling & Economy (Hoàn thành)
 - **Thêm mới**: Lớp `EconomyManager.cs` lưu trữ số dư tiền tệ, hỗ trợ hàm bán đồ và tính toán giá trị (kết hợp `InventoryManager`).
 - **Thêm mới**: `DealerInteractable.cs` cài đặt giao diện `IInteractable`, đóng vai trò là điểm thu mua (khi nhấn E sẽ bán sạch đồ trong túi).
