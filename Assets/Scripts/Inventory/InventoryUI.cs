@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace RentIsDue.Inventory
 {
     public class InventoryUI : MonoBehaviour
     {
         private InventoryManager inventoryManager;
+        private bool isUIVisible = true;
 
         private void Start()
         {
@@ -23,6 +25,14 @@ namespace RentIsDue.Inventory
             }
         }
 
+        private void Update()
+        {
+            if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame)
+            {
+                isUIVisible = !isUIVisible;
+            }
+        }
+
         private void UpdateUI()
         {
             Debug.Log("--- Inventory Updated ---");
@@ -36,7 +46,7 @@ namespace RentIsDue.Inventory
 
         private void OnGUI()
         {
-            if (inventoryManager == null) return;
+            if (inventoryManager == null || !isUIVisible) return;
 
             GUILayout.BeginArea(new Rect(10, 10, 300, 400));
             GUI.Box(new Rect(0, 0, 300, 400), "");
