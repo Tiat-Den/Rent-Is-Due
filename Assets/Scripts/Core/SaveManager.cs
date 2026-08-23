@@ -30,6 +30,9 @@ namespace RentIsDue.Core
                 
             if (EconomyManager.Instance != null)
                 data.currentMoney = EconomyManager.Instance.currentMoney;
+
+            if (DebtManager.Instance != null)
+                data.currentDebt = DebtManager.Instance.currentDebt;
                 
             if (UpgradeManager.Instance != null)
             {
@@ -55,14 +58,17 @@ namespace RentIsDue.Core
                 string json = File.ReadAllText(path);
                 SaveData data = JsonUtility.FromJson<SaveData>(json);
 
+                if (EconomyManager.Instance != null)
+                    EconomyManager.Instance.currentMoney = data.currentMoney;
+
+                if (DebtManager.Instance != null)
+                    DebtManager.Instance.currentDebt = data.currentDebt;
+
                 if (DayManager.Instance != null)
                 {
                     DayManager.Instance.currentDay = data.currentDay;
                     DayManager.Instance.CalculateRent();
                 }
-
-                if (EconomyManager.Instance != null)
-                    EconomyManager.Instance.currentMoney = data.currentMoney;
 
                 if (UpgradeManager.Instance != null)
                 {

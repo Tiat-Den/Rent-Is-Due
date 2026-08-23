@@ -4,6 +4,11 @@ Tất cả những thay đổi, cập nhật tính năng mới của dự án s�
 
 ## [Post-MVP Development]
 
+### Phase 12 - Economy & Gameplay Balance (Hoàn thành)
+- **Thêm mới**: Hệ thống Thể lực `StaminaSystem.cs` hỗ trợ Chạy nhanh (Sprint bằng `LeftShift` nhanh hơn 55%), tiêu hao thể lực khi nhảy và vẽ thanh Thể lực `⚡ STAMINA` mượt mà trên HUD.
+- **Thêm mới**: Hệ thống Quản lý Vay nợ khẩn cấp `DebtManager.cs` cho phép người chơi vay tiền chủ nhà khi thiếu tiền nhà ở hạn chót 22:00 với lãi suất 20% thay vì bị Game Over ngay lập tức.
+- **Cập nhật**: Tích hợp toàn diện `DaySummaryUI`, `PlayerMovement`, `DayManager`, `SaveManager` với hệ thống Thể lực và Nợ nần.
+
 ### Phase 11 - Vertical Slice (Hoàn thành)
 - **Thêm mới**: Hệ thống quản lý âm thanh `AudioManager.cs` với âm thanh tổng hợp đa âm (Procedural Audio Synthesizer) cho nhặt đồ, bán đồ (Ka-ching), bới rác, qua ngày và Game Over mà không cần file audio ngoài.
 - **Thêm mới**: Giao diện thông báo nổi `FloatingFeedbackUI.cs` hiển thị chữ tiền bay `+$XX`, cảnh báo đầy túi/quá tải và thông báo ngày mới mượt mà.

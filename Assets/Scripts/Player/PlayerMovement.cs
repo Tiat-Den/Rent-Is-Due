@@ -14,10 +14,16 @@ namespace RentIsDue.Player
         private CharacterController controller;
         private Vector3 playerVelocity;
         private bool isGrounded;
+        private StaminaSystem staminaSystem;
 
         private void Start()
         {
             controller = GetComponent<CharacterController>();
+            staminaSystem = GetComponent<StaminaSystem>();
+            if (staminaSystem == null)
+            {
+                staminaSystem = gameObject.AddComponent<StaminaSystem>();
+            }
         }
 
         private void Update()
@@ -48,12 +54,23 @@ namespace RentIsDue.Player
                 move.Normalize();
             }
 
-            controller.Move(move * moveSpeed * Time.deltaTime);
+            // Tốc độ chạy nhanh (Sprint) khi giữ Shift
+            float currentSpeed = moveSpeed;
+            if (staminaSystem != null && staminaSystem.isSprinting && move.sqrMagnitude > 0.01f)
+            {
+                currentSpeed = moveSpeed * 1.55f; // Chạy nhanh hơn 55%
+            }
 
-            // Nhảy khi bấm Space
+            controller.Move(move * currentSpeed * Time.deltaTime);
+
+            // Nhảy khi bấm Space (tiêu tốn 1 ít thể lực)
             if (isGrounded && Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
             {
-                playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravityValue);
+                if (staminaSystem == null || staminaSystem.CanJump())
+                {
+                    playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravityValue);
+                    if (staminaSystem != null) staminaSystem.ConsumeJumpStamina();
+                }
             }
 
             // Trọng lực

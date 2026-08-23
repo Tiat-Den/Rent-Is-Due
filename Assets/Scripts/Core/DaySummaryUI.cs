@@ -91,19 +91,46 @@ namespace RentIsDue.Core
             }
             else
             {
-                GUILayout.Label("<size=16><b><color=red>YOU FAILED TO PAY THE RENT!</color></b></size>");
-                GUILayout.Space(10);
-                GUILayout.Label($"Rent Due: <color=red>${rentPaid}</color>");
-                GUILayout.Label($"You only had: <color=yellow>${remainingMoney:F1}</color>");
-                GUILayout.Label("The landlord has thrown you out onto the street.");
-                
-                GUILayout.Space(20);
+                float deficit = rentPaid - remainingMoney;
+                bool canBorrow = DebtManager.Instance != null && DebtManager.Instance.CanTakeLoan(deficit);
+                float loanWithInterest = deficit * 1.20f;
 
-                if (GUILayout.Button("🔄 RETRY FROM DAY 1", GUILayout.Height(35)))
+                GUILayout.Label("<size=16><b><color=red>YOU ARE SHORT ON RENT!</color></b></size>");
+                GUILayout.Space(10);
+                GUILayout.Label($"Rent Due: <color=red>${rentPaid}</color> | You have: <color=yellow>${remainingMoney:F1}</color>");
+                GUILayout.Label($"Deficit: <color=red><b>-${deficit:F1}</b></color>");
+
+                if (DebtManager.Instance != null && DebtManager.Instance.currentDebt > 0f)
+                {
+                    GUILayout.Label($"Current Outstanding Debt: <color=orange>${DebtManager.Instance.currentDebt:F1}</color>");
+                }
+
+                GUILayout.Space(15);
+
+                // Nút Vay nợ khẩn cấp của chủ nhà (Lãi 20%)
+                if (canBorrow)
+                {
+                    if (GUILayout.Button($"🤝 TAKE LANDLORD LOAN (+${deficit:F1} now ➔ Owe ${loanWithInterest:F1})", GUILayout.Height(40)))
+                    {
+                        DebtManager.Instance.TakeEmergencyLoan(deficit);
+                        if (EconomyManager.Instance != null) EconomyManager.Instance.currentMoney = 0f;
+                        isShowingSummary = false;
+                        Time.timeScale = 1f;
+                        if (DayManager.Instance != null) DayManager.Instance.ProceedToNextDay();
+                        if (FloatingFeedbackUI.Instance != null)
+                        {
+                            FloatingFeedbackUI.Instance.ShowMessage($"Borrowed ${deficit:F1}! Survived to Day {dayPassed + 1}", Color.yellow, 3.5f);
+                        }
+                    }
+                    GUILayout.Space(8);
+                }
+
+                if (GUILayout.Button("🔄 RESTART FROM DAY 1", GUILayout.Height(30)))
                 {
                     isShowingSummary = false;
                     Time.timeScale = 1f;
                     if (EconomyManager.Instance != null) EconomyManager.Instance.currentMoney = 0f;
+                    if (DebtManager.Instance != null) DebtManager.Instance.currentDebt = 0f;
                     if (DayManager.Instance != null)
                     {
                         DayManager.Instance.currentDay = 1;
@@ -114,7 +141,7 @@ namespace RentIsDue.Core
 
                 GUILayout.Space(5);
 
-                if (GUILayout.Button("📂 LOAD LAST SAVE", GUILayout.Height(35)))
+                if (GUILayout.Button("📂 LOAD LAST SAVE", GUILayout.Height(30)))
                 {
                     isShowingSummary = false;
                     Time.timeScale = 1f;

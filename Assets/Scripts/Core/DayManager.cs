@@ -39,7 +39,13 @@ namespace RentIsDue.Core
 
         public void CalculateRent()
         {
-            currentRent = Mathf.RoundToInt(100 * Mathf.Pow(1.25f, currentDay - 1));
+            int baseRent = Mathf.RoundToInt(100 * Mathf.Pow(1.25f, currentDay - 1));
+            int debtAmount = 0;
+            if (DebtManager.Instance != null)
+            {
+                debtAmount = Mathf.RoundToInt(DebtManager.Instance.currentDebt);
+            }
+            currentRent = baseRent + debtAmount;
         }
 
         private void HandleDayEnded()

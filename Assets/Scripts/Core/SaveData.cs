@@ -7,6 +7,7 @@ namespace RentIsDue.Core
     {
         public int currentDay;
         public float currentMoney;
+        public float currentDebt;
         public int backpackLevel = 1;
         public int carryWeightLevel = 1;
         public int staminaLevel = 1;
