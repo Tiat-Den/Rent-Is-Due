@@ -75,7 +75,7 @@ namespace RentIsDue.Core
                     InventoryManager.Instance.maxWeight = 20f + (data.backpackLevel - 1) * 10f;
                 }
 
-                PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+                PlayerMovement playerMovement = FindAnyObjectByType<PlayerMovement>();
                 if (playerMovement != null)
                 {
                     playerMovement.moveSpeed = 5f * (1f + (data.movementLevel - 1) * 0.2f);
