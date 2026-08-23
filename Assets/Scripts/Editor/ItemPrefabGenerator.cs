@@ -63,10 +63,13 @@ namespace RentIsDue.Editor
                 ItemData item = AssetDatabase.LoadAssetAtPath<ItemData>(path);
                 if (item == null) continue;
 
+                string safeId = !string.IsNullOrEmpty(item.id) ? item.id : Path.GetFileNameWithoutExtension(path);
+                if (string.IsNullOrEmpty(safeId)) safeId = "item_" + item.name;
+
                 string fbxName = "books.fbx";
                 float scale = 0.4f;
 
-                if (modelMapping.TryGetValue(item.id, out var entry))
+                if (modelMapping.TryGetValue(safeId, out var entry))
                 {
                     fbxName = entry.fbx;
                     scale = entry.scale;
@@ -81,7 +84,7 @@ namespace RentIsDue.Editor
                 }
 
                 // Tạo đối tượng Prefab tạm thời
-                GameObject rootObj = new GameObject(item.id + "_Prefab");
+                GameObject rootObj = new GameObject(safeId + "_Prefab");
                 GameObject modelInstance = (GameObject)PrefabUtility.InstantiatePrefab(fbxAsset);
                 modelInstance.transform.SetParent(rootObj.transform, false);
                 modelInstance.transform.localPosition = Vector3.zero;
@@ -95,7 +98,7 @@ namespace RentIsDue.Editor
 
                 // Gắn Rigidbody nhẹ để đồ chạm đất tự nhiên
                 Rigidbody rb = rootObj.AddComponent<Rigidbody>();
-                rb.mass = item.weight;
+                rb.mass = Mathf.Max(0.1f, item.weight);
                 rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
                 // Gắn script PickupInteractable
@@ -103,7 +106,7 @@ namespace RentIsDue.Editor
                 pickup.itemData = item;
 
                 // Lưu thành Prefab
-                string prefabPath = $"{prefabsOutputFolder}/{item.id}.prefab";
+                string prefabPath = $"{prefabsOutputFolder}/{safeId}.prefab";
                 GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(rootObj, prefabPath);
                 GameObject.DestroyImmediate(rootObj);
 
