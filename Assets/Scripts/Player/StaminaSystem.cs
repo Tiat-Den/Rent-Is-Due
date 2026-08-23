@@ -10,11 +10,15 @@ namespace RentIsDue.Player
 
         [Header("Stamina Settings")]
         public float currentStamina = 100f;
-        public float regenRate = 25f; // hồi 25 thể lực / giây
+        [Tooltip("Tốc độ hồi phục thể lực mỗi giây")]
+        public float regenRate = 12f; // hồi 12 thể lực / giây (tốn ~8.5 giây để đầy từ 0)
+        [Tooltip("Thời gian chờ sau khi chạy/nhảy trước khi bắt đầu hồi phục")]
+        public float regenDelay = 1.2f; // nghỉ 1.2s mới bắt đầu hồi
         public float sprintDrainRate = 22f; // tiêu tốn khi chạy nhanh
-        public float jumpCost = 12f;
+        public float jumpCost = 15f;
 
         public bool isSprinting { get; private set; } = false;
+        private float lastStaminaConsumeTime = -999f;
 
         private void Awake()
         {
@@ -46,21 +50,24 @@ namespace RentIsDue.Player
 
             // Kiểm tra phím Shift để Sprint
             bool wantsToSprint = Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed;
-            PlayerMovement pm = GetComponent<PlayerMovement>();
 
             // Chỉ tính sprint khi đang di chuyển và còn thể lực
             if (wantsToSprint && currentStamina > 3f)
             {
                 isSprinting = true;
                 currentStamina = Mathf.Max(0f, currentStamina - sprintDrainRate * Time.deltaTime);
+                lastStaminaConsumeTime = Time.time;
             }
             else
             {
                 isSprinting = false;
-                // Hồi phục thể lực
-                if (currentStamina < maxStamina)
+                // Chỉ hồi phục khi đã nghỉ đủ thời gian regenDelay (1.2 giây)
+                if (Time.time >= lastStaminaConsumeTime + regenDelay)
                 {
-                    currentStamina = Mathf.Min(maxStamina, currentStamina + regenRate * Time.deltaTime);
+                    if (currentStamina < maxStamina)
+                    {
+                        currentStamina = Mathf.Min(maxStamina, currentStamina + regenRate * Time.deltaTime);
+                    }
                 }
             }
         }
@@ -73,6 +80,7 @@ namespace RentIsDue.Player
         public void ConsumeJumpStamina()
         {
             currentStamina = Mathf.Max(0f, currentStamina - jumpCost);
+            lastStaminaConsumeTime = Time.time;
         }
 
         private void OnGUI()
