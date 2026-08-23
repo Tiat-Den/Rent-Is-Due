@@ -10,8 +10,8 @@ namespace RentIsDue.Player
 
         [Header("Stamina Settings")]
         public float currentStamina = 100f;
-        [Tooltip("Tốc độ hồi phục thể lực mỗi giây")]
-        public float regenRate = 12f; // hồi 12 thể lực / giây (tốn ~8.5 giây để đầy từ 0)
+        [Tooltip("Tốc độ hồi phục thể lực cơ bản mỗi giây")]
+        public float baseRegenRate = 4.0f; // cơ bản 4.0/s
         [Tooltip("Thời gian chờ sau khi chạy/nhảy trước khi bắt đầu hồi phục")]
         public float regenDelay = 1.2f; // nghỉ 1.2s mới bắt đầu hồi
         public float sprintDrainRate = 22f; // tiêu tốn khi chạy nhanh
@@ -44,9 +44,19 @@ namespace RentIsDue.Player
             return 100f;
         }
 
+        public float GetRegenRate()
+        {
+            if (UpgradeManager.Instance != null)
+            {
+                return UpgradeManager.Instance.GetStaminaRegenRate();
+            }
+            return baseRegenRate;
+        }
+
         private void Update()
         {
             float maxStamina = GetMaxStamina();
+            float currentRegenRate = GetRegenRate();
 
             // Kiểm tra phím Shift để Sprint
             bool wantsToSprint = Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed;
@@ -66,7 +76,7 @@ namespace RentIsDue.Player
                 {
                     if (currentStamina < maxStamina)
                     {
-                        currentStamina = Mathf.Min(maxStamina, currentStamina + regenRate * Time.deltaTime);
+                        currentStamina = Mathf.Min(maxStamina, currentStamina + currentRegenRate * Time.deltaTime);
                     }
                 }
             }

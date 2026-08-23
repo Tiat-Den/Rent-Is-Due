@@ -71,15 +71,26 @@ namespace RentIsDue.Shop
                 () => um.TryUpgrade(ref um.carryWeightLevel, UpgradeManager.CarryWeightCosts, null)
             );
 
-            // 3. Better Fitness (Stamina)
+            // 3. Better Fitness (Max Stamina)
             DrawUpgradeCard(
-                "⚡ Better Fitness (Stamina)",
+                "⚡ Better Fitness (Max Stamina)",
                 um.staminaLevel,
-                um.GetMaxStamina() + " Stamina",
-                um.staminaLevel < 5 ? UpgradeManager.StaminaValues[um.staminaLevel] + " Stamina" : "MAX",
+                um.GetMaxStamina() + " Max",
+                um.staminaLevel < 5 ? UpgradeManager.StaminaValues[um.staminaLevel] + " Max" : "MAX",
                 um.staminaLevel < 5 ? UpgradeManager.StaminaCosts[um.staminaLevel] : 0,
                 money,
                 () => um.TryUpgrade(ref um.staminaLevel, UpgradeManager.StaminaCosts, null)
+            );
+
+            // 4. Fast Recovery (Stamina Regen)
+            DrawUpgradeCard(
+                "🫁 Fast Recovery (Stamina Regen)",
+                um.staminaRegenLevel,
+                $"{um.GetStaminaRegenRate():F1}/s",
+                um.staminaRegenLevel < 5 ? $"{UpgradeManager.StaminaRegenValues[um.staminaRegenLevel]:F1}/s" : "MAX",
+                um.staminaRegenLevel < 5 ? UpgradeManager.StaminaRegenCosts[um.staminaRegenLevel] : 0,
+                money,
+                () => um.TryUpgrade(ref um.staminaRegenLevel, UpgradeManager.StaminaRegenCosts, null)
             );
 
             // 4. Better Shoes (Move Speed)

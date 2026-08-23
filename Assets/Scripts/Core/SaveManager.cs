@@ -39,6 +39,7 @@ namespace RentIsDue.Core
                 data.backpackLevel = UpgradeManager.Instance.backpackLevel;
                 data.carryWeightLevel = UpgradeManager.Instance.carryWeightLevel;
                 data.staminaLevel = UpgradeManager.Instance.staminaLevel;
+                data.staminaRegenLevel = UpgradeManager.Instance.staminaRegenLevel;
                 data.moveSpeedLevel = UpgradeManager.Instance.moveSpeedLevel;
                 data.searchSpeedLevel = UpgradeManager.Instance.searchSpeedLevel;
                 data.sellPriceLevel = UpgradeManager.Instance.sellPriceLevel;
@@ -75,6 +76,7 @@ namespace RentIsDue.Core
                     UpgradeManager.Instance.backpackLevel = data.backpackLevel > 0 ? data.backpackLevel : 1;
                     UpgradeManager.Instance.carryWeightLevel = data.carryWeightLevel > 0 ? data.carryWeightLevel : 1;
                     UpgradeManager.Instance.staminaLevel = data.staminaLevel > 0 ? data.staminaLevel : 1;
+                    UpgradeManager.Instance.staminaRegenLevel = data.staminaRegenLevel > 0 ? data.staminaRegenLevel : 1;
                     UpgradeManager.Instance.moveSpeedLevel = data.moveSpeedLevel > 0 ? data.moveSpeedLevel : 1;
                     UpgradeManager.Instance.searchSpeedLevel = data.searchSpeedLevel > 0 ? data.searchSpeedLevel : 1;
                     UpgradeManager.Instance.sellPriceLevel = data.sellPriceLevel > 0 ? data.sellPriceLevel : 1;

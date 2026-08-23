@@ -15,6 +15,7 @@ namespace RentIsDue.Shop
         public int backpackLevel = 1;
         public int carryWeightLevel = 1;
         public int staminaLevel = 1;
+        public int staminaRegenLevel = 1;
         public int moveSpeedLevel = 1;
         public int searchSpeedLevel = 1;
         public int sellPriceLevel = 1;
@@ -29,6 +30,9 @@ namespace RentIsDue.Shop
         public static readonly int[] StaminaValues = { 100, 125, 150, 180, 220 };
         public static readonly int[] StaminaCosts = { 0, 85, 230, 550, 1200 };
 
+        public static readonly float[] StaminaRegenValues = { 4.0f, 7.0f, 11.0f, 16.0f, 22.0f };
+        public static readonly int[] StaminaRegenCosts = { 0, 80, 220, 500, 1100 };
+
         public static readonly float[] MoveSpeedMultipliers = { 1.00f, 1.10f, 1.25f, 1.40f, 1.60f };
         public static readonly int[] MoveSpeedCosts = { 0, 90, 240, 550, 1200 };
 
@@ -42,6 +46,7 @@ namespace RentIsDue.Shop
         public int GetMaxSlots() => BackpackSlots[Mathf.Clamp(backpackLevel - 1, 0, 4)];
         public float GetMaxWeight() => CarryWeights[Mathf.Clamp(carryWeightLevel - 1, 0, 4)];
         public int GetMaxStamina() => StaminaValues[Mathf.Clamp(staminaLevel - 1, 0, 4)];
+        public float GetStaminaRegenRate() => StaminaRegenValues[Mathf.Clamp(staminaRegenLevel - 1, 0, 4)];
         public float GetMoveSpeedMultiplier() => MoveSpeedMultipliers[Mathf.Clamp(moveSpeedLevel - 1, 0, 4)];
         public float GetSearchSpeedMultiplier() => SearchSpeedMultipliers[Mathf.Clamp(searchSpeedLevel - 1, 0, 4)];
         public float GetSellPriceMultiplier() => SellPriceMultipliers[Mathf.Clamp(sellPriceLevel - 1, 0, 4)];
