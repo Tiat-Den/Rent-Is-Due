@@ -4,6 +4,11 @@ Tất cả những thay đổi, cập nhật tính năng mới của dự án s�
 
 ## [MVP Development]
 
+### Feature - First-Person Controller & Jump (Hoàn thành)
+- **Cập nhật**: Chuyển đổi `PlayerMovement.cs` sang góc nhìn thứ nhất (di chuyển theo hướng nhìn của nhân vật) và thêm cơ chế Nhảy (Jump) bằng phím `Space`.
+- **Cập nhật**: Nâng cấp `CameraController.cs` thành First-Person Mouse Look Controller: xoay thân (Yaw), gật đầu (Pitch giới hạn -85° đến 85°), tự động khóa/mở khóa con trỏ chuột khi chơi/tạm dừng.
+- **Cập nhật**: Nâng cấp `PlayerInteractor.cs` hỗ trợ Raycast từ tâm mắt và hiển thị tâm ngắm (Crosshair) + gợi ý tương tác `[E]` ngay giữa màn hình.
+
 ### Phase 10 - MVP Polish & Playtest (Hoàn thành)
 - **Thêm mới**: `PauseMenu.cs` quản lý trạng thái đóng băng thời gian của game, cho phép bấm phím ESC để mở Menu tạm dừng với các nút Resume và Quit.
 - **Tổng kết**: Hoàn thành vòng lặp cốt lõi (Core Loop) của dự án. Trò chơi đã sẵn sàng để Build và gửi cho Tester chơi thử.

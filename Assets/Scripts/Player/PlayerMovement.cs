@@ -8,14 +8,14 @@ namespace RentIsDue.Player
     {
         [Header("Movement Settings")]
         public float moveSpeed = 5f;
-        public float rotationSpeed = 10f;
+        public float jumpHeight = 1.2f;
+        public float gravityValue = -15f;
         
         private CharacterController controller;
         private Vector3 playerVelocity;
         private bool groundedPlayer;
-        private float gravityValue = -9.81f;
 
-        // Sử dụng InputAction trực tiếp trong code để bạn không cần tạo file cấu hình Input ngoài
+        // Sử dụng InputAction trực tiếp trong code để không cần tạo file cấu hình Input ngoài
         private InputAction moveAction;
 
         private void Start()
@@ -46,26 +46,26 @@ namespace RentIsDue.Player
             groundedPlayer = controller.isGrounded;
             if (groundedPlayer && playerVelocity.y < 0)
             {
-                playerVelocity.y = 0f;
+                // Giữ một lực đè nhỏ để bám đất ổn định trên dốc/bề mặt
+                playerVelocity.y = -2f;
             }
 
             Vector2 input = moveAction.ReadValue<Vector2>();
-            // Di chuyển trên mặt phẳng XZ (3D top-down)
-            Vector3 move = new Vector3(input.x, 0, input.y);
+            // Di chuyển theo hướng nhân vật đang nhìn (First-Person)
+            Vector3 move = transform.right * input.x + transform.forward * input.y;
 
             // Normalize để đi chéo không bị nhanh hơn
             if (move.magnitude > 1f) move.Normalize();
 
             controller.Move(move * Time.deltaTime * moveSpeed);
 
-            if (move != Vector3.zero)
+            // Xử lý nhảy (Space)
+            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame && groundedPlayer)
             {
-                // Xoay nhân vật mượt mà theo hướng di chuyển
-                Quaternion targetRotation = Quaternion.LookRotation(move);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+                playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravityValue);
             }
 
-            // Xử lý trọng lực cơ bản
+            // Xử lý trọng lực
             playerVelocity.y += gravityValue * Time.deltaTime;
             controller.Move(playerVelocity * Time.deltaTime);
         }

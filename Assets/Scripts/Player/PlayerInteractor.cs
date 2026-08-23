@@ -35,6 +35,22 @@ namespace RentIsDue.Player
 
         private void FindInteractable()
         {
+            // 1. Ưu tiên kiểm tra bằng Raycast/SphereCast từ giữa màn hình (tầm mắt camera)
+            if (Camera.main != null)
+            {
+                Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                if (Physics.SphereCast(ray, 0.2f, out RaycastHit hit, interactionRange, interactableLayer))
+                {
+                    IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+                    if (interactable != null)
+                    {
+                        currentInteractable = interactable;
+                        return;
+                    }
+                }
+            }
+
+            // 2. Dự phòng: Quét xung quanh bằng OverlapSphere nếu không trỏ thẳng
             Collider[] colliders = Physics.OverlapSphere(transform.position, interactionRange, interactableLayer);
             
             if (colliders.Length > 0)
@@ -61,6 +77,33 @@ namespace RentIsDue.Player
             else
             {
                 currentInteractable = null;
+            }
+        }
+
+        private void OnGUI()
+        {
+            // Vẽ tâm ngắm nhỏ (Crosshair) chính giữa màn hình cho góc nhìn thứ nhất
+            if (Time.timeScale > 0f)
+            {
+                float size = 6f;
+                float x = (Screen.width - size) / 2f;
+                float y = (Screen.height - size) / 2f;
+                
+                Color originalColor = GUI.color;
+                GUI.color = currentInteractable != null ? Color.green : new Color(1, 1, 1, 0.6f);
+                GUI.DrawTexture(new Rect(x, y, size, size), Texture2D.whiteTexture);
+                
+                // Hiển thị gợi ý phím [E] khi đang nhìn vào vật thể có thể tương tác
+                if (currentInteractable != null)
+                {
+                    GUIStyle style = new GUIStyle(GUI.skin.label);
+                    style.alignment = TextAnchor.MiddleCenter;
+                    style.fontSize = 14;
+                    style.normal.textColor = Color.white;
+                    GUI.Label(new Rect(x - 100, y + 15, 200, 30), currentInteractable.GetInteractionText(), style);
+                }
+                
+                GUI.color = originalColor;
             }
         }
 
