@@ -6,14 +6,15 @@ using RentIsDue.Inventory;
 
 namespace RentIsDue.Loot
 {
-    public class SearchableObject : MonoBehaviour, IInteractable
-    {
+        [Header("Container Settings")]
+        public string containerName = "Container";
         public LootTable lootTable;
         public float searchDuration = 2f;
         public Transform spawnPoint;
 
         private bool hasBeenSearched = false;
         private bool isSearching = false;
+        private float searchProgress = 0f;
 
         private void Start()
         {
@@ -35,6 +36,7 @@ namespace RentIsDue.Loot
         {
             hasBeenSearched = false;
             isSearching = false;
+            searchProgress = 0f;
         }
 
         public bool CanInteract(PlayerInteractor player)
@@ -44,8 +46,9 @@ namespace RentIsDue.Loot
 
         public string GetInteractionText()
         {
-            if (isSearching) return "Searching...";
-            return "Search";
+            if (hasBeenSearched) return $"{containerName} (Empty)";
+            if (isSearching) return $"Searching {containerName}... {(int)(searchProgress * 100)}%";
+            return $"Search {containerName}";
         }
 
         public void Interact(PlayerInteractor player)
@@ -59,30 +62,37 @@ namespace RentIsDue.Loot
         private IEnumerator SearchCoroutine(PlayerInteractor player)
         {
             isSearching = true;
-            Debug.Log("Searching started...");
-            
+            searchProgress = 0f;
+            Debug.Log($"Searching {containerName} started...");
+
+            float actualDuration = searchDuration;
             if (RentIsDue.Shop.UpgradeManager.Instance != null)
             {
-                yield return new WaitForSeconds(searchDuration * RentIsDue.Shop.UpgradeManager.Instance.SearchSpeedMultiplier);
+                actualDuration = searchDuration * RentIsDue.Shop.UpgradeManager.Instance.SearchSpeedMultiplier;
             }
-            else
+
+            float elapsed = 0f;
+            while (elapsed < actualDuration)
             {
-                yield return new WaitForSeconds(searchDuration);
+                elapsed += Time.deltaTime;
+                searchProgress = Mathf.Clamp01(elapsed / actualDuration);
+                yield return null;
             }
 
             isSearching = false;
             hasBeenSearched = true;
+            searchProgress = 1f;
 
             ItemData foundItem = lootTable.RollLoot();
 
             if (foundItem != null)
             {
-                Debug.Log($"Found item: {foundItem.displayName}");
+                Debug.Log($"Found item in {containerName}: {foundItem.displayName} (${foundItem.baseValue})");
                 SpawnItem(foundItem);
             }
             else
             {
-                Debug.Log("Found nothing.");
+                Debug.Log($"Found nothing in {containerName}.");
             }
         }
 

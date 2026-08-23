@@ -2,6 +2,12 @@
 
 Tất cả những thay đổi, cập nhật tính năng mới của dự án sẽ được ghi chú tại đây.
 
+## [Post-MVP Development]
+
+### Feature - Categorized Loot Tables & Searchable Containers (Hoàn thành)
+- **Thêm mới**: Công cụ `LootTableGenerator.cs` tự động phân loại 30 item và sinh ra 5 bảng Loot Table chuyên biệt: `TrashLootTable`, `DeskLootTable`, `KitchenLootTable`, `WardrobeLootTable`, `SecretSafeLootTable`.
+- **Cập nhật**: Nâng cấp `SearchableObject.cs` hỗ trợ đặt tên hòm/tủ riêng biệt (`containerName`), theo dõi tiến độ bới rác theo thời gian thực (0% - 100%), và hiển thị thông tin rớt đồ sinh động.
+
 ## [MVP Development]
 
 ### Feature - First-Person Controller & Jump (Hoàn thành)
