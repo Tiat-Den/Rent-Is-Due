@@ -17,9 +17,7 @@ namespace RentIsDue.Player
 
             if (currentInteractable != null)
             {
-                bool ePressed = false;
-                if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) ePressed = true;
-                if (Input.GetKeyDown(KeyCode.E)) ePressed = true;
+                bool ePressed = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
 
                 if (ePressed)
                 {
