@@ -6,6 +6,8 @@ using RentIsDue.Inventory;
 
 namespace RentIsDue.Loot
 {
+    public class SearchableObject : MonoBehaviour, IInteractable
+    {
         [Header("Container Settings")]
         public string containerName = "Container";
         public LootTable lootTable;
