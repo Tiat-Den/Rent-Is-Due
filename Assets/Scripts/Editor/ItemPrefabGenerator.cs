@@ -91,10 +91,10 @@ namespace RentIsDue.Editor
                 modelInstance.transform.localRotation = Quaternion.identity;
                 modelInstance.transform.localScale = Vector3.one * scale;
 
-                // Gắn Collider
+                // Gắn Collider vừa vặn cho việc nhặt đồ dễ dàng
                 BoxCollider col = rootObj.AddComponent<BoxCollider>();
-                col.size = new Vector3(0.5f, 0.4f, 0.5f);
-                col.center = new Vector3(0, 0.2f, 0);
+                col.size = new Vector3(0.7f, 0.6f, 0.7f);
+                col.center = new Vector3(0, 0.25f, 0);
 
                 // Gắn Rigidbody nhẹ để đồ chạm đất tự nhiên
                 Rigidbody rb = rootObj.AddComponent<Rigidbody>();

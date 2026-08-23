@@ -6,7 +6,7 @@ namespace RentIsDue.Player
 {
     public class PlayerInteractor : MonoBehaviour
     {
-        [SerializeField] private float interactionRange = 2f;
+        [SerializeField] private float interactionRange = 3.2f;
         [SerializeField] private LayerMask interactableLayer = ~0; // ~0 means Everything
         
         private IInteractable currentInteractable;
@@ -17,8 +17,6 @@ namespace RentIsDue.Player
 
             if (currentInteractable != null)
             {
-                // TODO: Update UI with currentInteractable.GetInteractionText()
-
                 if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
                 {
                     if (currentInteractable.CanInteract(this))
@@ -27,21 +25,19 @@ namespace RentIsDue.Player
                     }
                 }
             }
-            else
-            {
-                // TODO: Hide UI
-            }
         }
 
         private void FindInteractable()
         {
-            // 1. Ưu tiên kiểm tra bằng Raycast/SphereCast từ giữa màn hình (tầm mắt camera)
+            // 1. Ưu tiên kiểm tra bằng SphereCast từ giữa màn hình (tầm mắt camera)
             if (Camera.main != null)
             {
                 Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-                if (Physics.SphereCast(ray, 0.2f, out RaycastHit hit, interactionRange, interactableLayer))
+                if (Physics.SphereCast(ray, 0.25f, out RaycastHit hit, interactionRange, interactableLayer))
                 {
-                    IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+                    IInteractable interactable = hit.collider.GetComponent<IInteractable>() 
+                                              ?? hit.collider.GetComponentInParent<IInteractable>()
+                                              ?? hit.collider.GetComponentInChildren<IInteractable>();
                     if (interactable != null)
                     {
                         currentInteractable = interactable;
@@ -60,7 +56,9 @@ namespace RentIsDue.Player
 
                 foreach (var col in colliders)
                 {
-                    IInteractable interactable = col.GetComponent<IInteractable>();
+                    IInteractable interactable = col.GetComponent<IInteractable>() 
+                                              ?? col.GetComponentInParent<IInteractable>()
+                                              ?? col.GetComponentInChildren<IInteractable>();
                     if (interactable != null)
                     {
                         float distance = Vector3.Distance(transform.position, col.transform.position);
