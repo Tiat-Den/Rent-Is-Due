@@ -6,7 +6,7 @@ namespace RentIsDue.Inventory
     public class InventoryUI : MonoBehaviour
     {
         private InventoryManager inventoryManager;
-        private bool isUIVisible = true;
+        public bool isUIVisible { get; private set; } = false;
 
         private void Start()
         {

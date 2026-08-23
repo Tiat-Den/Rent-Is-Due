@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PauseMenu : MonoBehaviour
 {
-    private bool isPaused = false;
+    public bool isPaused { get; private set; } = false;
 
     void Update()
     {

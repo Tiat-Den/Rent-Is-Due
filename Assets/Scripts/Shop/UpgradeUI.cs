@@ -7,7 +7,7 @@ namespace RentIsDue.Shop
 {
     public class UpgradeUI : MonoBehaviour
     {
-        private bool isUIVisible = false;
+        public bool isUIVisible { get; private set; } = false;
 
         public void ToggleUI()
         {

@@ -16,6 +16,10 @@ namespace RentIsDue.Player
 
         private float xRotation = 0f;
 
+        private PauseMenu pauseMenu;
+        private Inventory.InventoryUI inventoryUI;
+        private Shop.UpgradeUI upgradeUI;
+
         private void Start()
         {
             if (playerBody == null)
@@ -24,33 +28,45 @@ namespace RentIsDue.Player
                 if (player != null) playerBody = player.transform;
             }
 
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            pauseMenu = FindAnyObjectByType<PauseMenu>();
+            inventoryUI = FindAnyObjectByType<Inventory.InventoryUI>();
+            upgradeUI = FindAnyObjectByType<Shop.UpgradeUI>();
+
+            SetCursorState(true);
+        }
+
+        private bool IsAnyUIOpen()
+        {
+            if (Time.timeScale == 0f) return true;
+            if (pauseMenu != null && pauseMenu.isPaused) return true;
+            if (inventoryUI != null && inventoryUI.isUIVisible) return true;
+            if (upgradeUI != null && upgradeUI.isUIVisible) return true;
+            return false;
+        }
+
+        private void SetCursorState(bool locked)
+        {
+            Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = !locked;
         }
 
         private void Update()
         {
-            // Nếu game bị Pause (Time.timeScale == 0) thì mở khóa chuột để bấm UI
-            if (Time.timeScale == 0f)
+            // Kiểm tra xem có đang mở Menu nào không (Pause, Inventory Tab, Upgrade Laptop)
+            if (IsAnyUIOpen())
             {
                 if (Cursor.lockState != CursorLockMode.None)
                 {
-                    Cursor.lockState = CursorLockMode.None;
-                    Cursor.visible = true;
+                    SetCursorState(false);
                 }
-                return;
+                return; // Dừng xoay camera khi đang mở menu để dùng chuột bấm nút
             }
             else
             {
-                // Khi đang chơi bình thường, khóa con trỏ chuột lại
+                // Khi không mở menu nào, tự động khóa chuột lại để xoay góc nhìn
                 if (Cursor.lockState != CursorLockMode.Locked)
                 {
-                    // Nếu click chuột vào màn hình thì khóa chuột lại
-                    if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
-                    {
-                        Cursor.lockState = CursorLockMode.Locked;
-                        Cursor.visible = false;
-                    }
+                    SetCursorState(true);
                 }
             }
 
