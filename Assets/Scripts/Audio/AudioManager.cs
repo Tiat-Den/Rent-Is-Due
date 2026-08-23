@@ -4,7 +4,25 @@ namespace RentIsDue.Audio
 {
     public class AudioManager : MonoBehaviour
     {
-        public static AudioManager Instance { get; private set; }
+        private static AudioManager _instance;
+        public static AudioManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = Object.FindAnyObjectByType<AudioManager>();
+                    if (_instance == null)
+                    {
+                        GameObject go = new GameObject("AudioManager");
+                        _instance = go.AddComponent<AudioManager>();
+                        DontDestroyOnLoad(go);
+                    }
+                }
+                return _instance;
+            }
+            private set => _instance = value;
+        }
 
         [Header("Custom Audio Clips (Optional)")]
         public AudioClip pickupClip;
@@ -17,26 +35,47 @@ namespace RentIsDue.Audio
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
-            Instance = this;
+            _instance = this;
 
-            sfxSource = gameObject.AddComponent<AudioSource>();
+            sfxSource = GetComponent<AudioSource>();
+            if (sfxSource == null)
+            {
+                sfxSource = gameObject.AddComponent<AudioSource>();
+            }
             sfxSource.playOnAwake = false;
+            sfxSource.spatialBlend = 0f; // 2D Sound (Phát trực tiếp vào tai không bị giảm âm theo khoảng cách)
+            sfxSource.volume = 1f;
+
+            // Đảm bảo trong Scene luôn có 1 AudioListener để nghe được âm thanh
+            if (Object.FindAnyObjectByType<AudioListener>() == null)
+            {
+                Camera cam = Camera.main != null ? Camera.main : Object.FindAnyObjectByType<Camera>();
+                if (cam != null)
+                {
+                    cam.gameObject.AddComponent<AudioListener>();
+                }
+                else
+                {
+                    gameObject.AddComponent<AudioListener>();
+                }
+            }
         }
 
         public void PlayPickup()
         {
             if (pickupClip != null)
             {
-                sfxSource.PlayOneShot(pickupClip, 0.8f);
+                sfxSource.PlayOneShot(pickupClip, 1.0f);
             }
             else
             {
-                PlayProceduralBeep(600f, 850f, 0.08f, 0.3f);
+                // Âm thanh 'Pop' nhặt đồ vui tai
+                PlayProceduralBeep(520f, 980f, 0.09f, 0.7f);
             }
         }
 
@@ -44,12 +83,12 @@ namespace RentIsDue.Audio
         {
             if (sellClip != null)
             {
-                sfxSource.PlayOneShot(sellClip, 0.9f);
+                sfxSource.PlayOneShot(sellClip, 1.0f);
             }
             else
             {
-                // Ka-ching dual tone
-                PlayProceduralBeep(987f, 1318f, 0.12f, 0.4f);
+                // Âm thanh 'Ka-ching' leng keng bán đồ
+                PlayProceduralBeep(987f, 1480f, 0.15f, 0.8f);
             }
         }
 
@@ -57,11 +96,11 @@ namespace RentIsDue.Audio
         {
             if (searchClip != null)
             {
-                sfxSource.PlayOneShot(searchClip, 0.5f);
+                sfxSource.PlayOneShot(searchClip, 0.8f);
             }
             else
             {
-                PlayProceduralBeep(300f, 400f, 0.04f, 0.15f);
+                PlayProceduralBeep(350f, 480f, 0.05f, 0.4f);
             }
         }
 
@@ -73,7 +112,7 @@ namespace RentIsDue.Audio
             }
             else
             {
-                PlayProceduralBeep(523f, 1046f, 0.35f, 0.5f);
+                PlayProceduralBeep(523f, 1046f, 0.35f, 0.8f);
             }
         }
 
@@ -85,13 +124,15 @@ namespace RentIsDue.Audio
             }
             else
             {
-                PlayProceduralBeep(250f, 110f, 0.5f, 0.6f);
+                PlayProceduralBeep(250f, 110f, 0.5f, 0.8f);
             }
         }
 
-        // Tự động tạo âm thanh tổng hợp (Procedural Audio) tức thì mà không cần import file mp3/wav ngoài
+        // Tự động tạo âm thanh tổng hợp (Procedural Audio) tức thì
         private void PlayProceduralBeep(float startFreq, float endFreq, float duration, float volume)
         {
+            if (sfxSource == null) return;
+
             int sampleRate = 44100;
             int sampleCount = Mathf.CeilToInt(sampleRate * duration);
             float[] samples = new float[sampleCount];
@@ -100,7 +141,7 @@ namespace RentIsDue.Audio
             {
                 float t = (float)i / sampleCount;
                 float currentFreq = Mathf.Lerp(startFreq, endFreq, t);
-                float envelope = 1f - t; // Linear fade out
+                float envelope = Mathf.Sin(t * Mathf.PI); // Smooth attack and release envelope
                 samples[i] = Mathf.Sin(2 * Mathf.PI * currentFreq * ((float)i / sampleRate)) * envelope * volume;
             }
 
