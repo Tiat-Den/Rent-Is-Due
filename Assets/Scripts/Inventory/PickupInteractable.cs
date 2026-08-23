@@ -39,6 +39,11 @@ namespace RentIsDue.Inventory
                         RentIsDue.Core.FloatingFeedbackUI.Instance.ShowMessage($"+ {itemData.displayName} ({itemData.weight}kg)", Color.cyan);
                     }
 
+                    if (RentIsDue.Core.PlaytestLogger.Instance != null)
+                    {
+                        RentIsDue.Core.PlaytestLogger.Instance.RecordFirstItem();
+                    }
+
                     Debug.Log($"Picked up {itemData.displayName}");
                     Destroy(gameObject);
                 }

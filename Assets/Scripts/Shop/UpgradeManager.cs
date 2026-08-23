@@ -95,6 +95,12 @@ namespace RentIsDue.Shop
                 currentLevel++;
                 onUpgraded?.Invoke();
                 ApplyAllUpgrades();
+
+                if (RentIsDue.Core.PlaytestLogger.Instance != null)
+                {
+                    RentIsDue.Core.PlaytestLogger.Instance.RecordFirstUpgrade();
+                }
+
                 return true;
             }
             return false;

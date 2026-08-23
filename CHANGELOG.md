@@ -4,6 +4,11 @@ Tất cả những thay đổi, cập nhật tính năng mới của dự án s�
 
 ## [Post-MVP Development]
 
+### Phase 13 - External Playtest Preparation (Hoàn thành)
+- **Thêm mới**: Giao diện hướng dẫn mục tiêu và phím tắt `ObjectiveHUD.cs` hiển thị tiến độ đóng tiền nhà của ngày hiện tại và bảng phím tắt trợ giúp (bấm `H` để ẩn/hiện) giúp người chơi mới tự chơi dễ dàng.
+- **Thêm mới**: Hệ thống ghi chép số liệu chơi thử `PlaytestLogger.cs` theo dõi tự động thời gian nhặt món đồ đầu tiên, thời gian bán đồ đầu tiên, số lượng đồ đã nhặt/bán và ngày kỷ lục đạt được.
+- **Thêm mới**: Công cụ xuất bản game tự động `PlaytestBuilder.cs` cho phép Build ra file `RentIsDue.exe` độc lập cho Windows chỉ bằng 1 cú click menu `Tools ➔ Build Windows Playtest (.exe)`.
+
 ### Phase 12 - Economy & Gameplay Balance (Hoàn thành)
 - **Thêm mới**: Hệ thống Thể lực `StaminaSystem.cs` hỗ trợ Chạy nhanh (Sprint bằng `LeftShift` nhanh hơn 55%), tiêu hao thể lực khi nhảy và vẽ thanh Thể lực `⚡ STAMINA` mượt mà trên HUD.
 - **Thêm mới**: Hệ thống Quản lý Vay nợ khẩn cấp `DebtManager.cs` cho phép người chơi vay tiền chủ nhà khi thiếu tiền nhà ở hạn chót 22:00 với lãi suất 20% thay vì bị Game Over ngay lập tức.

@@ -39,6 +39,11 @@ namespace RentIsDue.Economy
                     RentIsDue.Core.FloatingFeedbackUI.Instance.ShowMessage($"+${amount:F1} ({item.displayName})", Color.yellow);
                 }
 
+                if (RentIsDue.Core.PlaytestLogger.Instance != null)
+                {
+                    RentIsDue.Core.PlaytestLogger.Instance.RecordFirstSale(amount);
+                }
+
                 Debug.Log($"+ ${amount:F1} (Sell Multiplier: {sellMultiplier}x)");
             }
         }

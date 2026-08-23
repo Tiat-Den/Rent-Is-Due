@@ -83,6 +83,12 @@ namespace RentIsDue.Core
         {
             currentDay++;
             CalculateRent();
+            
+            if (PlaytestLogger.Instance != null)
+            {
+                PlaytestLogger.Instance.RecordDayReached(currentDay);
+            }
+
             Debug.Log($"Next Day: Day {currentDay}. Paid rent.");
             if (TimeManager.Instance != null)
             {
