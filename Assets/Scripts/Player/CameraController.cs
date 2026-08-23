@@ -10,7 +10,8 @@ namespace RentIsDue.Player
         public Vector3 eyeOffset = new Vector3(0, 0.7f, 0); // Vị trí tầm mắt nhân vật
 
         [Header("Mouse Look Settings")]
-        public float mouseSensitivity = 2f;
+        [Range(0.1f, 3f)]
+        public float mouseSensitivity = 0.8f;
         public float minPitch = -85f;
         public float maxPitch = 85f;
 
@@ -89,10 +90,10 @@ namespace RentIsDue.Player
 
             if (Mouse.current == null) return;
 
-            // Đọc di chuyển của chuột
+            // Đọc di chuyển của chuột với tốc độ dịu hơn
             Vector2 mouseDelta = Mouse.current.delta.ReadValue();
-            float mouseX = mouseDelta.x * mouseSensitivity * 0.1f;
-            float mouseY = mouseDelta.y * mouseSensitivity * 0.1f;
+            float mouseX = mouseDelta.x * mouseSensitivity * 0.04f;
+            float mouseY = mouseDelta.y * mouseSensitivity * 0.04f;
 
             // Xoay đầu lên/xuống (Pitch)
             xRotation -= mouseY;
