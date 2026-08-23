@@ -6,10 +6,21 @@ namespace RentIsDue.Player
 {
     public class PlayerInteractor : MonoBehaviour
     {
-        [SerializeField] private float interactionRange = 3.2f;
+        [SerializeField] private float interactionRange = 3.5f;
         [SerializeField] private LayerMask interactableLayer = ~0; // ~0 means Everything
         
         private IInteractable currentInteractable;
+        private bool eKeyWasDown = false;
+
+        private void Awake()
+        {
+            // Ép buộc tầm tương tác tối thiểu 3.5m kể cả khi Scene bị lưu giá trị cũ
+            if (interactionRange < 3.5f)
+            {
+                interactionRange = 3.5f;
+            }
+            interactableLayer = ~0;
+        }
 
         private void Update()
         {
@@ -17,14 +28,30 @@ namespace RentIsDue.Player
 
             if (currentInteractable != null)
             {
-                bool ePressed = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
+                bool ePressedNow = false;
+                if (Keyboard.current != null)
+                {
+                    bool isDown = Keyboard.current.eKey.isPressed;
+                    if (Keyboard.current.eKey.wasPressedThisFrame || (isDown && !eKeyWasDown))
+                    {
+                        ePressedNow = true;
+                    }
+                    eKeyWasDown = isDown;
+                }
 
-                if (ePressed)
+                if (ePressedNow)
                 {
                     if (currentInteractable.CanInteract(this))
                     {
                         currentInteractable.Interact(this);
                     }
+                }
+            }
+            else
+            {
+                if (Keyboard.current != null)
+                {
+                    eKeyWasDown = Keyboard.current.eKey.isPressed;
                 }
             }
         }

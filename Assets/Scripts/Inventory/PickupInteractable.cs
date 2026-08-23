@@ -44,7 +44,7 @@ namespace RentIsDue.Inventory
                         RentIsDue.Core.PlaytestLogger.Instance.RecordFirstItem();
                     }
 
-                    Debug.Log($"Picked up {itemData.displayName}");
+                    Debug.Log($"[PickupInteractable] Picked up {itemData.displayName}");
                     Destroy(gameObject);
                 }
                 else
@@ -54,6 +54,11 @@ namespace RentIsDue.Inventory
                         RentIsDue.Core.FloatingFeedbackUI.Instance.ShowMessage("Inventory Full or Too Heavy!", Color.red, 1.8f);
                     }
                 }
+            }
+            else
+            {
+                Debug.LogWarning("[PickupInteractable] itemData is null on this object, removing object.");
+                Destroy(gameObject);
             }
         }
     }
