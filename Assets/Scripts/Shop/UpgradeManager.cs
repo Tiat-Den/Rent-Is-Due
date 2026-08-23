@@ -1,4 +1,7 @@
 using UnityEngine;
+using RentIsDue.Economy;
+using RentIsDue.Inventory;
+using RentIsDue.Player;
 
 namespace RentIsDue.Shop
 {
@@ -6,18 +9,45 @@ namespace RentIsDue.Shop
     {
         public static UpgradeManager Instance { get; private set; }
 
-        public int backpackLevel = 1;
-        public int movementLevel = 1;
-        public int searchSpeedLevel = 1;
+        public const int MAX_LEVEL = 5;
 
-        public float SearchSpeedMultiplier
-        {
-            get
-            {
-                // 1.0f at lv1, 0.8f at lv2, 0.6f at lv3, etc.
-                return Mathf.Max(0.1f, 1.0f - ((searchSpeedLevel - 1) * 0.2f));
-            }
-        }
+        [Header("Upgrade Levels (1-5)")]
+        public int backpackLevel = 1;
+        public int carryWeightLevel = 1;
+        public int staminaLevel = 1;
+        public int moveSpeedLevel = 1;
+        public int searchSpeedLevel = 1;
+        public int sellPriceLevel = 1;
+
+        // Data arrays based on UPGRADE_DATABASE.md
+        public static readonly int[] BackpackSlots = { 8, 12, 16, 22, 30 };
+        public static readonly int[] BackpackCosts = { 0, 80, 200, 450, 950 };
+
+        public static readonly float[] CarryWeights = { 20f, 28f, 36f, 48f, 65f };
+        public static readonly int[] CarryWeightCosts = { 0, 90, 220, 500, 1100 };
+
+        public static readonly int[] StaminaValues = { 100, 125, 150, 180, 220 };
+        public static readonly int[] StaminaCosts = { 0, 85, 230, 550, 1200 };
+
+        public static readonly float[] MoveSpeedMultipliers = { 1.00f, 1.10f, 1.25f, 1.40f, 1.60f };
+        public static readonly int[] MoveSpeedCosts = { 0, 90, 240, 550, 1200 };
+
+        public static readonly float[] SearchSpeedMultipliers = { 1.00f, 1.20f, 1.50f, 1.85f, 2.25f };
+        public static readonly int[] SearchSpeedCosts = { 0, 100, 260, 600, 1400 };
+
+        public static readonly float[] SellPriceMultipliers = { 1.00f, 1.05f, 1.10f, 1.17f, 1.25f };
+        public static readonly int[] SellPriceCosts = { 0, 150, 380, 850, 1800 };
+
+        // Modifiers
+        public int GetMaxSlots() => BackpackSlots[Mathf.Clamp(backpackLevel - 1, 0, 4)];
+        public float GetMaxWeight() => CarryWeights[Mathf.Clamp(carryWeightLevel - 1, 0, 4)];
+        public int GetMaxStamina() => StaminaValues[Mathf.Clamp(staminaLevel - 1, 0, 4)];
+        public float GetMoveSpeedMultiplier() => MoveSpeedMultipliers[Mathf.Clamp(moveSpeedLevel - 1, 0, 4)];
+        public float GetSearchSpeedMultiplier() => SearchSpeedMultipliers[Mathf.Clamp(searchSpeedLevel - 1, 0, 4)];
+        public float GetSellPriceMultiplier() => SellPriceMultipliers[Mathf.Clamp(sellPriceLevel - 1, 0, 4)];
+
+        // Helper for Search duration reduction: Duration = Base / Multiplier
+        public float SearchSpeedMultiplier => 1f / GetSearchSpeedMultiplier();
 
         private void Awake()
         {
@@ -27,6 +57,42 @@ namespace RentIsDue.Shop
                 return;
             }
             Instance = this;
+        }
+
+        private void Start()
+        {
+            ApplyAllUpgrades();
+        }
+
+        public void ApplyAllUpgrades()
+        {
+            if (InventoryManager.Instance != null)
+            {
+                InventoryManager.Instance.maxSlots = GetMaxSlots();
+                InventoryManager.Instance.maxWeight = GetMaxWeight();
+            }
+
+            PlayerMovement player = FindAnyObjectByType<PlayerMovement>();
+            if (player != null)
+            {
+                player.moveSpeed = 5.5f * GetMoveSpeedMultiplier();
+            }
+        }
+
+        public bool TryUpgrade(ref int currentLevel, int[] costs, System.Action onUpgraded)
+        {
+            if (currentLevel >= MAX_LEVEL) return false;
+            int nextCost = costs[currentLevel]; // index currentLevel is next cost
+
+            if (EconomyManager.Instance != null && EconomyManager.Instance.currentMoney >= nextCost)
+            {
+                EconomyManager.Instance.currentMoney -= nextCost;
+                currentLevel++;
+                onUpgraded?.Invoke();
+                ApplyAllUpgrades();
+                return true;
+            }
+            return false;
         }
     }
 }

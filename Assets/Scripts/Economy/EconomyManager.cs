@@ -24,10 +24,11 @@ namespace RentIsDue.Economy
         {
             if (item != null)
             {
-                float amount = item.baseValue * marketModifier;
+                float sellMultiplier = RentIsDue.Shop.UpgradeManager.Instance != null ? RentIsDue.Shop.UpgradeManager.Instance.GetSellPriceMultiplier() : 1f;
+                float amount = item.baseValue * marketModifier * sellMultiplier;
                 currentMoney += amount;
                 InventoryManager.Instance.RemoveItem(item);
-                Debug.Log($"+ ${amount}");
+                Debug.Log($"+ ${amount:F1} (Sell Multiplier: {sellMultiplier}x)");
             }
         }
 

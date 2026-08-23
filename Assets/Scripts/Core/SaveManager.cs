@@ -34,8 +34,11 @@ namespace RentIsDue.Core
             if (UpgradeManager.Instance != null)
             {
                 data.backpackLevel = UpgradeManager.Instance.backpackLevel;
-                data.movementLevel = UpgradeManager.Instance.movementLevel;
+                data.carryWeightLevel = UpgradeManager.Instance.carryWeightLevel;
+                data.staminaLevel = UpgradeManager.Instance.staminaLevel;
+                data.moveSpeedLevel = UpgradeManager.Instance.moveSpeedLevel;
                 data.searchSpeedLevel = UpgradeManager.Instance.searchSpeedLevel;
+                data.sellPriceLevel = UpgradeManager.Instance.sellPriceLevel;
             }
 
             string json = JsonUtility.ToJson(data, true);
@@ -63,22 +66,14 @@ namespace RentIsDue.Core
 
                 if (UpgradeManager.Instance != null)
                 {
-                    UpgradeManager.Instance.backpackLevel = data.backpackLevel;
-                    UpgradeManager.Instance.movementLevel = data.movementLevel;
-                    UpgradeManager.Instance.searchSpeedLevel = data.searchSpeedLevel;
-                }
+                    UpgradeManager.Instance.backpackLevel = data.backpackLevel > 0 ? data.backpackLevel : 1;
+                    UpgradeManager.Instance.carryWeightLevel = data.carryWeightLevel > 0 ? data.carryWeightLevel : 1;
+                    UpgradeManager.Instance.staminaLevel = data.staminaLevel > 0 ? data.staminaLevel : 1;
+                    UpgradeManager.Instance.moveSpeedLevel = data.moveSpeedLevel > 0 ? data.moveSpeedLevel : 1;
+                    UpgradeManager.Instance.searchSpeedLevel = data.searchSpeedLevel > 0 ? data.searchSpeedLevel : 1;
+                    UpgradeManager.Instance.sellPriceLevel = data.sellPriceLevel > 0 ? data.sellPriceLevel : 1;
 
-                // Re-apply upgrade effects
-                if (InventoryManager.Instance != null)
-                {
-                    InventoryManager.Instance.maxSlots = 8 + (data.backpackLevel - 1) * 4;
-                    InventoryManager.Instance.maxWeight = 20f + (data.backpackLevel - 1) * 10f;
-                }
-
-                PlayerMovement playerMovement = FindAnyObjectByType<PlayerMovement>();
-                if (playerMovement != null)
-                {
-                    playerMovement.moveSpeed = 5f * (1f + (data.movementLevel - 1) * 0.2f);
+                    UpgradeManager.Instance.ApplyAllUpgrades();
                 }
 
                 Debug.Log("Game Loaded from: " + path);

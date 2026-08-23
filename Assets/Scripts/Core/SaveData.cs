@@ -7,8 +7,11 @@ namespace RentIsDue.Core
     {
         public int currentDay;
         public float currentMoney;
-        public int backpackLevel;
-        public int movementLevel;
-        public int searchSpeedLevel;
+        public int backpackLevel = 1;
+        public int carryWeightLevel = 1;
+        public int staminaLevel = 1;
+        public int moveSpeedLevel = 1;
+        public int searchSpeedLevel = 1;
+        public int sellPriceLevel = 1;
     }
 }
