@@ -93,14 +93,26 @@ namespace RentIsDue.Player
                 GUI.color = currentInteractable != null ? Color.green : new Color(1, 1, 1, 0.6f);
                 GUI.DrawTexture(new Rect(x, y, size, size), Texture2D.whiteTexture);
                 
-                // Hiển thị gợi ý phím [E] khi đang nhìn vào vật thể có thể tương tác
+                // Hiển thị gợi ý phím [E] và thanh tiến trình bới đồ
                 if (currentInteractable != null)
                 {
                     GUIStyle style = new GUIStyle(GUI.skin.label);
                     style.alignment = TextAnchor.MiddleCenter;
                     style.fontSize = 14;
+                    style.fontStyle = FontStyle.Bold;
                     style.normal.textColor = Color.white;
-                    GUI.Label(new Rect(x - 100, y + 15, 200, 30), currentInteractable.GetInteractionText(), style);
+
+                    string prompt = currentInteractable.GetInteractionText();
+                    
+                    // Nếu là SearchableObject đang bới đồ, vẽ thêm thanh tiến trình (Progress Bar)
+                    if (currentInteractable is RentIsDue.Loot.SearchableObject searchable)
+                    {
+                        GUI.Label(new Rect(x - 150, y + 12, 300, 25), prompt, style);
+                    }
+                    else
+                    {
+                        GUI.Label(new Rect(x - 150, y + 15, 300, 25), $"[E] {prompt}", style);
+                    }
                 }
                 
                 GUI.color = originalColor;

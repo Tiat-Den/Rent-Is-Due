@@ -48,6 +48,7 @@ namespace RentIsDue.Player
         private bool IsAnyUIOpen()
         {
             if (Time.timeScale == 0f) return true;
+            if (DaySummaryUI.Instance != null && DaySummaryUI.Instance.isShowingSummary) return true;
             if (pauseMenu != null && pauseMenu.isPaused) return true;
             if (inventoryUI != null && inventoryUI.isUIVisible) return true;
             if (upgradeUI != null && upgradeUI.isUIVisible) return true;

@@ -28,6 +28,17 @@ namespace RentIsDue.Economy
                 float amount = item.baseValue * marketModifier * sellMultiplier;
                 currentMoney += amount;
                 InventoryManager.Instance.RemoveItem(item);
+                
+                if (RentIsDue.Audio.AudioManager.Instance != null)
+                {
+                    RentIsDue.Audio.AudioManager.Instance.PlaySell();
+                }
+
+                if (RentIsDue.Core.FloatingFeedbackUI.Instance != null)
+                {
+                    RentIsDue.Core.FloatingFeedbackUI.Instance.ShowMessage($"+${amount:F1} ({item.displayName})", Color.yellow);
+                }
+
                 Debug.Log($"+ ${amount:F1} (Sell Multiplier: {sellMultiplier}x)");
             }
         }

@@ -29,8 +29,25 @@ namespace RentIsDue.Inventory
                 bool added = InventoryManager.Instance.AddItem(itemData);
                 if (added)
                 {
+                    if (RentIsDue.Audio.AudioManager.Instance != null)
+                    {
+                        RentIsDue.Audio.AudioManager.Instance.PlayPickup();
+                    }
+
+                    if (RentIsDue.Core.FloatingFeedbackUI.Instance != null)
+                    {
+                        RentIsDue.Core.FloatingFeedbackUI.Instance.ShowMessage($"+ {itemData.displayName} ({itemData.weight}kg)", Color.cyan);
+                    }
+
                     Debug.Log($"Picked up {itemData.displayName}");
                     Destroy(gameObject);
+                }
+                else
+                {
+                    if (RentIsDue.Core.FloatingFeedbackUI.Instance != null)
+                    {
+                        RentIsDue.Core.FloatingFeedbackUI.Instance.ShowMessage("Inventory Full or Too Heavy!", Color.red, 1.8f);
+                    }
                 }
             }
         }

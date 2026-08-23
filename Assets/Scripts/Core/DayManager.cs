@@ -46,16 +46,41 @@ namespace RentIsDue.Core
         {
             if (EconomyManager.Instance.currentMoney >= currentRent)
             {
-                EconomyManager.Instance.currentMoney -= currentRent;
-                currentDay++;
-                CalculateRent();
-                Debug.Log($"Next Day: Day {currentDay}. Paid rent.");
-                TimeManager.Instance.ResetToMorning();
+                int rentToPay = currentRent;
+                EconomyManager.Instance.currentMoney -= rentToPay;
+                int nextRent = Mathf.RoundToInt(100 * Mathf.Pow(1.25f, currentDay));
+
+                if (DaySummaryUI.Instance != null)
+                {
+                    DaySummaryUI.Instance.ShowDayPassed(currentDay, rentToPay, EconomyManager.Instance.currentMoney, nextRent);
+                }
+                else
+                {
+                    ProceedToNextDay();
+                }
             }
             else
             {
                 Debug.Log("GAME OVER: Not enough money for rent.");
-                TimeManager.Instance.isTimeRunning = false;
+                if (DaySummaryUI.Instance != null)
+                {
+                    DaySummaryUI.Instance.ShowGameOver(currentDay, currentRent, EconomyManager.Instance.currentMoney);
+                }
+                else
+                {
+                    TimeManager.Instance.isTimeRunning = false;
+                }
+            }
+        }
+
+        public void ProceedToNextDay()
+        {
+            currentDay++;
+            CalculateRent();
+            Debug.Log($"Next Day: Day {currentDay}. Paid rent.");
+            if (TimeManager.Instance != null)
+            {
+                TimeManager.Instance.ResetToMorning();
             }
         }
     }

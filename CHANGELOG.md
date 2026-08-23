@@ -4,6 +4,12 @@ Tất cả những thay đổi, cập nhật tính năng mới của dự án s�
 
 ## [Post-MVP Development]
 
+### Phase 11 - Vertical Slice (Hoàn thành)
+- **Thêm mới**: Hệ thống quản lý âm thanh `AudioManager.cs` với âm thanh tổng hợp đa âm (Procedural Audio Synthesizer) cho nhặt đồ, bán đồ (Ka-ching), bới rác, qua ngày và Game Over mà không cần file audio ngoài.
+- **Thêm mới**: Giao diện thông báo nổi `FloatingFeedbackUI.cs` hiển thị chữ tiền bay `+$XX`, cảnh báo đầy túi/quá tải và thông báo ngày mới mượt mà.
+- **Thêm mới**: Bảng tổng kết cuối ngày `DaySummaryUI.cs` hiển thị tiền nhà đã trả, tiền tiết kiệm còn lại, cảnh báo tiền nhà ngày mai và màn hình Game Over khi không đủ tiền.
+- **Cập nhật**: Tích hợp toàn diện `EconomyManager`, `PickupInteractable`, `DayManager` và `PlayerInteractor` với hệ thống phản hồi âm thanh & hình ảnh.
+
 ### Feature - Categorized Loot Tables & Searchable Containers (Hoàn thành)
 - **Thêm mới**: Công cụ `LootTableGenerator.cs` tự động phân loại 30 item và sinh ra 5 bảng Loot Table chuyên biệt: `TrashLootTable`, `DeskLootTable`, `KitchenLootTable`, `WardrobeLootTable`, `SecretSafeLootTable`.
 - **Cập nhật**: Nâng cấp `SearchableObject.cs` hỗ trợ đặt tên hòm/tủ riêng biệt (`containerName`), theo dõi tiến độ bới rác theo thời gian thực (0% - 100%), và hiển thị thông tin rớt đồ sinh động.
