@@ -17,7 +17,11 @@ namespace RentIsDue.Player
 
             if (currentInteractable != null)
             {
-                if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+                bool ePressed = false;
+                if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) ePressed = true;
+                if (Input.GetKeyDown(KeyCode.E)) ePressed = true;
+
+                if (ePressed)
                 {
                     if (currentInteractable.CanInteract(this))
                     {
@@ -29,12 +33,42 @@ namespace RentIsDue.Player
 
         private void FindInteractable()
         {
-            // 1. Ưu tiên kiểm tra bằng SphereCast từ giữa màn hình (tầm mắt camera)
-            if (Camera.main != null)
+            Camera cam = Camera.main;
+            if (cam == null) cam = FindAnyObjectByType<Camera>();
+
+            // 1. Quét thẳng bằng Raycast & SphereCast từ tâm mắt camera (Bỏ qua collider của chính Player)
+            if (cam != null)
             {
-                Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-                if (Physics.SphereCast(ray, 0.25f, out RaycastHit hit, interactionRange, interactableLayer))
+                Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                
+                // Thử Raycast chính xác trước
+                RaycastHit[] rayHits = Physics.RaycastAll(ray, interactionRange, interactableLayer);
+                System.Array.Sort(rayHits, (a, b) => a.distance.CompareTo(b.distance));
+
+                foreach (var hit in rayHits)
                 {
+                    if (hit.transform == transform || hit.transform.IsChildOf(transform) || hit.transform.root == transform.root)
+                        continue; // Bỏ qua cơ thể Player
+
+                    IInteractable interactable = hit.collider.GetComponent<IInteractable>() 
+                                              ?? hit.collider.GetComponentInParent<IInteractable>()
+                                              ?? hit.collider.GetComponentInChildren<IInteractable>();
+                    if (interactable != null)
+                    {
+                        currentInteractable = interactable;
+                        return;
+                    }
+                }
+
+                // Nếu Raycast chưa trúng, dùng SphereCast hình cầu rộng 0.3m để dễ nhặt đồ nhỏ trên sàn
+                RaycastHit[] sphereHits = Physics.SphereCastAll(ray, 0.3f, interactionRange, interactableLayer);
+                System.Array.Sort(sphereHits, (a, b) => a.distance.CompareTo(b.distance));
+
+                foreach (var hit in sphereHits)
+                {
+                    if (hit.transform == transform || hit.transform.IsChildOf(transform) || hit.transform.root == transform.root)
+                        continue;
+
                     IInteractable interactable = hit.collider.GetComponent<IInteractable>() 
                                               ?? hit.collider.GetComponentInParent<IInteractable>()
                                               ?? hit.collider.GetComponentInChildren<IInteractable>();
@@ -56,6 +90,9 @@ namespace RentIsDue.Player
 
                 foreach (var col in colliders)
                 {
+                    if (col.transform == transform || col.transform.IsChildOf(transform) || col.transform.root == transform.root)
+                        continue;
+
                     IInteractable interactable = col.GetComponent<IInteractable>() 
                                               ?? col.GetComponentInParent<IInteractable>()
                                               ?? col.GetComponentInChildren<IInteractable>();

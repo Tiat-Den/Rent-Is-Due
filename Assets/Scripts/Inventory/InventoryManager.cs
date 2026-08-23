@@ -5,7 +5,24 @@ namespace RentIsDue.Inventory
 {
     public class InventoryManager : MonoBehaviour
     {
-        public static InventoryManager Instance { get; private set; }
+        private static InventoryManager _instance;
+        public static InventoryManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = Object.FindAnyObjectByType<InventoryManager>();
+                    if (_instance == null)
+                    {
+                        GameObject go = new GameObject("InventoryManager");
+                        _instance = go.AddComponent<InventoryManager>();
+                    }
+                }
+                return _instance;
+            }
+            private set => _instance = value;
+        }
 
         public int maxSlots = 8;
         public float maxWeight = 20f;
@@ -17,12 +34,12 @@ namespace RentIsDue.Inventory
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
-            Instance = this;
+            _instance = this;
         }
 
         public float GetTotalWeight()
