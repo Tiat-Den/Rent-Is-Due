@@ -7,65 +7,56 @@ namespace RentIsDue.Player
     public class PlayerMovement : MonoBehaviour
     {
         [Header("Movement Settings")]
-        public float moveSpeed = 5f;
-        public float jumpHeight = 1.2f;
-        public float gravityValue = -15f;
+        public float moveSpeed = 6f;
+        public float jumpHeight = 1.3f;
+        public float gravityValue = -18f;
         
         private CharacterController controller;
         private Vector3 playerVelocity;
-        private bool groundedPlayer;
-
-        // Sử dụng InputAction trực tiếp trong code để không cần tạo file cấu hình Input ngoài
-        private InputAction moveAction;
+        private bool isGrounded;
 
         private void Start()
         {
             controller = GetComponent<CharacterController>();
-            
-            moveAction = new InputAction("Move", binding: "<Gamepad>/leftStick");
-            moveAction.AddCompositeBinding("Dpad")
-                .With("Up", "<Keyboard>/w")
-                .With("Down", "<Keyboard>/s")
-                .With("Left", "<Keyboard>/a")
-                .With("Right", "<Keyboard>/d")
-                .With("Up", "<Keyboard>/upArrow")
-                .With("Down", "<Keyboard>/downArrow")
-                .With("Left", "<Keyboard>/leftArrow")
-                .With("Right", "<Keyboard>/rightArrow");
-            
-            moveAction.Enable();
-        }
-
-        private void OnDestroy()
-        {
-            moveAction?.Disable();
         }
 
         private void Update()
         {
-            groundedPlayer = controller.isGrounded;
-            if (groundedPlayer && playerVelocity.y < 0)
+            isGrounded = controller.isGrounded;
+            if (isGrounded && playerVelocity.y < 0)
             {
-                // Giữ một lực đè nhỏ để bám đất ổn định trên dốc/bề mặt
-                playerVelocity.y = -2f;
+                playerVelocity.y = -2f; // Giữ lực đè nhẹ để bám đất
             }
 
-            Vector2 input = moveAction.ReadValue<Vector2>();
-            // Di chuyển theo hướng nhân vật đang nhìn (First-Person)
-            Vector3 move = transform.right * input.x + transform.forward * input.y;
+            // Đọc phím di chuyển W, A, S, D
+            float inputX = 0f;
+            float inputZ = 0f;
 
-            // Normalize để đi chéo không bị nhanh hơn
-            if (move.magnitude > 1f) move.Normalize();
+            if (Keyboard.current != null)
+            {
+                if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) inputZ += 1f;
+                if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) inputZ -= 1f;
+                if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) inputX -= 1f;
+                if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) inputX += 1f;
+            }
 
-            controller.Move(move * Time.deltaTime * moveSpeed);
+            // Tính hướng di chuyển theo đúng góc nhìn của nhân vật (FPS)
+            Vector3 move = transform.right * inputX + transform.forward * inputZ;
 
-            // Xử lý nhảy (Space)
-            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame && groundedPlayer)
+            if (move.sqrMagnitude > 1f)
+            {
+                move.Normalize();
+            }
+
+            controller.Move(move * moveSpeed * Time.deltaTime);
+
+            // Nhảy khi bấm Space
+            if (isGrounded && Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
             {
                 playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravityValue);
             }
 
-            // Xử lý trọng lực
+            // Trọng lực
             playerVelocity.y += gravityValue * Time.deltaTime;
             controller.Move(playerVelocity * Time.deltaTime);
         }

@@ -7,10 +7,10 @@ namespace RentIsDue.Player
     {
         [Header("Target & Positioning")]
         public Transform playerBody;
-        public Vector3 eyeOffset = new Vector3(0, 0.6f, 0); // Vị trí tầm mắt nhân vật
+        public Vector3 eyeOffset = new Vector3(0, 0.7f, 0); // Vị trí tầm mắt nhân vật
 
         [Header("Mouse Look Settings")]
-        public float mouseSensitivity = 15f;
+        public float mouseSensitivity = 2f;
         public float minPitch = -85f;
         public float maxPitch = 85f;
 
@@ -22,17 +22,25 @@ namespace RentIsDue.Player
 
         private void Start()
         {
-            if (playerBody == null)
-            {
-                PlayerMovement player = FindAnyObjectByType<PlayerMovement>();
-                if (player != null) playerBody = player.transform;
-            }
+            FindPlayer();
 
             pauseMenu = FindAnyObjectByType<PauseMenu>();
             inventoryUI = FindAnyObjectByType<Inventory.InventoryUI>();
             upgradeUI = FindAnyObjectByType<Shop.UpgradeUI>();
 
             SetCursorState(true);
+        }
+
+        private void FindPlayer()
+        {
+            if (playerBody == null)
+            {
+                PlayerMovement player = FindAnyObjectByType<PlayerMovement>();
+                if (player != null)
+                {
+                    playerBody = player.transform;
+                }
+            }
         }
 
         private bool IsAnyUIOpen()
@@ -52,38 +60,45 @@ namespace RentIsDue.Player
 
         private void Update()
         {
-            // Kiểm tra xem có đang mở Menu nào không (Pause, Inventory Tab, Upgrade Laptop)
+            if (playerBody == null)
+            {
+                FindPlayer();
+                if (playerBody == null) return;
+            }
+
+            // Kiểm tra xem có đang mở Menu nào không
             if (IsAnyUIOpen())
             {
                 if (Cursor.lockState != CursorLockMode.None)
                 {
                     SetCursorState(false);
                 }
-                return; // Dừng xoay camera khi đang mở menu để dùng chuột bấm nút
+                return; // Dừng xoay camera khi đang mở menu
             }
             else
             {
-                // Khi không mở menu nào, tự động khóa chuột lại để xoay góc nhìn
+                // Khi đang chơi bình thường, khóa chuột lại
                 if (Cursor.lockState != CursorLockMode.Locked)
                 {
-                    SetCursorState(true);
+                    if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+                    {
+                        SetCursorState(true);
+                    }
                 }
             }
 
-            if (playerBody == null || Mouse.current == null) return;
+            if (Mouse.current == null) return;
 
             // Đọc di chuyển của chuột
-            Vector2 mouseDelta = Mouse.current.delta.ReadValue() * (mouseSensitivity * 0.05f);
-
-            float mouseX = mouseDelta.x;
-            float mouseY = mouseDelta.y;
+            Vector2 mouseDelta = Mouse.current.delta.ReadValue();
+            float mouseX = mouseDelta.x * mouseSensitivity * 0.1f;
+            float mouseY = mouseDelta.y * mouseSensitivity * 0.1f;
 
             // Xoay đầu lên/xuống (Pitch)
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, minPitch, maxPitch);
-            transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
-            // Xoay thân người sang trái/phải (Yaw)
+            // Xoay thân người chơi trái/phải (Yaw)
             playerBody.Rotate(Vector3.up * mouseX);
         }
 
@@ -91,8 +106,11 @@ namespace RentIsDue.Player
         {
             if (playerBody == null) return;
 
-            // Camera luôn bám theo vị trí tầm mắt của người chơi
+            // Đặt vị trí camera luôn bám vào tầm mắt của Player
             transform.position = playerBody.position + eyeOffset;
+
+            // Đồng bộ hướng nhìn của Camera: Xoay dọc theo đầu (xRotation) và xoay ngang theo thân người chơi (playerBody.eulerAngles.y)
+            transform.rotation = Quaternion.Euler(xRotation, playerBody.eulerAngles.y, 0f);
         }
     }
 }
