@@ -4,32 +4,75 @@ using UnityEngine.InputSystem;
 public class PauseMenu : MonoBehaviour
 {
     public bool isPaused { get; private set; } = false;
+    private bool isSettingsOpen = false;
 
     void Update()
     {
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
+            if (isSettingsOpen)
+            {
+                isSettingsOpen = false;
+                return;
+            }
+
             isPaused = !isPaused;
-            if (isPaused)
-            {
-                Time.timeScale = 0f;
-            }
-            else
-            {
-                Time.timeScale = 1f;
-            }
+            Time.timeScale = isPaused ? 0f : 1f;
         }
     }
 
     void OnGUI()
     {
-        if (isPaused)
-        {
-            float width = 200;
-            float height = 250;
-            float x = (Screen.width - width) / 2f;
-            float y = (Screen.height - height) / 2f;
+        if (!isPaused) return;
 
+        float width = 240;
+        float height = 280;
+        float x = (Screen.width - width) / 2f;
+        float y = (Screen.height - height) / 2f;
+
+        if (isSettingsOpen)
+        {
+            GUILayout.BeginArea(new Rect(x, y, width, height), "Settings", GUI.skin.window);
+            
+            GUILayout.Space(25);
+
+            RentIsDue.Player.CameraController cam = FindAnyObjectByType<RentIsDue.Player.CameraController>();
+            float currentSens = cam != null ? cam.mouseSensitivity : PlayerPrefs.GetFloat("MouseSensitivity", 0.8f);
+
+            GUILayout.Label($"Mouse Sensitivity: {currentSens:F2}");
+            
+            float newSens = GUILayout.HorizontalSlider(currentSens, 0.1f, 3.0f);
+            if (Mathf.Abs(newSens - currentSens) > 0.001f)
+            {
+                if (cam != null)
+                {
+                    cam.mouseSensitivity = newSens;
+                }
+                PlayerPrefs.SetFloat("MouseSensitivity", newSens);
+                PlayerPrefs.Save();
+            }
+
+            GUILayout.Space(20);
+
+            if (GUILayout.Button("Reset Default"))
+            {
+                float defaultSens = 0.8f;
+                if (cam != null) cam.mouseSensitivity = defaultSens;
+                PlayerPrefs.SetFloat("MouseSensitivity", defaultSens);
+                PlayerPrefs.Save();
+            }
+
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Back"))
+            {
+                isSettingsOpen = false;
+            }
+
+            GUILayout.EndArea();
+        }
+        else
+        {
             GUILayout.BeginArea(new Rect(x, y, width, height), "Pause Menu", GUI.skin.window);
             
             GUILayout.Space(20);
@@ -40,7 +83,7 @@ public class PauseMenu : MonoBehaviour
                 Time.timeScale = 1f;
             }
 
-            GUILayout.Space(10);
+            GUILayout.Space(8);
 
             if (GUILayout.Button("Save Game"))
             {
@@ -50,7 +93,7 @@ public class PauseMenu : MonoBehaviour
                 }
             }
 
-            GUILayout.Space(10);
+            GUILayout.Space(8);
 
             if (GUILayout.Button("Load Game"))
             {
@@ -62,7 +105,14 @@ public class PauseMenu : MonoBehaviour
                 }
             }
 
-            GUILayout.Space(10);
+            GUILayout.Space(8);
+
+            if (GUILayout.Button("Settings"))
+            {
+                isSettingsOpen = true;
+            }
+
+            GUILayout.Space(8);
 
             if (GUILayout.Button("Quit"))
             {

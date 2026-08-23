@@ -23,6 +23,7 @@ namespace RentIsDue.Player
 
         private void Start()
         {
+            mouseSensitivity = PlayerPrefs.GetFloat("MouseSensitivity", mouseSensitivity);
             FindPlayer();
 
             pauseMenu = FindAnyObjectByType<PauseMenu>();
