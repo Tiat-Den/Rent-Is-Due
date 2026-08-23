@@ -26,7 +26,7 @@ public class PauseMenu : MonoBehaviour
         if (isPaused)
         {
             float width = 200;
-            float height = 150;
+            float height = 250;
             float x = (Screen.width - width) / 2f;
             float y = (Screen.height - height) / 2f;
 
@@ -38,6 +38,28 @@ public class PauseMenu : MonoBehaviour
             {
                 isPaused = false;
                 Time.timeScale = 1f;
+            }
+
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Save Game"))
+            {
+                if (RentIsDue.Core.SaveManager.Instance != null)
+                {
+                    RentIsDue.Core.SaveManager.Instance.SaveGame();
+                }
+            }
+
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Load Game"))
+            {
+                if (RentIsDue.Core.SaveManager.Instance != null)
+                {
+                    RentIsDue.Core.SaveManager.Instance.LoadGame();
+                    isPaused = false;
+                    Time.timeScale = 1f;
+                }
             }
 
             GUILayout.Space(10);
