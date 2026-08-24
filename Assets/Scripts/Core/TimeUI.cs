@@ -7,6 +7,7 @@ namespace RentIsDue.Core
     {
         private void OnGUI()
         {
+            if (Cursor.lockState != CursorLockMode.Locked) return;
             if (TimeManager.Instance == null || DayManager.Instance == null) return;
 
             string timeString = TimeManager.Instance.GetTimeString();

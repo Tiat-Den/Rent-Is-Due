@@ -6,6 +6,8 @@ namespace RentIsDue.Economy
     {
         private void OnGUI()
         {
+            if (Cursor.lockState != CursorLockMode.Locked) return;
+
             if (EconomyManager.Instance != null)
             {
                 float width = 150f;
