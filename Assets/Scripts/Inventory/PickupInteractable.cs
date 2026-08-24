@@ -8,6 +8,26 @@ namespace RentIsDue.Inventory
     {
         public ItemData itemData;
 
+        private void Start()
+        {
+            // Tự động sinh ra hình dáng 3D nếu vật phẩm được đặt bằng tay (spawn lúc đầu)
+            // mà chưa có MeshRenderer (ví dụ: chỉ là một GameObject trống)
+            if (itemData != null && itemData.prefab != null)
+            {
+                if (GetComponentInChildren<MeshRenderer>() == null)
+                {
+                    GameObject visual = Instantiate(itemData.prefab, transform.position, transform.rotation, transform);
+                    visual.transform.localScale = Vector3.one * 1.5f;
+
+                    if (GetComponent<Collider>() == null && visual.GetComponentInChildren<Collider>() == null)
+                    {
+                        BoxCollider bc = gameObject.AddComponent<BoxCollider>();
+                        bc.size = new Vector3(0.5f, 0.5f, 0.5f);
+                    }
+                }
+            }
+        }
+
         public bool CanInteract(PlayerInteractor player)
         {
             return itemData != null;
