@@ -21,16 +21,21 @@ namespace RentIsDue.Environment
             ApplyLightState();
         }
 
-        public void Interact()
+        public bool CanInteract(RentIsDue.Player.PlayerInteractor player)
+        {
+            return true;
+        }
+
+        public string GetInteractionText()
+        {
+            return isLightOn ? "[E] Tắt Đèn Trần" : "[E] Bật Đèn Trần";
+        }
+
+        public void Interact(RentIsDue.Player.PlayerInteractor player)
         {
             isLightOn = !isLightOn;
             ApplyLightState();
             PlayClickSound();
-        }
-
-        public string GetInteractionPrompt()
-        {
-            return isLightOn ? "[E] Tắt Đèn Trần" : "[E] Bật Đèn Trần";
         }
 
         public void SetLightState(bool on)
