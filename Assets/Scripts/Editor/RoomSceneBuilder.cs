@@ -510,18 +510,36 @@ namespace RentIsDue.Editor
 
             var modelMap = new System.Collections.Generic.Dictionary<string, string>
             {
-                { "item_old_book", "books.fbx" },
-                { "item_magazine_bundle", "books.fbx" },
-                { "item_cardboard_box", "cardboardBoxClosed.fbx" },
-                { "item_old_mug", "mug.fbx" },
-                { "item_frying_pan", "pan.fbx" },
-                { "item_wall_clock", "wallClock.fbx" },
-                { "item_antique_clock", "wallClock.fbx" },
-                { "item_keyboard", "computerKeyboard.fbx" },
-                { "item_mouse", "computerMouse.fbx" },
+                { "item_aluminum_can", "plantSmall2.fbx" },
+                { "item_antique_clock", "radio.fbx" },
                 { "item_broken_laptop", "laptop.fbx" },
+                { "item_broken_phone", "computerMouse.fbx" },
+                { "item_cardboard_box", "cardboardBoxClosed.fbx" },
+                { "item_collectible_card", "books.fbx" },
+                { "item_digital_camera", "speakerSmall.fbx" },
+                { "item_empty_jar", "plantSmall1.fbx" },
+                { "item_frying_pan", "toaster.fbx" },
+                { "item_game_controller", "computerMouse.fbx" },
+                { "item_gold_watch", "speakerSmall.fbx" },
+                { "item_headphones", "speakerSmall.fbx" },
+                { "item_keyboard", "computerKeyboard.fbx" },
+                { "item_magazine_bundle", "books.fbx" },
+                { "item_mouse", "computerMouse.fbx" },
+                { "item_old_book", "books.fbx" },
+                { "item_old_clothes", "pillow.fbx" },
+                { "item_old_console", "radio.fbx" },
+                { "item_old_gpu", "laptop.fbx" },
+                { "item_old_mug", "plantSmall3.fbx" },
+                { "item_old_newspaper", "books.fbx" },
+                { "item_plastic_bottle", "plantSmall2.fbx" },
+                { "item_rare_coin_collection", "books.fbx" },
+                { "item_rare_console", "televisionVintage.fbx" },
+                { "item_rare_painting", "televisionVintage.fbx" },
                 { "item_rubber_duck", "bear.fbx" },
-                { "item_vintage_radio", "radio.fbx" }
+                { "item_vintage_camera", "speakerSmall.fbx" },
+                { "item_vintage_radio", "radio.fbx" },
+                { "item_vinyl_player", "televisionVintage.fbx" },
+                { "item_wall_clock", "speakerSmall.fbx" }
             };
 
             int linkedCount = 0;
