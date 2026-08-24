@@ -51,6 +51,18 @@ namespace RentIsDue.Core
             OnDayEnded?.Invoke();
         }
 
+        /// <summary>
+        /// Manually trigger the day-end event (e.g. player chooses to sleep early).
+        /// </summary>
+        public void TriggerDayEnd()
+        {
+            if (isTimeRunning)
+            {
+                isTimeRunning = false;
+            }
+            OnDayEnded?.Invoke();
+        }
+
         public void ResetToMorning()
         {
             currentTimeMinutes = 480;

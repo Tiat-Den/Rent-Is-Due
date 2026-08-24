@@ -197,6 +197,19 @@ namespace RentIsDue.Editor
             GameObject bed = SpawnModel(modelsFolder, "bedSingle.fbx", new Vector3(-halfW + 2.0f, 0, halfD - 2.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
             SpawnModel(modelsFolder, "cabinetBed.fbx", new Vector3(-halfW + 2.0f, 0, halfD - 4.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
             SpawnModel(modelsFolder, "lampRoundFloor.fbx", new Vector3(-halfW + 1.0f, 0, halfD - 4.5f), Quaternion.identity, roomRoot, 0.35f);
+            if (bed != null)
+            {
+                EnsureCollider(bed);
+                bed.AddComponent<RentIsDue.Gameplay.BedInteractable>(); // 😴 Ngủ để kết thúc ngày
+            }
+
+            // 🔧 BÀN SỬA ĐỒ (Góc Tây Nam gần cửa - Scale 0.35x)
+            GameObject repairBench = SpawnModel(modelsFolder, "tableCoffee.fbx", new Vector3(-halfW + 3.5f, 0, -halfD + 2.5f), Quaternion.identity, roomRoot, 0.35f);
+            if (repairBench != null)
+            {
+                EnsureCollider(repairBench);
+                repairBench.AddComponent<RentIsDue.Gameplay.RepairManager>(); // 🔧 Sửa đồ
+            }
 
             // 5. 💻 BÀN LÀM VIỆC & NÂNG CẤP (Phía Đông Bắc - Scale 0.35x)
             GameObject desk = SpawnModel(modelsFolder, "desk.fbx", new Vector3(3.0f, 0, halfD - 1.5f), Quaternion.Euler(0, 180, 0), roomRoot, 0.35f);
@@ -271,6 +284,7 @@ namespace RentIsDue.Editor
             {
                 EnsureCollider(dealerDesk);
                 dealerDesk.AddComponent<DealerInteractable>();
+                dealerDesk.AddComponent<RentIsDue.Gameplay.DailyOrderManager>(); // 📋 Đơn đặt hàng hằng ngày
             }
 
             // 11. Cấu hình Ánh Sáng Tự Nhiên Mặt Trời Chiếu Xiên Qua Cửa Sổ
