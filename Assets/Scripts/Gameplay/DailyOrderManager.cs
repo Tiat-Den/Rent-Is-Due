@@ -177,8 +177,10 @@ namespace RentIsDue.Gameplay
 
         private void DrawDealerWindow(int id)
         {
-            // Background đặc che các UI phía sau
-            GUI.Box(new Rect(0, 0, 400, 340), "", new GUIStyle(GUI.skin.box) { normal = { background = Texture2D.whiteTexture } });
+            // Background tối mờ che các UI phía sau
+            GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.95f);
+            GUI.Box(new Rect(0, 0, 400, 340), "");
+            GUI.backgroundColor = Color.white;
             
             GUILayout.Space(8);
 

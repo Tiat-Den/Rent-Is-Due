@@ -6,7 +6,23 @@ namespace RentIsDue.Core
 {
     public class DaySummaryUI : MonoBehaviour
     {
-        public static DaySummaryUI Instance { get; private set; }
+        private static DaySummaryUI _instance;
+        public static DaySummaryUI Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = Object.FindAnyObjectByType<DaySummaryUI>();
+                    if (_instance == null)
+                    {
+                        GameObject go = new GameObject("DaySummaryUI");
+                        _instance = go.AddComponent<DaySummaryUI>();
+                    }
+                }
+                return _instance;
+            }
+        }
 
         public bool isShowingSummary { get; private set; } = false;
         private bool isGameOver = false;
@@ -18,12 +34,12 @@ namespace RentIsDue.Core
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
-            Instance = this;
+            _instance = this;
         }
 
         public void ShowDayPassed(int day, int rent, float remaining, int nextRent)

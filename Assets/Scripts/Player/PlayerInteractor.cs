@@ -167,13 +167,11 @@ namespace RentIsDue.Player
                     // Nếu là SearchableObject đang bới đồ, vẽ thêm thanh tiến trình (Progress Bar)
                     if (currentInteractable is RentIsDue.Loot.SearchableObject searchable)
                     {
-                        GUI.Label(new Rect(x - 150, y + 12, 300, 25), prompt, style);
+                        GUI.Label(new Rect(x - 250, y + 12, 500, 50), prompt, style);
                     }
                     else
                     {
-                        // Some scripts still return "[E]" in their strings, others don't.
-                        // To be clean, just draw what they return.
-                        GUI.Label(new Rect(x - 150, y + 15, 300, 25), prompt, style);
+                        GUI.Label(new Rect(x - 250, y + 15, 500, 50), $"[E] {prompt}", style);
                     }
                 }
                 
