@@ -126,6 +126,17 @@ namespace RentIsDue.Shop
                 () => um.TryUpgrade(ref um.sellPriceLevel, UpgradeManager.SellPriceCosts, null)
             );
 
+            // 7. Repair Speed
+            DrawUpgradeCard(
+                "🔧 Master Tinker (Repair Speed)",
+                um.repairSpeedLevel,
+                $"{(int)(um.GetRepairSpeedMultiplier() * 100)}%",
+                um.repairSpeedLevel < 5 ? $"{(int)(UpgradeManager.RepairSpeedMultipliers[um.repairSpeedLevel] * 100)}%" : "MAX",
+                um.repairSpeedLevel < 5 ? UpgradeManager.RepairSpeedCosts[um.repairSpeedLevel] : 0,
+                money,
+                () => um.TryUpgrade(ref um.repairSpeedLevel, UpgradeManager.RepairSpeedCosts, null)
+            );
+
             GUILayout.EndScrollView();
 
             GUI.DragWindow();

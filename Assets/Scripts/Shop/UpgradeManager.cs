@@ -19,6 +19,7 @@ namespace RentIsDue.Shop
         public int moveSpeedLevel = 1;
         public int searchSpeedLevel = 1;
         public int sellPriceLevel = 1;
+        public int repairSpeedLevel = 1;
 
         // Data arrays based on UPGRADE_DATABASE.md
         public static readonly int[] BackpackSlots = { 8, 12, 16, 22, 30 };
@@ -42,6 +43,9 @@ namespace RentIsDue.Shop
         public static readonly float[] SellPriceMultipliers = { 1.00f, 1.05f, 1.10f, 1.17f, 1.25f };
         public static readonly int[] SellPriceCosts = { 0, 150, 380, 850, 1800 };
 
+        public static readonly float[] RepairSpeedMultipliers = { 1.00f, 1.35f, 1.85f, 2.50f, 3.50f };
+        public static readonly int[] RepairSpeedCosts = { 0, 110, 270, 620, 1350 };
+
         // Modifiers
         public int GetMaxSlots() => BackpackSlots[Mathf.Clamp(backpackLevel - 1, 0, 4)];
         public float GetMaxWeight() => CarryWeights[Mathf.Clamp(carryWeightLevel - 1, 0, 4)];
@@ -50,6 +54,7 @@ namespace RentIsDue.Shop
         public float GetMoveSpeedMultiplier() => MoveSpeedMultipliers[Mathf.Clamp(moveSpeedLevel - 1, 0, 4)];
         public float GetSearchSpeedMultiplier() => SearchSpeedMultipliers[Mathf.Clamp(searchSpeedLevel - 1, 0, 4)];
         public float GetSellPriceMultiplier() => SellPriceMultipliers[Mathf.Clamp(sellPriceLevel - 1, 0, 4)];
+        public float GetRepairSpeedMultiplier() => RepairSpeedMultipliers[Mathf.Clamp(repairSpeedLevel - 1, 0, 4)];
 
         // Helper for Search duration reduction: Duration = Base / Multiplier
         public float SearchSpeedMultiplier => 1f / GetSearchSpeedMultiplier();

@@ -49,7 +49,19 @@ namespace RentIsDue.Gameplay
         private bool _isRepairing = false;
         private float _repairProgress = 0f;
         private ItemInstance _currentlyRepairingItem = null;
-        public float repairDurationSec = 2.0f; // Thời gian sửa 1 món đồ
+
+        private float GetBaseRepairDuration(RentIsDue.Inventory.ItemRarity rarity)
+        {
+            switch (rarity)
+            {
+                case RentIsDue.Inventory.ItemRarity.Common: return 8.0f;
+                case RentIsDue.Inventory.ItemRarity.Uncommon: return 9.5f;
+                case RentIsDue.Inventory.ItemRarity.Rare: return 11.0f;
+                case RentIsDue.Inventory.ItemRarity.Epic: return 12.5f;
+                case RentIsDue.Inventory.ItemRarity.Legendary: return 14.0f;
+                default: return 8.0f;
+            }
+        }
 
         private System.Collections.IEnumerator RepairRoutine(ItemInstance item, float cost)
         {
@@ -61,12 +73,17 @@ namespace RentIsDue.Gameplay
             if (EconomyManager.Instance != null)
                 EconomyManager.Instance.currentMoney -= cost;
 
+            // Tính toán thời gian dựa vào độ hiếm & kỹ năng Upgrade
+            float baseTime = GetBaseRepairDuration(item.data.rarity);
+            float speedMultiplier = RentIsDue.Shop.UpgradeManager.Instance != null ? RentIsDue.Shop.UpgradeManager.Instance.GetRepairSpeedMultiplier() : 1f;
+            float actualDuration = baseTime / speedMultiplier;
+
             // Chờ quá trình sửa
             float elapsed = 0f;
-            while (elapsed < repairDurationSec)
+            while (elapsed < actualDuration)
             {
                 elapsed += Time.deltaTime;
-                _repairProgress = Mathf.Clamp01(elapsed / repairDurationSec);
+                _repairProgress = Mathf.Clamp01(elapsed / actualDuration);
                 yield return null;
             }
 
