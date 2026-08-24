@@ -13,7 +13,13 @@ namespace RentIsDue.Editor
     {
         private const string SAVED_ROOM_PREFAB_PATH = "Assets/Prefabs/Environments/SavedGiantRoom.prefab";
 
-        [MenuItem("Tools/💾 1. Save Current Room Layout as Giant Room Template")]
+        [MenuItem("Tools/🏠 Build Giant Room (25m x 20m - Siêu Rộng Rãi)")]
+        public static void BuildGiantRoom()
+        {
+            BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
+        }
+
+        [MenuItem("Tools/💾 Save Current Room Layout as Custom Template")]
         public static void SaveCurrentRoomLayout()
         {
             GameObject roomRoot = GameObject.Find("TinyRoom_Environment");
@@ -33,45 +39,42 @@ namespace RentIsDue.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            EditorUtility.DisplayDialog("Room Saved! 💾", "Đã lưu thành công toàn bộ cách sắp xếp căn phòng của bạn vào Template Prefab (SavedGiantRoom.prefab)!\n\nTừ bây giờ khi bấm 'Build Giant Room', hệ thống sẽ tự động nạp lại đúng 100% căn phòng bạn đã bài trí.", "Tuyệt vời!");
+            EditorUtility.DisplayDialog("Room Saved! 💾", "Đã lưu thành công toàn bộ cách sắp xếp căn phòng của bạn vào Template Prefab (SavedGiantRoom.prefab)!\n\nTừ bây giờ bạn có thể nạp lại bất cứ lúc nào qua menu 'Restore Saved Custom Room Template'.", "Tuyệt vời!");
             Debug.Log($"<color=green>[RoomSceneBuilder] Successfully saved room layout to {SAVED_ROOM_PREFAB_PATH}!</color>");
         }
 
-        [MenuItem("Tools/🏠 2. Build Giant Room (25m x 20m - Nạp Căn Phòng Đã Sắp Xếp)")]
-        public static void BuildGiantRoom()
+        [MenuItem("Tools/🏠 Restore Saved Custom Room Template (Nạp Phòng Đã Lưu)")]
+        public static void RestoreSavedRoom()
         {
-            // Nếu người chơi đã lưu thiết kế phòng của riêng mình -> Nạp lại đúng thiết kế đó
-            if (File.Exists(SAVED_ROOM_PREFAB_PATH))
+            if (!File.Exists(SAVED_ROOM_PREFAB_PATH))
             {
-                GameObject existingRoom = GameObject.Find("TinyRoom_Environment");
-                if (existingRoom != null)
-                {
-                    Undo.DestroyObjectImmediate(existingRoom);
-                }
-
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(SAVED_ROOM_PREFAB_PATH);
-                if (prefab != null)
-                {
-                    GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
-                    instance.name = "TinyRoom_Environment";
-                    instance.transform.position = Vector3.zero;
-                    instance.transform.rotation = Quaternion.identity;
-                    Undo.RegisterCreatedObjectUndo(instance, "Restore Saved Giant Room");
-
-                    // Đặt Player vào vị trí thích hợp
-                    GameObject player = GameObject.Find("Player");
-                    if (player != null)
-                    {
-                        player.transform.position = new Vector3(0, 1.0f, 0);
-                    }
-
-                    Debug.Log("<color=green>[RoomSceneBuilder] Restored saved custom room template!</color>");
-                    return;
-                }
+                EditorUtility.DisplayDialog("No Saved Room", "Chưa có file phòng mẫu nào được lưu! Hãy bấm 'Save Current Room Layout as Custom Template' trước.", "OK");
+                return;
             }
 
-            // Nếu chưa có file lưu tùy chỉnh, tạo phòng mặc định
-            BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
+            GameObject existingRoom = GameObject.Find("TinyRoom_Environment");
+            if (existingRoom != null)
+            {
+                Undo.DestroyObjectImmediate(existingRoom);
+            }
+
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(SAVED_ROOM_PREFAB_PATH);
+            if (prefab != null)
+            {
+                GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+                instance.name = "TinyRoom_Environment";
+                instance.transform.position = Vector3.zero;
+                instance.transform.rotation = Quaternion.identity;
+                Undo.RegisterCreatedObjectUndo(instance, "Restore Saved Giant Room");
+
+                GameObject player = GameObject.Find("Player");
+                if (player != null)
+                {
+                    player.transform.position = new Vector3(0, 1.0f, 0);
+                }
+
+                Debug.Log("<color=green>[RoomSceneBuilder] Restored saved custom room template!</color>");
+            }
         }
 
         [MenuItem("Tools/🏠 Build Spacious Room (16m x 14m)")]
@@ -84,7 +87,7 @@ namespace RentIsDue.Editor
         public static void OpenWindow()
         {
             RoomSceneBuilder window = GetWindow<RoomSceneBuilder>("Room Builder");
-            window.minSize = new Vector2(380, 360);
+            window.minSize = new Vector2(380, 380);
             window.Show();
         }
 
@@ -97,9 +100,14 @@ namespace RentIsDue.Editor
             GUILayout.Label("🏠 <b>RENT IS DUE — 3D ROOM BUILDER</b>", EditorStyles.boldLabel);
             GUILayout.Space(10);
 
-            if (GUILayout.Button("💾 LƯU BỐ CỤC PHÒNG HIỆN TẠI VÀO TEMPLATE", GUILayout.Height(35)))
+            if (GUILayout.Button("💾 LƯU BỐ CỤC PHÒNG HIỆN TẠI VÀO TEMPLATE", GUILayout.Height(32)))
             {
                 SaveCurrentRoomLayout();
+            }
+
+            if (GUILayout.Button("🏠 NẠP LẠI PHÒNG ĐÃ LƯU TÙY CHỈNH", GUILayout.Height(32)))
+            {
+                RestoreSavedRoom();
             }
 
             GUILayout.Space(10);
@@ -162,7 +170,7 @@ namespace RentIsDue.Editor
             switchBox.transform.SetParent(roomRoot.transform, false);
             switchBox.transform.localPosition = new Vector3(-halfW + 0.20f, 1.40f, -halfD + 4.8f);
             switchBox.transform.localScale = new Vector3(0.08f, 0.14f, 0.10f);
-            ApplyMaterial(switchBox, new Color(0.95f, 0.95f, 0.95f));
+            ApplyMaterial(switchBox, "Mat_LightSwitch", new Color(0.95f, 0.95f, 0.95f));
 
             // 3. 💡 ĐÈN TRẦN & BÓNG CHIẾU TỪ TRÊN XUỐNG (Treo giữa phòng)
             GameObject ceilingLamp = SpawnModel(modelsFolder, "lampSquareCeiling.fbx", new Vector3(0, wallHeight - 0.15f, 0), Quaternion.identity, roomRoot, 0.75f);
@@ -289,14 +297,14 @@ namespace RentIsDue.Editor
             floor.transform.SetParent(parent.transform, false);
             floor.transform.localPosition = new Vector3(0, -0.15f, 0);
             floor.transform.localScale = new Vector3(width, 0.3f, depth);
-            ApplyMaterial(floor, new Color(0.32f, 0.25f, 0.20f));
+            ApplyMaterial(floor, "Mat_Room_Floor", new Color(0.32f, 0.25f, 0.20f));
 
             // Tường Bắc (Phía sau bàn làm việc & giường)
-            CreateWall("Wall_North", new Vector3(0, halfH, halfD), new Vector3(width, height, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            CreateWall("Wall_North", "Mat_Room_Wall", new Vector3(0, halfH, halfD), new Vector3(width, height, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
 
             // Tường Tây & Đông
-            CreateWall("Wall_West", new Vector3(-halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, new Color(0.82f, 0.80f, 0.76f));
-            CreateWall("Wall_East", new Vector3(halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, new Color(0.82f, 0.80f, 0.76f));
+            CreateWall("Wall_West", "Mat_Room_Wall", new Vector3(-halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, new Color(0.82f, 0.80f, 0.76f));
+            CreateWall("Wall_East", "Mat_Room_Wall", new Vector3(halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, new Color(0.82f, 0.80f, 0.76f));
 
             // TƯỜNG NAM (KHOÉT KHUNG CỬA SỔ LỚN ĐÓN NẮNG)
             float windowWidth = 6.0f;
@@ -304,14 +312,14 @@ namespace RentIsDue.Editor
             float windowBottomY = 1.0f;
 
             // Phần tường dưới cửa sổ
-            CreateWall("Wall_South_Bottom", new Vector3(0, windowBottomY / 2f, -halfD), new Vector3(width, windowBottomY, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            CreateWall("Wall_South_Bottom", "Mat_Room_Wall", new Vector3(0, windowBottomY / 2f, -halfD), new Vector3(width, windowBottomY, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
             // Phần tường trên cửa sổ
             float topWallHeight = height - (windowBottomY + windowHeight);
-            CreateWall("Wall_South_Top", new Vector3(0, height - (topWallHeight / 2f), -halfD), new Vector3(width, topWallHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            CreateWall("Wall_South_Top", "Mat_Room_Wall", new Vector3(0, height - (topWallHeight / 2f), -halfD), new Vector3(width, topWallHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
             // Phần tường 2 bên cửa sổ
             float sideWallWidth = (width - windowWidth) / 2f;
-            CreateWall("Wall_South_Left", new Vector3(-halfW + (sideWallWidth / 2f), windowBottomY + (windowHeight / 2f), -halfD), new Vector3(sideWallWidth, windowHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
-            CreateWall("Wall_South_Right", new Vector3(halfW - (sideWallWidth / 2f), windowBottomY + (windowHeight / 2f), -halfD), new Vector3(sideWallWidth, windowHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            CreateWall("Wall_South_Left", "Mat_Room_Wall", new Vector3(-halfW + (sideWallWidth / 2f), windowBottomY + (windowHeight / 2f), -halfD), new Vector3(sideWallWidth, windowHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            CreateWall("Wall_South_Right", "Mat_Room_Wall", new Vector3(halfW - (sideWallWidth / 2f), windowBottomY + (windowHeight / 2f), -halfD), new Vector3(sideWallWidth, windowHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
 
             // Kính Cửa Sổ Trong Suốt
             GameObject windowGlass = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -319,7 +327,7 @@ namespace RentIsDue.Editor
             windowGlass.transform.SetParent(parent.transform, false);
             windowGlass.transform.localPosition = new Vector3(0, windowBottomY + (windowHeight / 2f), -halfD);
             windowGlass.transform.localScale = new Vector3(windowWidth, windowHeight, 0.04f);
-            ApplyMaterial(windowGlass, new Color(0.80f, 0.92f, 1.0f, 0.3f));
+            ApplyMaterial(windowGlass, "Mat_Window_Glass", new Color(0.80f, 0.92f, 1.0f, 0.3f));
 
             // Khung cửa sổ mỹ thuật
             GameObject windowFrame = SpawnModel(urbanFolder, "window-wide-type-a.fbx", new Vector3(0, windowBottomY + (windowHeight / 2f) - 0.2f, -halfD + 0.05f), Quaternion.identity, parent, 1.2f);
@@ -331,7 +339,7 @@ namespace RentIsDue.Editor
             ceiling.transform.SetParent(parent.transform, false);
             ceiling.transform.localPosition = new Vector3(0, height + 0.15f, 0);
             ceiling.transform.localScale = new Vector3(width, 0.3f, depth);
-            ApplyMaterial(ceiling, new Color(0.92f, 0.92f, 0.92f));
+            ApplyMaterial(ceiling, "Mat_Room_Ceiling", new Color(0.92f, 0.92f, 0.92f));
         }
 
         private static void SetupNaturalSunlight(GameObject parent, float southZ, float wallHeight)
@@ -374,28 +382,48 @@ namespace RentIsDue.Editor
             glow.shadows = LightShadows.None;
         }
 
-        private static void CreateWall(string name, Vector3 pos, Vector3 size, GameObject parent, Color wallColor)
+        private static void CreateWall(string name, string matName, Vector3 pos, Vector3 size, GameObject parent, Color wallColor)
         {
             GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
             wall.name = name;
             wall.transform.SetParent(parent.transform, false);
             wall.transform.localPosition = pos;
             wall.transform.localScale = size;
-            ApplyMaterial(wall, wallColor);
+            ApplyMaterial(wall, matName, wallColor);
         }
 
-        private static void ApplyMaterial(GameObject obj, Color color)
+        private static void ApplyMaterial(GameObject obj, string matName, Color color)
         {
             Renderer rend = obj.GetComponent<Renderer>();
             if (rend != null)
             {
-                Shader shader = Shader.Find("Universal Render Pipeline/Lit");
-                if (shader == null) shader = Shader.Find("Standard");
-                if (shader == null) shader = Shader.Find("Diffuse");
+                string folder = "Assets/Materials/Environment";
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
 
-                Material mat = new Material(shader);
-                mat.color = color;
-                if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
+                string matPath = $"{folder}/{matName}.mat";
+                Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+
+                if (mat == null)
+                {
+                    Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+                    if (shader == null) shader = Shader.Find("Standard");
+                    if (shader == null) shader = Shader.Find("Diffuse");
+
+                    mat = new Material(shader);
+                    mat.color = color;
+                    if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
+                    AssetDatabase.CreateAsset(mat, matPath);
+                }
+                else
+                {
+                    mat.color = color;
+                    if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
+                    EditorUtility.SetDirty(mat);
+                }
+
                 rend.sharedMaterial = mat;
             }
         }
