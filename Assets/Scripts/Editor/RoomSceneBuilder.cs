@@ -82,19 +82,19 @@ namespace RentIsDue.Editor
             float halfW = roomWidth / 2f;
             float halfD = roomDepth / 2f;
 
-            // 2. 🛏️ GÓC GIƯỜNG NGỦ (Góc Tây Bắc - Scale 0.25x)
-            GameObject bed = SpawnModel(modelsFolder, "bedSingle.fbx", new Vector3(-halfW + 2.0f, 0, halfD - 2.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.25f);
-            SpawnModel(modelsFolder, "cabinetBed.fbx", new Vector3(-halfW + 2.0f, 0, halfD - 4.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.25f);
-            SpawnModel(modelsFolder, "lampRoundFloor.fbx", new Vector3(-halfW + 1.0f, 0, halfD - 4.5f), Quaternion.identity, roomRoot, 0.25f);
+            // 2. 🛏️ GÓC GIƯỜNG NGỦ (Góc Tây Bắc - Scale 0.35x)
+            GameObject bed = SpawnModel(modelsFolder, "bedSingle.fbx", new Vector3(-halfW + 2.0f, 0, halfD - 2.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
+            SpawnModel(modelsFolder, "cabinetBed.fbx", new Vector3(-halfW + 2.0f, 0, halfD - 4.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
+            SpawnModel(modelsFolder, "lampRoundFloor.fbx", new Vector3(-halfW + 1.0f, 0, halfD - 4.5f), Quaternion.identity, roomRoot, 0.35f);
 
-            // 3. 💻 BÀN LÀM VIỆC & NÂNG CẤP (Phía Đông Bắc - Scale 0.25x)
-            GameObject desk = SpawnModel(modelsFolder, "desk.fbx", new Vector3(3.0f, 0, halfD - 1.5f), Quaternion.Euler(0, 180, 0), roomRoot, 0.25f);
+            // 3. 💻 BÀN LÀM VIỆC & NÂNG CẤP (Phía Đông Bắc - Scale 0.35x)
+            GameObject desk = SpawnModel(modelsFolder, "desk.fbx", new Vector3(3.0f, 0, halfD - 1.5f), Quaternion.Euler(0, 180, 0), roomRoot, 0.35f);
             
-            // Ghế xoay đặt đúng phía trước bàn làm việc (Scale 0.25x)
-            SpawnModel(modelsFolder, "chairDesk.fbx", new Vector3(3.0f, 0, halfD - 2.4f), Quaternion.identity, roomRoot, 0.25f);
+            // Ghế xoay đặt đúng phía trước bàn làm việc (Scale 0.35x)
+            SpawnModel(modelsFolder, "chairDesk.fbx", new Vector3(3.0f, 0, halfD - 2.4f), Quaternion.identity, roomRoot, 0.35f);
             
-            // Laptop nhỏ gọn đặt ngay ngắn trên mặt bàn (Scale 0.15x)
-            GameObject laptop = SpawnModel(modelsFolder, "laptop.fbx", new Vector3(3.0f, 0.22f, halfD - 1.5f), Quaternion.Euler(0, 180, 0), roomRoot, 0.15f);
+            // Laptop nhỏ gọn đặt ngay ngắn trên mặt bàn (Scale 0.20x)
+            GameObject laptop = SpawnModel(modelsFolder, "laptop.fbx", new Vector3(3.0f, 0.32f, halfD - 1.5f), Quaternion.Euler(0, 180, 0), roomRoot, 0.20f);
             if (laptop != null)
             {
                 EnsureCollider(laptop);
@@ -111,8 +111,8 @@ namespace RentIsDue.Editor
                 deskSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/DeskLootTable.asset");
             }
 
-            // 4. 🗑️ GÓC THÙNG RÁC (Góc Đông Bắc sát tường - Scale 0.25x)
-            GameObject trash = SpawnModel(modelsFolder, "cardboardBoxOpen.fbx", new Vector3(halfW - 1.8f, 0, halfD - 1.8f), Quaternion.Euler(0, -35, 0), roomRoot, 0.25f);
+            // 4. 🗑️ GÓC THÙNG RÁC (Góc Đông Bắc sát tường - Scale 0.35x)
+            GameObject trash = SpawnModel(modelsFolder, "cardboardBoxOpen.fbx", new Vector3(halfW - 1.8f, 0, halfD - 1.8f), Quaternion.Euler(0, -35, 0), roomRoot, 0.35f);
             if (trash != null)
             {
                 EnsureCollider(trash);
@@ -122,9 +122,9 @@ namespace RentIsDue.Editor
                 trashSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/TrashLootTable.asset");
             }
 
-            // 5. 🍳 KHU BẾP (Mép tường phía Đông - Scale 0.25x)
-            GameObject kitchen = SpawnModel(modelsFolder, "kitchenCabinet.fbx", new Vector3(halfW - 1.2f, 0, 0.5f), Quaternion.Euler(0, -90, 0), roomRoot, 0.25f);
-            SpawnModel(modelsFolder, "kitchenSink.fbx", new Vector3(halfW - 1.2f, 0, -1.0f), Quaternion.Euler(0, -90, 0), roomRoot, 0.25f);
+            // 5. 🍳 KHU BẾP (Mép tường phía Đông - Scale 0.35x)
+            GameObject kitchen = SpawnModel(modelsFolder, "kitchenCabinet.fbx", new Vector3(halfW - 1.2f, 0, 0.5f), Quaternion.Euler(0, -90, 0), roomRoot, 0.35f);
+            SpawnModel(modelsFolder, "kitchenSink.fbx", new Vector3(halfW - 1.2f, 0, -1.0f), Quaternion.Euler(0, -90, 0), roomRoot, 0.35f);
             if (kitchen != null)
             {
                 EnsureCollider(kitchen);
@@ -134,9 +134,9 @@ namespace RentIsDue.Editor
                 kitchenSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/KitchenLootTable.asset");
             }
 
-            // 6. 🚪 TỦ QUẦN ÁO & GIÁ SÁCH (Mép tường phía Tây - Scale 0.25x)
-            GameObject wardrobe = SpawnModel(modelsFolder, "bookcaseClosed.fbx", new Vector3(-halfW + 1.2f, 0, -0.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.25f);
-            SpawnModel(modelsFolder, "bookcaseOpen.fbx", new Vector3(-halfW + 1.2f, 0, -2.0f), Quaternion.Euler(0, 90, 0), roomRoot, 0.25f);
+            // 6. 🚪 TỦ QUẦN ÁO & GIÁ SÁCH (Mép tường phía Tây - Scale 0.35x)
+            GameObject wardrobe = SpawnModel(modelsFolder, "bookcaseClosed.fbx", new Vector3(-halfW + 1.2f, 0, -0.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
+            SpawnModel(modelsFolder, "bookcaseOpen.fbx", new Vector3(-halfW + 1.2f, 0, -2.0f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
             if (wardrobe != null)
             {
                 EnsureCollider(wardrobe);
@@ -146,8 +146,8 @@ namespace RentIsDue.Editor
                 wardrobeSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/WardrobeLootTable.asset");
             }
 
-            // 7. 🔒 KÉT SẮT BÍ MẬT (Góc Tây Nam - Scale 0.25x)
-            GameObject safe = SpawnModel(modelsFolder, "cardboardBoxClosed.fbx", new Vector3(-halfW + 2.0f, 0, -halfD + 2.0f), Quaternion.Euler(0, 45, 0), roomRoot, 0.25f);
+            // 7. 🔒 KÉT SẮT BÍ MẬT (Góc Tây Nam - Scale 0.35x)
+            GameObject safe = SpawnModel(modelsFolder, "cardboardBoxClosed.fbx", new Vector3(-halfW + 2.0f, 0, -halfD + 2.0f), Quaternion.Euler(0, 45, 0), roomRoot, 0.35f);
             if (safe != null)
             {
                 EnsureCollider(safe);
@@ -157,8 +157,8 @@ namespace RentIsDue.Editor
                 safeSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/SecretSafeLootTable.asset");
             }
 
-            // 8. 👤 QUẦY DEALER VE CHAI (Góc Đông Nam - Scale 0.25x)
-            GameObject dealerDesk = SpawnModel(modelsFolder, "bench.fbx", new Vector3(halfW - 2.5f, 0, -halfD + 2.5f), Quaternion.Euler(0, -45, 0), roomRoot, 0.25f);
+            // 8. 👤 QUẦY DEALER VE CHAI (Góc Đông Nam - Scale 0.35x)
+            GameObject dealerDesk = SpawnModel(modelsFolder, "bench.fbx", new Vector3(halfW - 2.5f, 0, -halfD + 2.5f), Quaternion.Euler(0, -45, 0), roomRoot, 0.35f);
             if (dealerDesk != null)
             {
                 EnsureCollider(dealerDesk);
