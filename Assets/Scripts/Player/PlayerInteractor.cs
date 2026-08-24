@@ -154,7 +154,7 @@ namespace RentIsDue.Player
                 GUI.DrawTexture(new Rect(x, y, size, size), Texture2D.whiteTexture);
                 
                 // Hiển thị gợi ý phím [E] và thanh tiến trình bới đồ
-                if (currentInteractable != null)
+                if (currentInteractable != null && currentInteractable.CanInteract(this))
                 {
                     GUIStyle style = new GUIStyle(GUI.skin.label);
                     style.alignment = TextAnchor.MiddleCenter;
@@ -171,7 +171,9 @@ namespace RentIsDue.Player
                     }
                     else
                     {
-                        GUI.Label(new Rect(x - 150, y + 15, 300, 25), $"[E] {prompt}", style);
+                        // Some scripts still return "[E]" in their strings, others don't.
+                        // To be clean, just draw what they return.
+                        GUI.Label(new Rect(x - 150, y + 15, 300, 25), prompt, style);
                     }
                 }
                 
