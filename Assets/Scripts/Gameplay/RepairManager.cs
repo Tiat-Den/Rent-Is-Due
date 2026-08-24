@@ -87,6 +87,9 @@ namespace RentIsDue.Gameplay
 
         private void DrawRepairWindow(int id)
         {
+            // Background đặc để che chữ ở phía sau
+            GUI.Box(new Rect(0, 0, 420, 480), "", new GUIStyle(GUI.skin.box) { normal = { background = Texture2D.whiteTexture } });
+            
             GUILayout.Space(8);
 
             if (InventoryManager.Instance == null)
@@ -100,7 +103,6 @@ namespace RentIsDue.Gameplay
             GUILayout.Label($"💰 Tiền hiện có: ${money:F1}");
             GUILayout.Space(6);
 
-            // Get all items — support both ItemData list and ItemInstance list
             var items = InventoryManager.Instance.items;
             if (items == null || items.Count == 0)
             {
@@ -108,38 +110,28 @@ namespace RentIsDue.Gameplay
             }
             else
             {
-                // RepairManager works with the raw ItemData list for now.
-                // Items spawned via loot get condition tracked separately by SearchableObject.
                 GUILayout.Label($"Đồ trong túi ({items.Count} vật phẩm):");
                 GUILayout.Space(4);
 
                 _scrollPos = GUILayout.BeginScrollView(_scrollPos, GUILayout.Height(320));
                 foreach (var item in items)
                 {
-                    if (item == null) continue;
-                    // Show all items; 'damaged' ones indicated by low value
-                    float repairCost = Mathf.Max(1f, item.baseValue * 0.2f);
+                    if (item == null || item.data == null) continue;
+                    
+                    float repairCost = item.RepairCost;
+                    bool needsRepair = item.IsDamaged;
+
                     GUILayout.BeginHorizontal("box");
-                    GUILayout.Label($"{item.displayName}  | Giá gốc: ${item.baseValue:F1}", GUILayout.Width(260));
-                    if (GUILayout.Button($"Bảo dưỡng (${repairCost:F1})", GUILayout.Width(130)))
+                    string conditionText = needsRepair ? $"Hỏng ({(item.condition*100):F0}%)" : "Tốt (100%)";
+                    GUILayout.Label($"{item.data.displayName} | {conditionText} | Giá: ${item.EffectiveValue:F1}", GUILayout.Width(260));
+                    
+                    GUI.enabled = needsRepair;
+                    if (GUILayout.Button(needsRepair ? $"Bảo dưỡng (${repairCost:F1})" : "Đã sửa", GUILayout.Width(130)))
                     {
-                        if (EconomyManager.Instance != null)
-                        {
-                            if (EconomyManager.Instance.currentMoney >= repairCost)
-                            {
-                                EconomyManager.Instance.currentMoney -= repairCost;
-                                if (AudioManager.Instance != null) AudioManager.Instance.PlaySell();
-                                if (FloatingFeedbackUI.Instance != null)
-                                    FloatingFeedbackUI.Instance.ShowMessage($"Đã bảo dưỡng {item.displayName}! (-${repairCost:F1})", Color.green);
-                                Debug.Log($"[RepairManager] Maintained '{item.displayName}' for ${repairCost:F1}");
-                            }
-                            else
-                            {
-                                if (FloatingFeedbackUI.Instance != null)
-                                    FloatingFeedbackUI.Instance.ShowMessage("Không đủ tiền!", Color.red);
-                            }
-                        }
+                        RepairItem(item);
                     }
+                    GUI.enabled = true;
+                    
                     GUILayout.EndHorizontal();
                 }
                 GUILayout.EndScrollView();

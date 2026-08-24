@@ -58,9 +58,11 @@ namespace RentIsDue.Inventory
 
             for (int i = 0; i < inventoryManager.items.Count; i++)
             {
-                var item = inventoryManager.items[i];
+                var instance = inventoryManager.items[i];
+                if (instance == null || instance.data == null) continue;
+                
                 GUILayout.BeginHorizontal();
-                GUILayout.Label($"{item.displayName} - {item.weight}kg");
+                GUILayout.Label($"{instance.data.displayName} - {instance.data.weight}kg");
                 
                 if (GUILayout.Button("Drop", GUILayout.Width(50)))
                 {
@@ -71,7 +73,7 @@ namespace RentIsDue.Inventory
                     {
                         dropPos = player.transform.position + player.transform.forward * 1.5f + Vector3.up * 0.5f;
                     }
-                    inventoryManager.DropItem(item, dropPos);
+                    inventoryManager.DropItem(instance, dropPos);
                     break; // break to avoid collection modified exception during GUI loop
                 }
                 GUILayout.EndHorizontal();

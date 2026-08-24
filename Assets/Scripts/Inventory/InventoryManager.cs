@@ -27,7 +27,7 @@ namespace RentIsDue.Inventory
         public int maxSlots = 8;
         public float maxWeight = 20f;
 
-        public List<ItemData> items = new List<ItemData>();
+        public List<ItemInstance> items = new List<ItemInstance>();
         
         public delegate void OnInventoryChanged();
         public OnInventoryChanged onInventoryChanged;
@@ -47,46 +47,51 @@ namespace RentIsDue.Inventory
             float total = 0f;
             foreach (var item in items)
             {
-                total += item.weight;
+                if (item?.data != null) total += item.data.weight;
             }
             return total;
         }
 
-        public bool AddItem(ItemData item)
+        public bool AddItem(ItemData itemData)
         {
+            if (itemData == null) return false;
+            
             if (items.Count >= maxSlots)
             {
                 Debug.Log("Inventory full! No empty slots.");
                 return false;
             }
 
-            if (GetTotalWeight() + item.weight > maxWeight)
+            if (GetTotalWeight() + itemData.weight > maxWeight)
             {
                 Debug.Log("Inventory too heavy! Cannot carry.");
                 return false;
             }
 
-            items.Add(item);
+            // Mặc định đồ nhặt được sẽ bị hỏng (condition = 0.5f) cần bảo dưỡng
+            ItemInstance newInst = new ItemInstance(itemData, 0.5f);
+            items.Add(newInst);
+            
             onInventoryChanged?.Invoke();
             return true;
         }
 
-        public void RemoveItem(ItemData item)
+        public void RemoveItem(ItemInstance instance)
         {
-            if (items.Contains(item))
+            if (instance != null && items.Contains(instance))
             {
-                items.Remove(item);
+                items.Remove(instance);
                 onInventoryChanged?.Invoke();
             }
         }
 
-        public void DropItem(ItemData item, Vector3 dropPosition)
+        public void DropItem(ItemInstance instance, Vector3 dropPosition)
         {
-            if (items.Contains(item))
+            if (instance != null && instance.data != null && items.Contains(instance))
             {
-                if (item.prefab != null)
+                if (instance.data.prefab != null)
                 {
-                    Instantiate(item.prefab, dropPosition, Quaternion.identity);
+                    Instantiate(instance.data.prefab, dropPosition, Quaternion.identity);
                 }
                 else
                 {
@@ -95,10 +100,10 @@ namespace RentIsDue.Inventory
                     placeholder.transform.position = dropPosition;
                     placeholder.transform.localScale = Vector3.one * 0.3f;
                     PickupInteractable pickup = placeholder.AddComponent<PickupInteractable>();
-                    pickup.itemData = item;
+                    pickup.itemData = instance.data; // Note: drops reset condition for now
                 }
                 
-                RemoveItem(item);
+                RemoveItem(instance);
             }
         }
     }

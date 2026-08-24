@@ -111,11 +111,11 @@ namespace RentIsDue.Gameplay
             if (InventoryManager.Instance == null || EconomyManager.Instance == null) return 0f;
 
             var items = InventoryManager.Instance.items;
-            var matching = new List<ItemData>();
+            var matching = new List<ItemInstance>();
 
             foreach (var item in items)
             {
-                if (item != null && item.category == currentOrder.requiredCategory)
+                if (item != null && item.data != null && item.data.category == currentOrder.requiredCategory)
                     matching.Add(item);
                 if (matching.Count >= currentOrder.requiredQuantity) break;
             }
@@ -129,11 +129,11 @@ namespace RentIsDue.Gameplay
             {
                 float sellMultiplier = UpgradeManager.Instance != null
                     ? UpgradeManager.Instance.GetSellPriceMultiplier() : 1f;
-                float bonusAmount = item.baseValue * currentOrder.rewardMultiplier * sellMultiplier;
+                float bonusAmount = item.EffectiveValue * currentOrder.rewardMultiplier * sellMultiplier;
                 bonusTotal += bonusAmount;
                 EconomyManager.Instance.currentMoney += bonusAmount;
                 InventoryManager.Instance.RemoveItem(item);
-                Debug.Log($"[DailyOrderManager] Sold '{item.displayName}' for ${bonusAmount:F1} (x{currentOrder.rewardMultiplier} order bonus)");
+                Debug.Log($"[DailyOrderManager] Sold '{item.data.displayName}' for ${bonusAmount:F1} (x{currentOrder.rewardMultiplier} order bonus)");
             }
 
             currentOrder.isCompleted = true;
@@ -177,6 +177,9 @@ namespace RentIsDue.Gameplay
 
         private void DrawDealerWindow(int id)
         {
+            // Background đặc che các UI phía sau
+            GUI.Box(new Rect(0, 0, 400, 340), "", new GUIStyle(GUI.skin.box) { normal = { background = Texture2D.whiteTexture } });
+            
             GUILayout.Space(8);
 
             float money = EconomyManager.Instance != null ? EconomyManager.Instance.currentMoney : 0f;
@@ -207,7 +210,7 @@ namespace RentIsDue.Gameplay
                     int count = 0;
                     if (InventoryManager.Instance != null)
                         foreach (var item in InventoryManager.Instance.items)
-                            if (item != null && item.category == currentOrder.requiredCategory) count++;
+                            if (item != null && item.data != null && item.data.category == currentOrder.requiredCategory) count++;
 
                     GUILayout.Label($"  Đồ đang có: {count}/{currentOrder.requiredQuantity}");
                     GUILayout.Space(6);

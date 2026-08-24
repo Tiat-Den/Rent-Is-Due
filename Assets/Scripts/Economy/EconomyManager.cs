@@ -20,14 +20,14 @@ namespace RentIsDue.Economy
             Instance = this;
         }
 
-        public void SellItem(ItemData item, float marketModifier = 1f)
+        public void SellItem(ItemInstance instance, float marketModifier = 1f)
         {
-            if (item != null)
+            if (instance != null && instance.data != null)
             {
                 float sellMultiplier = RentIsDue.Shop.UpgradeManager.Instance != null ? RentIsDue.Shop.UpgradeManager.Instance.GetSellPriceMultiplier() : 1f;
-                float amount = item.baseValue * marketModifier * sellMultiplier;
+                float amount = instance.EffectiveValue * marketModifier * sellMultiplier;
                 currentMoney += amount;
-                InventoryManager.Instance?.RemoveItem(item);
+                InventoryManager.Instance?.RemoveItem(instance);
                 
                 if (RentIsDue.Audio.AudioManager.Instance != null)
                 {
@@ -36,7 +36,7 @@ namespace RentIsDue.Economy
 
                 if (RentIsDue.Core.FloatingFeedbackUI.Instance != null)
                 {
-                    RentIsDue.Core.FloatingFeedbackUI.Instance.ShowMessage($"+${amount:F1} ({item.displayName})", Color.yellow);
+                    RentIsDue.Core.FloatingFeedbackUI.Instance.ShowMessage($"+${amount:F1} ({instance.data.displayName})", Color.yellow);
                 }
 
                 if (RentIsDue.Core.PlaytestLogger.Instance != null)
@@ -52,7 +52,7 @@ namespace RentIsDue.Economy
         {
             if (InventoryManager.Instance == null) return;
             
-            List<ItemData> itemsToSell = new List<ItemData>(InventoryManager.Instance.items);
+            List<ItemInstance> itemsToSell = new List<ItemInstance>(InventoryManager.Instance.items);
             foreach (var item in itemsToSell)
             {
                 SellItem(item);
