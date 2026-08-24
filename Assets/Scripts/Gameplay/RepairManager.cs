@@ -46,32 +46,41 @@ namespace RentIsDue.Gameplay
 
         // ─── Repair Logic ────────────────────────────────────────────────────────
 
-        /// <summary>
-        /// Repair a single item instance: deduct cost from EconomyManager, restore condition to 1.
-        /// Returns true on success.
-        /// </summary>
-        public bool RepairItem(ItemInstance instance)
-        {
-            if (instance == null || !instance.IsDamaged) return false;
-            if (EconomyManager.Instance == null) return false;
+        private bool _isRepairing = false;
+        private float _repairProgress = 0f;
+        private ItemInstance _currentlyRepairingItem = null;
+        public float repairDurationSec = 2.0f; // Thời gian sửa 1 món đồ
 
-            float cost = instance.RepairCost;
-            if (EconomyManager.Instance.currentMoney < cost)
+        private System.Collections.IEnumerator RepairRoutine(ItemInstance item, float cost)
+        {
+            _isRepairing = true;
+            _currentlyRepairingItem = item;
+            _repairProgress = 0f;
+
+            // Trừ tiền ngay lập tức
+            if (EconomyManager.Instance != null)
+                EconomyManager.Instance.currentMoney -= cost;
+
+            // Chờ quá trình sửa
+            float elapsed = 0f;
+            while (elapsed < repairDurationSec)
             {
-                if (FloatingFeedbackUI.Instance != null)
-                    FloatingFeedbackUI.Instance.ShowMessage("Không đủ tiền để sửa!", Color.red);
-                return false;
+                elapsed += Time.deltaTime;
+                _repairProgress = Mathf.Clamp01(elapsed / repairDurationSec);
+                yield return null;
             }
 
-            EconomyManager.Instance.currentMoney -= cost;
-            instance.condition = 1f;
+            // Hoàn thành
+            item.condition = 1f;
+            _isRepairing = false;
+            _currentlyRepairingItem = null;
+            _repairProgress = 1f;
 
             if (AudioManager.Instance != null) AudioManager.Instance.PlaySell();
             if (FloatingFeedbackUI.Instance != null)
-                FloatingFeedbackUI.Instance.ShowMessage($"Đã sửa {instance.data.displayName}! (-${cost:F1})", Color.green);
+                FloatingFeedbackUI.Instance.ShowMessage($"Đã sửa {item.data.displayName}! (-${cost:F1})", Color.green);
 
-            Debug.Log($"[RepairManager] Repaired '{instance.data.displayName}' for ${cost:F1}");
-            return true;
+            Debug.Log($"[RepairManager] Repaired '{item.data.displayName}' for ${cost:F1}");
         }
 
         // ─── OnGUI ───────────────────────────────────────────────────────────────
@@ -125,12 +134,28 @@ namespace RentIsDue.Gameplay
                     string conditionText = needsRepair ? $"Hỏng ({(item.condition*100):F0}%)" : "Tốt (100%)";
                     GUILayout.Label($"{item.data.displayName} | {conditionText} | Giá: ${item.EffectiveValue:F1}", GUILayout.Width(260));
                     
-                    GUI.enabled = needsRepair;
-                    if (GUILayout.Button(needsRepair ? $"Bảo dưỡng (${repairCost:F1})" : "Đã sửa", GUILayout.Width(130)))
+                    if (_isRepairing && _currentlyRepairingItem == item)
                     {
-                        RepairItem(item);
+                        // Đang sửa món này -> Hiện %
+                        GUILayout.Box($"Đang sửa... {(_repairProgress * 100):F0}%", GUILayout.Width(130));
                     }
-                    GUI.enabled = true;
+                    else
+                    {
+                        GUI.enabled = needsRepair && !_isRepairing; // Disable nút nếu đang sửa món khác
+                        if (GUILayout.Button(needsRepair ? $"Bảo dưỡng (${repairCost:F1})" : "Đã sửa", GUILayout.Width(130)))
+                        {
+                            if (EconomyManager.Instance != null && EconomyManager.Instance.currentMoney >= repairCost)
+                            {
+                                StartCoroutine(RepairRoutine(item, repairCost));
+                            }
+                            else
+                            {
+                                if (FloatingFeedbackUI.Instance != null)
+                                    FloatingFeedbackUI.Instance.ShowMessage("Không đủ tiền!", Color.red);
+                            }
+                        }
+                        GUI.enabled = true;
+                    }
                     
                     GUILayout.EndHorizontal();
                 }
@@ -138,7 +163,11 @@ namespace RentIsDue.Gameplay
             }
 
             GUILayout.Space(8);
+            
+            // Khóa nút Đóng nếu đang sửa để tránh lỗi tắt UI ngang
+            GUI.enabled = !_isRepairing;
             if (GUILayout.Button("❌ Đóng", GUILayout.Height(30))) CloseUI();
+            GUI.enabled = true;
         }
 
         private void CloseUI()
