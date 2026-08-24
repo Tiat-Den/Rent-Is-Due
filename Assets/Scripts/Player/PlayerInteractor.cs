@@ -143,7 +143,8 @@ namespace RentIsDue.Player
         private void OnGUI()
         {
             // Vẽ tâm ngắm nhỏ (Crosshair) chính giữa màn hình cho góc nhìn thứ nhất
-            if (Time.timeScale > 0f)
+            // Nếu con trỏ chuột không bị khóa (đang dùng chuột bấm UI), ẩn tâm ngắm đi
+            if (Time.timeScale > 0f && Cursor.lockState == CursorLockMode.Locked)
             {
                 float size = 6f;
                 float x = (Screen.width - size) / 2f;

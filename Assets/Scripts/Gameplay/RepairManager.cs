@@ -113,8 +113,8 @@ namespace RentIsDue.Gameplay
 
         private void DrawRepairWindow(int id)
         {
-            // Background tối mờ để dễ đọc chữ trắng
-            GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.95f);
+            // Background đen đặc để che hoàn toàn cảnh phía sau
+            GUI.backgroundColor = Color.black;
             GUI.Box(new Rect(0, 0, 420, 480), "");
             GUI.backgroundColor = Color.white;
             
