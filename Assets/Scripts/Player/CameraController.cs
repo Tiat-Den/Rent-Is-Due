@@ -110,8 +110,16 @@ namespace RentIsDue.Player
         {
             if (playerBody == null) return;
 
-            // Đặt vị trí camera luôn bám vào tầm mắt của Player
-            transform.position = playerBody.position + eyeOffset;
+            // Tính toán vị trí chân tiếp đất chính xác của nhân vật
+            float groundY = playerBody.position.y;
+            CharacterController cc = playerBody.GetComponent<CharacterController>();
+            if (cc != null)
+            {
+                groundY = playerBody.position.y + cc.center.y - (cc.height / 2f);
+            }
+
+            // Đặt tầm mắt luôn chuẩn xác 1.85m phía trên mặt sàn
+            transform.position = new Vector3(playerBody.position.x, groundY + 1.85f, playerBody.position.z);
 
             // Đồng bộ hướng nhìn của Camera: Xoay dọc theo đầu (xRotation) và xoay ngang theo thân người chơi (playerBody.eulerAngles.y)
             transform.rotation = Quaternion.Euler(xRotation, playerBody.eulerAngles.y, 0f);
