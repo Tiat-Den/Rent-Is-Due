@@ -50,6 +50,12 @@ namespace RentIsDue.Core
 
         private void HandleDayEnded()
         {
+            if (EconomyManager.Instance == null)
+            {
+                Debug.LogError("[DayManager] EconomyManager.Instance is null — cannot process day end!");
+                return;
+            }
+
             if (EconomyManager.Instance.currentMoney >= currentRent)
             {
                 int rentToPay = currentRent;
@@ -74,7 +80,8 @@ namespace RentIsDue.Core
                 }
                 else
                 {
-                    TimeManager.Instance.isTimeRunning = false;
+                    if (TimeManager.Instance != null)
+                        TimeManager.Instance.isTimeRunning = false;
                 }
             }
         }

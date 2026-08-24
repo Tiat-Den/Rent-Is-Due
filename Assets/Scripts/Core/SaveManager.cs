@@ -54,10 +54,22 @@ namespace RentIsDue.Core
         public void LoadGame()
         {
             string path = Application.persistentDataPath + "/save.json";
-            if (File.Exists(path))
+            if (!File.Exists(path))
+            {
+                Debug.Log("No save file found.");
+                return;
+            }
+
+            try
             {
                 string json = File.ReadAllText(path);
                 SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+                if (data == null)
+                {
+                    Debug.LogError("[SaveManager] Save file is corrupted or empty — aborting load.");
+                    return;
+                }
 
                 if (EconomyManager.Instance != null)
                     EconomyManager.Instance.currentMoney = data.currentMoney;
@@ -67,7 +79,7 @@ namespace RentIsDue.Core
 
                 if (DayManager.Instance != null)
                 {
-                    DayManager.Instance.currentDay = data.currentDay;
+                    DayManager.Instance.currentDay = data.currentDay > 0 ? data.currentDay : 1;
                     DayManager.Instance.CalculateRent();
                 }
 
@@ -86,9 +98,9 @@ namespace RentIsDue.Core
 
                 Debug.Log("Game Loaded from: " + path);
             }
-            else
+            catch (System.Exception ex)
             {
-                Debug.Log("No save file found.");
+                Debug.LogError($"[SaveManager] Failed to load save file: {ex.Message}");
             }
         }
     }

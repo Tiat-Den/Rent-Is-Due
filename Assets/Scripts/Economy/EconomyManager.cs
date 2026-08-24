@@ -27,7 +27,7 @@ namespace RentIsDue.Economy
                 float sellMultiplier = RentIsDue.Shop.UpgradeManager.Instance != null ? RentIsDue.Shop.UpgradeManager.Instance.GetSellPriceMultiplier() : 1f;
                 float amount = item.baseValue * marketModifier * sellMultiplier;
                 currentMoney += amount;
-                InventoryManager.Instance.RemoveItem(item);
+                InventoryManager.Instance?.RemoveItem(item);
                 
                 if (RentIsDue.Audio.AudioManager.Instance != null)
                 {

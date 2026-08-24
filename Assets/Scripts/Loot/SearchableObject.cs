@@ -28,6 +28,8 @@ namespace RentIsDue.Loot
 
         private void OnDisable()
         {
+            StopAllCoroutines(); // Prevent ghost coroutine spawning loot after disable
+            isSearching = false;
             if (TimeManager.Instance != null)
             {
                 TimeManager.Instance.OnDayEnded -= ResetSearchable;
@@ -36,6 +38,7 @@ namespace RentIsDue.Loot
 
         private void ResetSearchable()
         {
+            StopAllCoroutines();
             hasBeenSearched = false;
             isSearching = false;
             searchProgress = 0f;
@@ -84,6 +87,13 @@ namespace RentIsDue.Loot
             isSearching = false;
             hasBeenSearched = true;
             searchProgress = 1f;
+
+            // Guard: lootTable might have been cleared externally
+            if (lootTable == null)
+            {
+                Debug.LogWarning($"[SearchableObject] lootTable is null on '{containerName}' — cannot roll loot.");
+                yield break;
+            }
 
             ItemData foundItem = lootTable.RollLoot();
 

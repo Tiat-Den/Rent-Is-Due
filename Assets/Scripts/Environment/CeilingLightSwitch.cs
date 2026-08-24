@@ -16,8 +16,17 @@ namespace RentIsDue.Environment
         [Header("Audio Settings")]
         public AudioClip switchSound;
 
+        // Cached material to avoid allocating a new instance each toggle
+        private Material _cachedLampMaterial;
+
         private void Start()
         {
+            if (ceilingLight == null)
+                Debug.LogWarning($"[CeilingLightSwitch] '{name}': ceilingLight is not assigned in Inspector — light toggle will have no effect.");
+
+            if (lampFixtureRenderer != null)
+                _cachedLampMaterial = lampFixtureRenderer.material; // cache once, reuse
+
             ApplyLightState();
         }
 
@@ -51,31 +60,28 @@ namespace RentIsDue.Environment
                 ceilingLight.enabled = isLightOn;
             }
 
-            if (lampFixtureRenderer != null)
+            if (_cachedLampMaterial != null)
             {
                 Color emissionColor = isLightOn ? new Color(1f, 0.95f, 0.8f) * 2f : Color.black;
-                if (lampFixtureRenderer.material.HasProperty("_EmissionColor"))
+                if (_cachedLampMaterial.HasProperty("_EmissionColor"))
                 {
-                    lampFixtureRenderer.material.SetColor("_EmissionColor", emissionColor);
+                    _cachedLampMaterial.SetColor("_EmissionColor", emissionColor);
                     if (isLightOn)
-                    {
-                        lampFixtureRenderer.material.EnableKeyword("_EMISSION");
-                    }
+                        _cachedLampMaterial.EnableKeyword("_EMISSION");
                     else
-                    {
-                        lampFixtureRenderer.material.DisableKeyword("_EMISSION");
-                    }
+                        _cachedLampMaterial.DisableKeyword("_EMISSION");
                 }
             }
         }
 
         private void PlayClickSound()
         {
-            if (AudioManager.Instance != null)
-            {
-                // Tiếng click công tắc điện vui tai
-                AudioManager.Instance.PlaySearch();
-            }
+            if (AudioManager.Instance == null) return;
+
+            if (switchSound != null)
+                AudioManager.Instance.sfxSource.PlayOneShot(switchSound);
+            else
+                AudioManager.Instance.PlaySearch(); // fallback nếu chưa gán clip
         }
     }
 }
