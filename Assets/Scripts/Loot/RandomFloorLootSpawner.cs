@@ -102,11 +102,25 @@ namespace RentIsDue.Loot
 
         private void SpawnItemAt(ItemData itemData, Vector3 position)
         {
-            GameObject prefab = itemData.prefab != null ? itemData.prefab : GameObject.CreatePrimitive(PrimitiveType.Cube);
-            GameObject itemObj = Instantiate(prefab, position, Quaternion.Euler(0, Random.Range(0f, 360f), 0));
-            
-            if (itemData.prefab == null)
+            GameObject itemObj = null;
+
+            if (itemData.prefab != null)
             {
+                itemObj = Instantiate(itemData.prefab, position, Quaternion.Euler(0, Random.Range(0f, 360f), 0));
+                itemObj.transform.localScale = Vector3.one * 1.5f;
+
+                Collider col = itemObj.GetComponentInChildren<Collider>();
+                if (col == null)
+                {
+                    BoxCollider bc = itemObj.AddComponent<BoxCollider>();
+                    bc.size = new Vector3(0.5f, 0.5f, 0.5f);
+                }
+            }
+            else
+            {
+                itemObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                itemObj.transform.position = position;
+                itemObj.transform.rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
                 itemObj.transform.localScale = Vector3.one * 0.25f;
                 if (itemObj.GetComponent<Collider>() == null)
                 {
