@@ -79,6 +79,12 @@ namespace RentIsDue.Audio
             }
         }
 
+        public void PlayClip(AudioClip clip, float volume = 1f)
+        {
+            if (clip != null && sfxSource != null)
+                sfxSource.PlayOneShot(clip, volume);
+        }
+
         public void PlaySell()
         {
             if (sellClip != null)

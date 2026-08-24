@@ -79,7 +79,7 @@ namespace RentIsDue.Environment
             if (AudioManager.Instance == null) return;
 
             if (switchSound != null)
-                AudioManager.Instance.sfxSource.PlayOneShot(switchSound);
+                AudioManager.Instance.PlayClip(switchSound);
             else
                 AudioManager.Instance.PlaySearch(); // fallback nếu chưa gán clip
         }
