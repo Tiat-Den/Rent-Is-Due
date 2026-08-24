@@ -161,7 +161,7 @@ namespace RentIsDue.Editor
             body.transform.SetParent(parent.transform, false);
             body.transform.localPosition = new Vector3(0, 0.10f, 0);
             body.transform.localScale = new Vector3(0.08f, 0.09f, 0.08f);
-            ApplyMaterial(body, liquidColor);
+            ApplyMaterial(body, "Mat_PlasticBottle", liquidColor);
             RemoveCollider(body);
 
             // Cổ chai
@@ -170,7 +170,7 @@ namespace RentIsDue.Editor
             neck.transform.SetParent(parent.transform, false);
             neck.transform.localPosition = new Vector3(0, 0.21f, 0);
             neck.transform.localScale = new Vector3(0.035f, 0.03f, 0.035f);
-            ApplyMaterial(neck, liquidColor);
+            ApplyMaterial(neck, "Mat_PlasticBottle", liquidColor);
             RemoveCollider(neck);
 
             // Nắp chai
@@ -179,7 +179,7 @@ namespace RentIsDue.Editor
             cap.transform.SetParent(parent.transform, false);
             cap.transform.localPosition = new Vector3(0, 0.245f, 0);
             cap.transform.localScale = new Vector3(0.04f, 0.01f, 0.04f);
-            ApplyMaterial(cap, Color.white);
+            ApplyMaterial(cap, "Mat_BottleCap", Color.white);
             RemoveCollider(cap);
         }
 
@@ -190,7 +190,7 @@ namespace RentIsDue.Editor
             can.transform.SetParent(parent.transform, false);
             can.transform.localPosition = new Vector3(0, 0.07f, 0);
             can.transform.localScale = new Vector3(0.07f, 0.07f, 0.07f);
-            ApplyMaterial(can, canColor);
+            ApplyMaterial(can, "Mat_SodaCan", canColor);
             RemoveCollider(can);
 
             // Vành trên kim loại
@@ -199,7 +199,7 @@ namespace RentIsDue.Editor
             top.transform.SetParent(parent.transform, false);
             top.transform.localPosition = new Vector3(0, 0.141f, 0);
             top.transform.localScale = new Vector3(0.065f, 0.005f, 0.065f);
-            ApplyMaterial(top, new Color(0.85f, 0.85f, 0.88f));
+            ApplyMaterial(top, "Mat_MetalRim", new Color(0.85f, 0.85f, 0.88f));
             RemoveCollider(top);
         }
 
@@ -210,7 +210,7 @@ namespace RentIsDue.Editor
             body.transform.SetParent(parent.transform, false);
             body.transform.localPosition = new Vector3(0, 0.07f, 0);
             body.transform.localScale = new Vector3(0.09f, 0.065f, 0.09f);
-            ApplyMaterial(body, new Color(0.85f, 0.95f, 0.95f, 0.6f));
+            ApplyMaterial(body, "Mat_GlassJar", new Color(0.85f, 0.95f, 0.95f, 0.6f));
             RemoveCollider(body);
 
             GameObject lid = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -218,7 +218,7 @@ namespace RentIsDue.Editor
             lid.transform.SetParent(parent.transform, false);
             lid.transform.localPosition = new Vector3(0, 0.14f, 0);
             lid.transform.localScale = new Vector3(0.095f, 0.01f, 0.095f);
-            ApplyMaterial(lid, new Color(0.75f, 0.65f, 0.4f)); // Nắp vàng đồng
+            ApplyMaterial(lid, "Mat_BronzeLid", new Color(0.75f, 0.65f, 0.4f)); // Nắp vàng đồng
             RemoveCollider(lid);
         }
 
@@ -229,7 +229,7 @@ namespace RentIsDue.Editor
             body.transform.SetParent(parent.transform, false);
             body.transform.localPosition = new Vector3(0, 0.06f, 0);
             body.transform.localScale = new Vector3(0.08f, 0.06f, 0.08f);
-            ApplyMaterial(body, mugColor);
+            ApplyMaterial(body, "Mat_CeramicMug", mugColor);
             RemoveCollider(body);
         }
 
@@ -241,7 +241,7 @@ namespace RentIsDue.Editor
             body.transform.SetParent(parent.transform, false);
             body.transform.localPosition = new Vector3(0, 0.005f, 0);
             body.transform.localScale = new Vector3(0.08f, 0.01f, 0.15f);
-            ApplyMaterial(body, new Color(0.15f, 0.15f, 0.18f));
+            ApplyMaterial(body, "Mat_PhoneBody", new Color(0.15f, 0.15f, 0.18f));
             RemoveCollider(body);
 
             // Màn hình đen bóng
@@ -250,7 +250,7 @@ namespace RentIsDue.Editor
             screen.transform.SetParent(parent.transform, false);
             screen.transform.localPosition = new Vector3(0, 0.011f, 0);
             screen.transform.localScale = new Vector3(0.072f, 0.002f, 0.138f);
-            ApplyMaterial(screen, new Color(0.05f, 0.08f, 0.1f));
+            ApplyMaterial(screen, "Mat_PhoneScreen", new Color(0.05f, 0.08f, 0.1f));
             RemoveCollider(screen);
         }
 
@@ -261,7 +261,7 @@ namespace RentIsDue.Editor
             dial.transform.SetParent(parent.transform, false);
             dial.transform.localPosition = new Vector3(0, 0.008f, 0);
             dial.transform.localScale = new Vector3(0.05f, 0.01f, 0.05f);
-            ApplyMaterial(dial, new Color(0.95f, 0.8f, 0.2f)); // Vàng óng
+            ApplyMaterial(dial, "Mat_GoldWatch", new Color(0.95f, 0.8f, 0.2f)); // Vàng óng
             RemoveCollider(dial);
 
             GameObject strap = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -269,7 +269,7 @@ namespace RentIsDue.Editor
             strap.transform.SetParent(parent.transform, false);
             strap.transform.localPosition = new Vector3(0, 0.005f, 0);
             strap.transform.localScale = new Vector3(0.025f, 0.006f, 0.12f);
-            ApplyMaterial(strap, new Color(0.4f, 0.25f, 0.15f)); // Dây da nâu
+            ApplyMaterial(strap, "Mat_LeatherStrap", new Color(0.4f, 0.25f, 0.15f)); // Dây da nâu
             RemoveCollider(strap);
         }
 
@@ -280,7 +280,7 @@ namespace RentIsDue.Editor
             card.transform.SetParent(parent.transform, false);
             card.transform.localPosition = new Vector3(0, 0.002f, 0);
             card.transform.localScale = new Vector3(0.07f, 0.002f, 0.10f);
-            ApplyMaterial(card, new Color(0.95f, 0.75f, 0.1f)); // Thẻ vàng lấp lánh
+            ApplyMaterial(card, "Mat_TradingCard", new Color(0.95f, 0.75f, 0.1f)); // Thẻ vàng lấp lánh
             RemoveCollider(card);
         }
 
@@ -290,18 +290,38 @@ namespace RentIsDue.Editor
             if (col != null) GameObject.DestroyImmediate(col);
         }
 
-        private static void ApplyMaterial(GameObject obj, Color color)
+        private static void ApplyMaterial(GameObject obj, string matName, Color color)
         {
             Renderer rend = obj.GetComponent<Renderer>();
             if (rend != null)
             {
-                Shader shader = Shader.Find("Universal Render Pipeline/Lit");
-                if (shader == null) shader = Shader.Find("Standard");
-                if (shader == null) shader = Shader.Find("Diffuse");
+                string folder = "Assets/Materials/Items";
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
 
-                Material mat = new Material(shader);
-                mat.color = color;
-                if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
+                string matPath = $"{folder}/{matName}.mat";
+                Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+
+                if (mat == null)
+                {
+                    Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+                    if (shader == null) shader = Shader.Find("Standard");
+                    if (shader == null) shader = Shader.Find("Diffuse");
+
+                    mat = new Material(shader);
+                    mat.color = color;
+                    if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
+                    AssetDatabase.CreateAsset(mat, matPath);
+                }
+                else
+                {
+                    mat.color = color;
+                    if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
+                    EditorUtility.SetDirty(mat);
+                }
+
                 rend.sharedMaterial = mat;
             }
         }
