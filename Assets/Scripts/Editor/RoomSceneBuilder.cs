@@ -11,17 +11,66 @@ namespace RentIsDue.Editor
 {
     public class RoomSceneBuilder : EditorWindow
     {
-        [MenuItem("Tools/🏠 Custom Room Builder Window (Tùy Chỉnh Kích Thước)")]
-        public static void OpenWindow()
+        private const string SAVED_ROOM_PREFAB_PATH = "Assets/Prefabs/Environments/SavedGiantRoom.prefab";
+
+        [MenuItem("Tools/💾 1. Save Current Room Layout as Giant Room Template")]
+        public static void SaveCurrentRoomLayout()
         {
-            RoomSceneBuilder window = GetWindow<RoomSceneBuilder>("Room Builder");
-            window.minSize = new Vector2(380, 320);
-            window.Show();
+            GameObject roomRoot = GameObject.Find("TinyRoom_Environment");
+            if (roomRoot == null)
+            {
+                EditorUtility.DisplayDialog("Room Not Found", "Không tìm thấy GameObject 'TinyRoom_Environment' trong Hierarchy để lưu! Hãy chắc chắn căn phòng đang mở trong Scene.", "OK");
+                return;
+            }
+
+            string folder = "Assets/Prefabs/Environments";
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            GameObject savedPrefab = PrefabUtility.SaveAsPrefabAssetAndConnect(roomRoot, SAVED_ROOM_PREFAB_PATH, InteractionMode.UserAction);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            EditorUtility.DisplayDialog("Room Saved! 💾", "Đã lưu thành công toàn bộ cách sắp xếp căn phòng của bạn vào Template Prefab (SavedGiantRoom.prefab)!\n\nTừ bây giờ khi bấm 'Build Giant Room', hệ thống sẽ tự động nạp lại đúng 100% căn phòng bạn đã bài trí.", "Tuyệt vời!");
+            Debug.Log($"<color=green>[RoomSceneBuilder] Successfully saved room layout to {SAVED_ROOM_PREFAB_PATH}!</color>");
         }
 
-        [MenuItem("Tools/🏠 Build Giant Room (25m x 20m - Siêu Rộng Rãi)")]
+        [MenuItem("Tools/🏠 2. Build Giant Room (25m x 20m - Nạp Căn Phòng Đã Sắp Xếp)")]
         public static void BuildGiantRoom()
         {
+            // Nếu người chơi đã lưu thiết kế phòng của riêng mình -> Nạp lại đúng thiết kế đó
+            if (File.Exists(SAVED_ROOM_PREFAB_PATH))
+            {
+                GameObject existingRoom = GameObject.Find("TinyRoom_Environment");
+                if (existingRoom != null)
+                {
+                    Undo.DestroyObjectImmediate(existingRoom);
+                }
+
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(SAVED_ROOM_PREFAB_PATH);
+                if (prefab != null)
+                {
+                    GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+                    instance.name = "TinyRoom_Environment";
+                    instance.transform.position = Vector3.zero;
+                    instance.transform.rotation = Quaternion.identity;
+                    Undo.RegisterCreatedObjectUndo(instance, "Restore Saved Giant Room");
+
+                    // Đặt Player vào vị trí thích hợp
+                    GameObject player = GameObject.Find("Player");
+                    if (player != null)
+                    {
+                        player.transform.position = new Vector3(0, 1.0f, 0);
+                    }
+
+                    Debug.Log("<color=green>[RoomSceneBuilder] Restored saved custom room template!</color>");
+                    return;
+                }
+            }
+
+            // Nếu chưa có file lưu tùy chỉnh, tạo phòng mặc định
             BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
         }
 
@@ -29,6 +78,14 @@ namespace RentIsDue.Editor
         public static void BuildSpaciousRoom()
         {
             BuildRoomInternal("Spacious Room (16m x 14m)", 16f, 14f, 4.0f);
+        }
+
+        [MenuItem("Tools/🏠 Custom Room Builder Window (Tùy Chỉnh Kích Thước)")]
+        public static void OpenWindow()
+        {
+            RoomSceneBuilder window = GetWindow<RoomSceneBuilder>("Room Builder");
+            window.minSize = new Vector2(380, 360);
+            window.Show();
         }
 
         private float customWidth = 25f;
@@ -40,21 +97,30 @@ namespace RentIsDue.Editor
             GUILayout.Label("🏠 <b>RENT IS DUE — 3D ROOM BUILDER</b>", EditorStyles.boldLabel);
             GUILayout.Space(10);
 
+            if (GUILayout.Button("💾 LƯU BỐ CỤC PHÒNG HIỆN TẠI VÀO TEMPLATE", GUILayout.Height(35)))
+            {
+                SaveCurrentRoomLayout();
+            }
+
+            GUILayout.Space(10);
+            EditorGUILayout.HelpBox("Bạn có thể tự do kéo thả, dịch chuyển nội thất theo ý thích rồi bấm 'LƯU BỐ CỤC PHÒNG' ở trên để lưu vĩnh viễn.", MessageType.Info);
+            GUILayout.Space(10);
+
             customWidth = EditorGUILayout.Slider("Chiều Rộng (Width - mét):", customWidth, 10f, 50f);
             customDepth = EditorGUILayout.Slider("Chiều Dài (Depth - mét):", customDepth, 10f, 50f);
             customHeight = EditorGUILayout.Slider("Chiều Cao Trần (Height):", customHeight, 3f, 8f);
 
-            GUILayout.Space(15);
+            GUILayout.Space(10);
             GUILayout.Label($"Diện tích sàn: <b>{(int)(customWidth * customDepth)} m²</b>", EditorStyles.helpBox);
 
-            GUILayout.Space(15);
-            if (GUILayout.Button($"🚀 XÂY PHÒNG NGAY ({customWidth:F0}m x {customDepth:F0}m)", GUILayout.Height(45)))
+            GUILayout.Space(10);
+            if (GUILayout.Button($"🚀 XÂY LẠI TỪ ĐẦU ({customWidth:F0}m x {customDepth:F0}m)", GUILayout.Height(35)))
             {
                 BuildRoomInternal($"Custom Room ({customWidth:F0}m x {customDepth:F0}m)", customWidth, customDepth, customHeight);
             }
 
             GUILayout.Space(10);
-            if (GUILayout.Button("📦 Link 3D Models to 30 ItemData Assets", GUILayout.Height(30)))
+            if (GUILayout.Button("📦 Link 3D Models to 30 ItemData Assets", GUILayout.Height(25)))
             {
                 LinkItemModels();
             }
