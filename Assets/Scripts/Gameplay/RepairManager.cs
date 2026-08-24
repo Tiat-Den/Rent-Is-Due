@@ -21,6 +21,7 @@ namespace RentIsDue.Gameplay
         public string workbenchName = "Repair Workbench";
 
         private bool _uiOpen = false;
+        public bool IsUIOpen => _uiOpen;
         private Vector2 _scrollPos;
 
         private void Awake()
@@ -33,7 +34,7 @@ namespace RentIsDue.Gameplay
 
         public bool CanInteract(PlayerInteractor player) => !_uiOpen;
 
-        public string GetInteractionText() => $"[E] Mở Bàn Sửa Đồ";
+        public string GetInteractionText() => "Mở Bàn Sửa Đồ";
 
         public void Interact(PlayerInteractor player)
         {

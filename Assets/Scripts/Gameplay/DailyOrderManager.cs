@@ -51,6 +51,7 @@ namespace RentIsDue.Gameplay
         public DailyOrder currentOrder;
 
         private bool _uiOpen = false;
+        public bool IsUIOpen => _uiOpen;
 
         // ─── Lifecycle ───────────────────────────────────────────────────────────
 
@@ -147,13 +148,13 @@ namespace RentIsDue.Gameplay
 
         // ─── IInteractable ───────────────────────────────────────────────────────
 
-        public bool CanInteract(PlayerInteractor player) => true;
+        public bool CanInteract(PlayerInteractor player) => !_uiOpen;
 
         public string GetInteractionText()
         {
-            if (currentOrder == null) return "[E] Dealer";
-            if (currentOrder.isCompleted) return "[E] Dealer (Đơn hàng hôm nay đã xong ✅)";
-            return $"[E] Dealer — {currentOrder.Description}";
+            if (currentOrder == null) return "Dealer";
+            if (currentOrder.isCompleted) return "Dealer (Đơn hàng hôm nay đã xong ✅)";
+            return $"Dealer — {currentOrder.Description}";
         }
 
         public void Interact(PlayerInteractor player)

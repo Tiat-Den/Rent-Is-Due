@@ -47,10 +47,10 @@ namespace RentIsDue.Gameplay
             {
                 int hour = Mathf.FloorToInt(TimeManager.Instance.currentTimeMinutes / 60f);
                 return hour < 20
-                    ? $"[E] Ngủ sớm (Hiện tại {hour:D2}:00 — sẽ bỏ qua đến sáng)"
-                    : "[E] Đi Ngủ (Kết thúc ngày)";
+                    ? $"Ngủ sớm (Hiện tại {hour:D2}:00 — sẽ bỏ qua đến sáng)"
+                    : "Đi Ngủ (Kết thúc ngày)";
             }
-            return "[E] Đi Ngủ";
+            return "Đi Ngủ";
         }
 
         public void Interact(PlayerInteractor player)

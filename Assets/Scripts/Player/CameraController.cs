@@ -60,6 +60,11 @@ namespace RentIsDue.Player
             if (pauseMenu != null && pauseMenu.isPaused) return true;
             if (inventoryUI != null && inventoryUI.isUIVisible) return true;
             if (upgradeUI != null && upgradeUI.isUIVisible) return true;
+            
+            // New systems UI check
+            if (RentIsDue.Gameplay.RepairManager.Instance != null && RentIsDue.Gameplay.RepairManager.Instance.IsUIOpen) return true;
+            if (RentIsDue.Gameplay.DailyOrderManager.Instance != null && RentIsDue.Gameplay.DailyOrderManager.Instance.IsUIOpen) return true;
+            
             return false;
         }
 

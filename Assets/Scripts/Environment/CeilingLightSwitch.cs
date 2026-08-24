@@ -37,7 +37,7 @@ namespace RentIsDue.Environment
 
         public string GetInteractionText()
         {
-            return isLightOn ? "[E] Tắt Đèn Trần" : "[E] Bật Đèn Trần";
+            return isLightOn ? "Tắt Đèn Trần" : "Bật Đèn Trần";
         }
 
         public void Interact(RentIsDue.Player.PlayerInteractor player)
