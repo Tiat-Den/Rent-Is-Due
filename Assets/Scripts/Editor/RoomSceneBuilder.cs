@@ -129,6 +129,7 @@ namespace RentIsDue.Editor
         public static void BuildRoomInternal(string roomTitle, float roomWidth, float roomDepth, float wallHeight)
         {
             string modelsFolder = "Assets/Models/FBX format";
+            string urbanFolder = "Assets/Models_Item/FBX format";
 
             GameObject roomRoot = GameObject.Find("TinyRoom_Environment");
             if (roomRoot != null)
@@ -142,24 +143,57 @@ namespace RentIsDue.Editor
             roomRoot.transform.localScale = Vector3.one;
             Undo.RegisterCreatedObjectUndo(roomRoot, $"Build {roomTitle}");
 
-            // 1. Tạo Vỏ Phòng dày dặn chống rách bóng (Floor Cube 0.3m, 4 Tường, Trần)
-            CreateRoomShell(roomRoot, roomWidth, roomDepth, wallHeight);
+            // 1. Tạo Vỏ Phòng (Sàn, 3 Tường bao, Tường Cửa Sổ phía Nam có khoét khung kính)
+            CreateRoomShellWithWindow(roomRoot, roomWidth, roomDepth, wallHeight, urbanFolder);
 
             float halfW = roomWidth / 2f;
             float halfD = roomDepth / 2f;
 
-            // 2. 🛏️ GÓC GIƯỜNG NGỦ (Góc Tây Bắc - Scale 0.35x)
+            // 2. 🚪 CỬA RA VÀO (Đặt ở mép tường phía Tây - Scale chuẩn 0.75x)
+            GameObject door = SpawnModel(urbanFolder, "door-type-a.fbx", new Vector3(-halfW + 0.15f, 0, -halfD + 4.0f), Quaternion.Euler(0, 90, 0), roomRoot, 0.75f);
+            if (door != null)
+            {
+                EnsureCollider(door);
+            }
+
+            // 🎛️ CÔNG TẮC ĐÈN TRẦN (Gắn tường cạnh cửa ra vào)
+            GameObject switchBox = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            switchBox.name = "Light_Switch_Wall";
+            switchBox.transform.SetParent(roomRoot.transform, false);
+            switchBox.transform.localPosition = new Vector3(-halfW + 0.20f, 1.40f, -halfD + 4.8f);
+            switchBox.transform.localScale = new Vector3(0.08f, 0.14f, 0.10f);
+            ApplyMaterial(switchBox, new Color(0.95f, 0.95f, 0.95f));
+
+            // 3. 💡 ĐÈN TRẦN & BÓNG CHIẾU TỪ TRÊN XUỐNG (Treo giữa phòng)
+            GameObject ceilingLamp = SpawnModel(modelsFolder, "lampSquareCeiling.fbx", new Vector3(0, wallHeight - 0.15f, 0), Quaternion.identity, roomRoot, 0.75f);
+            
+            GameObject ceilingLightObj = new GameObject("Ceiling_Light_Source");
+            ceilingLightObj.transform.SetParent(roomRoot.transform, false);
+            ceilingLightObj.transform.localPosition = new Vector3(0, wallHeight - 0.6f, 0);
+
+            Light ceilingLight = ceilingLightObj.AddComponent<Light>();
+            ceilingLight.type = LightType.Point;
+            ceilingLight.color = new Color(1f, 0.94f, 0.82f); // Ánh sáng đèn ấm cúng
+            ceilingLight.intensity = 20f;
+            ceilingLight.range = 22f;
+            ceilingLight.shadows = LightShadows.Soft;
+            ceilingLight.enabled = false; // Mặc định tắt ban ngày để đón nắng cửa sổ
+
+            // Gắn tương tác công tắc bật/tắt đèn
+            CeilingLightSwitch lightSwitch = switchBox.AddComponent<CeilingLightSwitch>();
+            lightSwitch.ceilingLight = ceilingLight;
+            lightSwitch.isLightOn = false;
+
+            // 4. 🛏️ GÓC GIƯỜNG NGỦ (Góc Tây Bắc - Scale 0.35x)
             GameObject bed = SpawnModel(modelsFolder, "bedSingle.fbx", new Vector3(-halfW + 2.0f, 0, halfD - 2.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
             SpawnModel(modelsFolder, "cabinetBed.fbx", new Vector3(-halfW + 2.0f, 0, halfD - 4.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
             SpawnModel(modelsFolder, "lampRoundFloor.fbx", new Vector3(-halfW + 1.0f, 0, halfD - 4.5f), Quaternion.identity, roomRoot, 0.35f);
 
-            // 3. 💻 BÀN LÀM VIỆC & NÂNG CẤP (Phía Đông Bắc - Scale 0.35x)
+            // 5. 💻 BÀN LÀM VIỆC & NÂNG CẤP (Phía Đông Bắc - Scale 0.35x)
             GameObject desk = SpawnModel(modelsFolder, "desk.fbx", new Vector3(3.0f, 0, halfD - 1.5f), Quaternion.Euler(0, 180, 0), roomRoot, 0.35f);
-            
-            // Ghế xoay đặt đúng phía trước bàn làm việc (Scale 0.35x)
             SpawnModel(modelsFolder, "chairDesk.fbx", new Vector3(3.0f, 0, halfD - 2.4f), Quaternion.identity, roomRoot, 0.35f);
             
-            // Laptop nhỏ gọn đặt ngay ngắn trên mặt bàn (Scale 0.20x)
+            // Laptop trên bàn
             GameObject laptop = SpawnModel(modelsFolder, "laptop.fbx", new Vector3(3.0f, 0.32f, halfD - 1.5f), Quaternion.Euler(0, 180, 0), roomRoot, 0.20f);
             if (laptop != null)
             {
@@ -167,7 +201,6 @@ namespace RentIsDue.Editor
                 laptop.AddComponent<UpgradeInteractable>();
             }
 
-            // Gắn Searchable cho Bàn làm việc
             if (desk != null)
             {
                 EnsureCollider(desk);
@@ -177,7 +210,7 @@ namespace RentIsDue.Editor
                 deskSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/DeskLootTable.asset");
             }
 
-            // 4. 🗑️ GÓC THÙNG RÁC (Góc Đông Bắc sát tường - Scale 0.35x)
+            // 6. 🗑️ GÓC THÙNG RÁC (Góc Đông Bắc sát tường - Scale 0.35x)
             GameObject trash = SpawnModel(modelsFolder, "cardboardBoxOpen.fbx", new Vector3(halfW - 1.8f, 0, halfD - 1.8f), Quaternion.Euler(0, -35, 0), roomRoot, 0.35f);
             if (trash != null)
             {
@@ -188,7 +221,7 @@ namespace RentIsDue.Editor
                 trashSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/TrashLootTable.asset");
             }
 
-            // 5. 🍳 KHU BẾP (Mép tường phía Đông - Scale 0.35x)
+            // 7. 🍳 KHU BẾP (Mép tường phía Đông - Scale 0.35x)
             GameObject kitchen = SpawnModel(modelsFolder, "kitchenCabinet.fbx", new Vector3(halfW - 1.2f, 0, 0.5f), Quaternion.Euler(0, -90, 0), roomRoot, 0.35f);
             SpawnModel(modelsFolder, "kitchenSink.fbx", new Vector3(halfW - 1.2f, 0, -1.0f), Quaternion.Euler(0, -90, 0), roomRoot, 0.35f);
             if (kitchen != null)
@@ -200,7 +233,7 @@ namespace RentIsDue.Editor
                 kitchenSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/KitchenLootTable.asset");
             }
 
-            // 6. 🚪 TỦ QUẦN ÁO & GIÁ SÁCH (Mép tường phía Tây - Scale 0.35x)
+            // 8. 🚪 TỦ QUẦN ÁO & GIÁ SÁCH (Mép tường phía Tây - Scale 0.35x)
             GameObject wardrobe = SpawnModel(modelsFolder, "bookcaseClosed.fbx", new Vector3(-halfW + 1.2f, 0, -0.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
             SpawnModel(modelsFolder, "bookcaseOpen.fbx", new Vector3(-halfW + 1.2f, 0, -2.0f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
             if (wardrobe != null)
@@ -212,7 +245,7 @@ namespace RentIsDue.Editor
                 wardrobeSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/WardrobeLootTable.asset");
             }
 
-            // 7. 🔒 KÉT SẮT BÍ MẬT (Góc Tây Nam - Scale 0.35x)
+            // 9. 🔒 KÉT SẮT BÍ MẬT (Góc Tây Nam - Scale 0.35x)
             GameObject safe = SpawnModel(modelsFolder, "cardboardBoxClosed.fbx", new Vector3(-halfW + 2.0f, 0, -halfD + 2.0f), Quaternion.Euler(0, 45, 0), roomRoot, 0.35f);
             if (safe != null)
             {
@@ -223,7 +256,7 @@ namespace RentIsDue.Editor
                 safeSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/SecretSafeLootTable.asset");
             }
 
-            // 8. 👤 QUẦY DEALER VE CHAI (Góc Đông Nam - Scale 0.35x)
+            // 10. 👤 QUẦY DEALER VE CHAI (Góc Đông Nam - Scale 0.35x)
             GameObject dealerDesk = SpawnModel(modelsFolder, "bench.fbx", new Vector3(halfW - 2.5f, 0, -halfD + 2.5f), Quaternion.Euler(0, -45, 0), roomRoot, 0.35f);
             if (dealerDesk != null)
             {
@@ -231,38 +264,66 @@ namespace RentIsDue.Editor
                 dealerDesk.AddComponent<DealerInteractable>();
             }
 
-            // 9. Thiết lập ánh sáng phòng ấm cúng
-            SetupLighting(roomRoot, wallHeight);
+            // 11. Cấu hình Ánh Sáng Tự Nhiên Mặt Trời Chiếu Xiên Qua Cửa Sổ
+            SetupNaturalSunlight(roomRoot, -halfD, wallHeight);
 
-            // 10. Đặt Player vào tâm phòng (Tọa độ 0, 1, 0)
+            // 12. Đặt Player vào tâm phòng
             GameObject player = GameObject.Find("Player");
             if (player != null)
             {
                 player.transform.position = new Vector3(0, 1.0f, 0);
             }
 
-            Debug.Log($"<color=green>[RoomSceneBuilder] Successfully built {roomTitle} ({roomWidth}m x {roomDepth}m)!</color>");
+            Debug.Log($"<color=green>[RoomSceneBuilder] Successfully built {roomTitle} with Window, Door, and Ceiling Light!</color>");
         }
 
-        private static void CreateRoomShell(GameObject parent, float width, float depth, float height)
+        private static void CreateRoomShellWithWindow(GameObject parent, float width, float depth, float height, string urbanFolder)
         {
             float halfW = width / 2f;
             float halfD = depth / 2f;
             float halfH = height / 2f;
 
-            // Sàn nhà dày (Floor Cube 0.3m chống rách bóng)
+            // Sàn nhà dày
             GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             floor.name = "Room_Floor";
             floor.transform.SetParent(parent.transform, false);
             floor.transform.localPosition = new Vector3(0, -0.15f, 0);
             floor.transform.localScale = new Vector3(width, 0.3f, depth);
-            ApplyMaterial(floor, new Color(0.32f, 0.25f, 0.20f)); // Sàn gỗ nâu ấm
+            ApplyMaterial(floor, new Color(0.32f, 0.25f, 0.20f));
 
-            // 4 Bức tường bao quanh
+            // Tường Bắc (Phía sau bàn làm việc & giường)
             CreateWall("Wall_North", new Vector3(0, halfH, halfD), new Vector3(width, height, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
-            CreateWall("Wall_South", new Vector3(0, halfH, -halfD), new Vector3(width, height, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+
+            // Tường Tây & Đông
             CreateWall("Wall_West", new Vector3(-halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, new Color(0.82f, 0.80f, 0.76f));
             CreateWall("Wall_East", new Vector3(halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, new Color(0.82f, 0.80f, 0.76f));
+
+            // TƯỜNG NAM (KHOÉT KHUNG CỬA SỔ LỚN ĐÓN NẮNG)
+            float windowWidth = 6.0f;
+            float windowHeight = 2.4f;
+            float windowBottomY = 1.0f;
+
+            // Phần tường dưới cửa sổ
+            CreateWall("Wall_South_Bottom", new Vector3(0, windowBottomY / 2f, -halfD), new Vector3(width, windowBottomY, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            // Phần tường trên cửa sổ
+            float topWallHeight = height - (windowBottomY + windowHeight);
+            CreateWall("Wall_South_Top", new Vector3(0, height - (topWallHeight / 2f), -halfD), new Vector3(width, topWallHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            // Phần tường 2 bên cửa sổ
+            float sideWallWidth = (width - windowWidth) / 2f;
+            CreateWall("Wall_South_Left", new Vector3(-halfW + (sideWallWidth / 2f), windowBottomY + (windowHeight / 2f), -halfD), new Vector3(sideWallWidth, windowHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            CreateWall("Wall_South_Right", new Vector3(halfW - (sideWallWidth / 2f), windowBottomY + (windowHeight / 2f), -halfD), new Vector3(sideWallWidth, windowHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+
+            // Kính Cửa Sổ Trong Suốt
+            GameObject windowGlass = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            windowGlass.name = "Window_Glass_Pane";
+            windowGlass.transform.SetParent(parent.transform, false);
+            windowGlass.transform.localPosition = new Vector3(0, windowBottomY + (windowHeight / 2f), -halfD);
+            windowGlass.transform.localScale = new Vector3(windowWidth, windowHeight, 0.04f);
+            ApplyMaterial(windowGlass, new Color(0.80f, 0.92f, 1.0f, 0.3f));
+
+            // Khung cửa sổ mỹ thuật
+            GameObject windowFrame = SpawnModel(urbanFolder, "window-wide-type-a.fbx", new Vector3(0, windowBottomY + (windowHeight / 2f) - 0.2f, -halfD + 0.05f), Quaternion.identity, parent, 1.2f);
+            if (windowFrame != null) EnsureCollider(windowFrame);
 
             // Trần nhà
             GameObject ceiling = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -271,6 +332,46 @@ namespace RentIsDue.Editor
             ceiling.transform.localPosition = new Vector3(0, height + 0.15f, 0);
             ceiling.transform.localScale = new Vector3(width, 0.3f, depth);
             ApplyMaterial(ceiling, new Color(0.92f, 0.92f, 0.92f));
+        }
+
+        private static void SetupNaturalSunlight(GameObject parent, float southZ, float wallHeight)
+        {
+            // Tìm Directional Light (Mặt trời) chính của Scene và chỉnh góc chiếu xiên qua cửa sổ
+            Light sunLight = null;
+            Light[] allLights = Object.FindObjectsByType<Light>(FindObjectsSortMode.None);
+            foreach (var l in allLights)
+            {
+                if (l.type == LightType.Directional)
+                {
+                    sunLight = l;
+                    break;
+                }
+            }
+
+            if (sunLight == null)
+            {
+                GameObject sunObj = new GameObject("Natural_Sunlight");
+                sunLight = sunObj.AddComponent<Light>();
+                sunLight.type = LightType.Directional;
+            }
+
+            // Góc chiếu xiên từ ngoài cửa sổ vào phòng (Tia nắng ấm áp ban ngày)
+            sunLight.transform.rotation = Quaternion.Euler(28f, 25f, 0f);
+            sunLight.color = new Color(1.0f, 0.95f, 0.84f); // Ánh nắng vàng ấm tự nhiên
+            sunLight.intensity = 1.35f;
+            sunLight.shadows = LightShadows.Soft;
+
+            // Đèn viền hắt sáng từ cửa sổ (Window Glow Light)
+            GameObject windowGlow = new GameObject("Window_Sun_Glow");
+            windowGlow.transform.SetParent(parent.transform, false);
+            windowGlow.transform.localPosition = new Vector3(0, 2.2f, southZ + 0.8f);
+
+            Light glow = windowGlow.AddComponent<Light>();
+            glow.type = LightType.Point;
+            glow.color = new Color(1.0f, 0.92f, 0.80f);
+            glow.intensity = 8.0f;
+            glow.range = 14.0f;
+            glow.shadows = LightShadows.None;
         }
 
         private static void CreateWall(string name, Vector3 pos, Vector3 size, GameObject parent, Color wallColor)
