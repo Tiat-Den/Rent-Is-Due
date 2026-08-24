@@ -17,7 +17,7 @@ namespace RentIsDue.Inventory
                 if (GetComponentInChildren<MeshRenderer>() == null)
                 {
                     GameObject visual = Instantiate(itemData.prefab, transform.position, transform.rotation, transform);
-                    visual.transform.localScale = Vector3.one * 1.5f;
+                    visual.transform.localScale = Vector3.one * 0.5f;
 
                     if (GetComponent<Collider>() == null && visual.GetComponentInChildren<Collider>() == null)
                     {

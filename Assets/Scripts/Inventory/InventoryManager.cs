@@ -92,7 +92,7 @@ namespace RentIsDue.Inventory
                 if (instance.data.prefab != null)
                 {
                     GameObject itemObj = Instantiate(instance.data.prefab, dropPosition, Quaternion.identity);
-                    itemObj.transform.localScale = Vector3.one * 1.5f;
+                    itemObj.transform.localScale = Vector3.one * 0.5f;
 
                     Collider col = itemObj.GetComponentInChildren<Collider>();
                     if (col == null)

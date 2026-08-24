@@ -117,7 +117,7 @@ namespace RentIsDue.Loot
             {
                 itemObject = Instantiate(itemData.prefab, spawnPos, Quaternion.identity);
                 // Đảm bảo model không bị quá bé hoặc quá to
-                itemObject.transform.localScale = Vector3.one * 1.5f;
+                itemObject.transform.localScale = Vector3.one * 0.5f;
                 
                 // Đảm bảo model có Collider để tia Raycast/Overlap có thể chạm trúng
                 Collider col = itemObject.GetComponentInChildren<Collider>();

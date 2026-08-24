@@ -108,7 +108,7 @@ namespace RentIsDue.Loot
             if (itemData.prefab != null)
             {
                 itemObj = Instantiate(itemData.prefab, position, Quaternion.Euler(0, Random.Range(0f, 360f), 0));
-                itemObj.transform.localScale = Vector3.one * 1.5f;
+                itemObj.transform.localScale = Vector3.one * 0.5f;
 
                 Collider col = itemObj.GetComponentInChildren<Collider>();
                 if (col == null)
