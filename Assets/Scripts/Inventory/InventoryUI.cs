@@ -39,7 +39,10 @@ namespace RentIsDue.Inventory
             Debug.Log($"Weight: {inventoryManager.GetTotalWeight()}/{inventoryManager.maxWeight} kg | Slots: {inventoryManager.items.Count}/{inventoryManager.maxSlots}");
             foreach (var item in inventoryManager.items)
             {
-                Debug.Log($"- {item.displayName} ({item.weight}kg)");
+                if (item?.data != null)
+                {
+                    Debug.Log($"- {item.data.displayName} ({item.data.weight}kg)");
+                }
             }
             Debug.Log("-------------------------");
         }
