@@ -31,6 +31,13 @@ namespace RentIsDue.Player
             inventoryUI = FindAnyObjectByType<Inventory.InventoryUI>();
             upgradeUI = FindAnyObjectByType<Shop.UpgradeUI>();
 
+            // Đặt góc nhìn rộng FPS chuẩn 80 độ (Human Natural Perspective) chống zoom ảo
+            Camera cam = GetComponent<Camera>();
+            if (cam != null)
+            {
+                cam.fieldOfView = 80f;
+            }
+
             SetCursorState(true);
         }
 
@@ -123,6 +130,27 @@ namespace RentIsDue.Player
 
             // Đồng bộ hướng nhìn của Camera: Xoay dọc theo đầu (xRotation) và xoay ngang theo thân người chơi (playerBody.eulerAngles.y)
             transform.rotation = Quaternion.Euler(xRotation, playerBody.eulerAngles.y, 0f);
+        }
+
+        private void OnGUI()
+        {
+            // Hiển thị thông số độ cao thực tế ở góc dưới để kiểm chứng
+            if (Time.timeScale > 0f)
+            {
+                GUIStyle style = new GUIStyle(GUI.skin.label);
+                style.fontSize = 11;
+                style.normal.textColor = new Color(1f, 1f, 1f, 0.45f);
+                
+                float groundY = playerBody != null ? playerBody.position.y : 0f;
+                CharacterController cc = playerBody != null ? playerBody.GetComponent<CharacterController>() : null;
+                if (cc != null)
+                {
+                    groundY = playerBody.position.y + cc.center.y - (cc.height / 2f);
+                }
+
+                float currentEyeHeight = transform.position.y - groundY;
+                GUI.Label(new Rect(10, Screen.height - 22, 450, 20), $"[Debug] Camera Eye Height: {currentEyeHeight:F2}m (Ground: {groundY:F2}m | FOV: 80°)", style);
+            }
         }
     }
 }
