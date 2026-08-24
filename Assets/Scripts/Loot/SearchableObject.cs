@@ -111,17 +111,25 @@ namespace RentIsDue.Loot
         private void SpawnItem(ItemData itemData)
         {
             Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : transform.position + Vector3.up * 0.5f;
-            
-            GameObject prefabToSpawn = itemData.prefab != null ? itemData.prefab : GameObject.CreatePrimitive(PrimitiveType.Cube);
-            GameObject itemObject;
+            GameObject itemObject = null;
 
             if (itemData.prefab != null)
             {
-                itemObject = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
+                itemObject = Instantiate(itemData.prefab, spawnPos, Quaternion.identity);
+                // Đảm bảo model không bị quá bé hoặc quá to
+                itemObject.transform.localScale = Vector3.one * 1.5f;
+                
+                // Đảm bảo model có Collider để tia Raycast/Overlap có thể chạm trúng
+                Collider col = itemObject.GetComponentInChildren<Collider>();
+                if (col == null)
+                {
+                    BoxCollider bc = itemObject.AddComponent<BoxCollider>();
+                    bc.size = new Vector3(0.5f, 0.5f, 0.5f);
+                }
             }
             else
             {
-                itemObject = prefabToSpawn;
+                itemObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 itemObject.transform.position = spawnPos;
                 itemObject.transform.localScale = Vector3.one * 0.3f;
                 
