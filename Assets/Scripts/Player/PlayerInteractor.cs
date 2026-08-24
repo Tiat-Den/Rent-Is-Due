@@ -6,7 +6,7 @@ namespace RentIsDue.Player
 {
     public class PlayerInteractor : MonoBehaviour
     {
-        [SerializeField] private float interactionRange = 3.5f;
+        [SerializeField] private float interactionRange = 4.2f;
         [SerializeField] private LayerMask interactableLayer = ~0; // ~0 means Everything
         
         private IInteractable currentInteractable;
@@ -14,10 +14,10 @@ namespace RentIsDue.Player
 
         private void Awake()
         {
-            // Ép buộc tầm tương tác tối thiểu 3.5m kể cả khi Scene bị lưu giá trị cũ
-            if (interactionRange < 3.5f)
+            // Ép buộc tầm tương tác tối thiểu 4.2m để dễ nhặt đồ từ tầm mắt cao
+            if (interactionRange < 4.2f)
             {
-                interactionRange = 3.5f;
+                interactionRange = 4.2f;
             }
             interactableLayer = ~0;
         }

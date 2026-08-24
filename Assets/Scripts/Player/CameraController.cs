@@ -8,7 +8,7 @@ namespace RentIsDue.Player
     {
         [Header("Target & Positioning")]
         public Transform playerBody;
-        public Vector3 eyeOffset = new Vector3(0, 1.70f, 0); // Chiều cao tầm mắt chuẩn (1.70m)
+        public Vector3 eyeOffset = new Vector3(0, 2.2f, 0); // Tầm nhìn cao thoáng (2.2m) dễ quan sát phòng và đồ đạc
 
         [Header("Mouse Look Settings")]
         [Range(0.1f, 3f)]
