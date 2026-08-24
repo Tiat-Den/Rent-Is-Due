@@ -89,10 +89,11 @@ namespace RentIsDue.Loot
         {
             float rx = Random.Range(-spawnAreaSize.x / 2f, spawnAreaSize.x / 2f);
             float rz = Random.Range(-spawnAreaSize.y / 2f, spawnAreaSize.y / 2f);
-            Vector3 origin = transform.position + spawnCenter + new Vector3(rx, 5f, rz);
+            // Bắn tia raycast từ ngang người xuống (tránh đụng trần nhà vì trần nhà ở Y=4.0)
+            Vector3 origin = transform.position + spawnCenter + new Vector3(rx, 3.8f, rz);
 
             // Bắn tia raycast từ trên trời xuống để đặt đồ chạm khít mặt đất
-            if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 15f, groundLayer))
+            if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 10f, groundLayer))
             {
                 return hit.point + Vector3.up * 0.15f;
             }

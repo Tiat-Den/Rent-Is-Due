@@ -110,7 +110,7 @@ namespace RentIsDue.Gameplay
 
         private void OnGUI()
         {
-            if (!_isSleeping) return;
+            if (!_isSleeping || Time.timeScale == 0f || Cursor.lockState != CursorLockMode.Locked) return;
             GUI.color = new Color(1f, 1f, 0.7f, 1f);
             GUI.Label(new Rect(Screen.width / 2f - 120, Screen.height / 2f - 20, 240, 40),
                 "💤 Đang ngủ... Sáng mai sẽ đến.", GUI.skin.box);
