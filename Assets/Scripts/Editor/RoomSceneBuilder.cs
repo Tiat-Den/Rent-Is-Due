@@ -347,7 +347,7 @@ namespace RentIsDue.Editor
         {
             // Tìm Directional Light (Mặt trời) chính của Scene và chỉnh góc chiếu xiên qua cửa sổ
             Light sunLight = null;
-            Light[] allLights = Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            Light[] allLights = Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude);
             foreach (var l in allLights)
             {
                 if (l.type == LightType.Directional)
