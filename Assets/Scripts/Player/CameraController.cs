@@ -64,6 +64,7 @@ namespace RentIsDue.Player
             // New systems UI check
             if (RentIsDue.Gameplay.RepairManager.Instance != null && RentIsDue.Gameplay.RepairManager.Instance.IsUIOpen) return true;
             if (RentIsDue.Gameplay.DailyOrderManager.Instance != null && RentIsDue.Gameplay.DailyOrderManager.Instance.IsUIOpen) return true;
+            if (RentIsDue.Gameplay.CollectorManager.Instance != null && RentIsDue.Gameplay.CollectorManager.Instance.IsUIOpen) return true;
             
             return false;
         }

@@ -16,6 +16,7 @@ namespace RentIsDue.Core
         public int searchSpeedLevel = 1;
         public int sellPriceLevel = 1;
         public System.Collections.Generic.List<SavedItem> inventory = new System.Collections.Generic.List<SavedItem>();
+        public System.Collections.Generic.List<string> currentCollectorSet = new System.Collections.Generic.List<string>();
     }
 
     [Serializable]

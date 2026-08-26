@@ -287,7 +287,17 @@ namespace RentIsDue.Editor
                 dealerDesk.AddComponent<RentIsDue.Gameplay.DailyOrderManager>(); // 📋 Đơn đặt hàng hằng ngày
             }
 
-            // 11. Cấu hình Ánh Sáng Tự Nhiên Mặt Trời Chiếu Xiên Qua Cửa Sổ
+            // 11. BẢNG NHIỆM VỤ VIP (Góc Đông, treo tường)
+            GameObject bountyBoard = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            bountyBoard.name = "Collector_Board";
+            bountyBoard.transform.SetParent(roomRoot.transform, false);
+            bountyBoard.transform.localPosition = new Vector3(halfW - 0.05f, 1.8f, 3.0f);
+            bountyBoard.transform.localScale = new Vector3(0.1f, 1.5f, 2.5f);
+            ApplyMaterial(bountyBoard, "Mat_BountyBoard", new Color(0.15f, 0.35f, 0.15f)); // Bảng xanh lá đậm
+            bountyBoard.AddComponent<RentIsDue.Gameplay.CollectorInteractable>();
+            bountyBoard.AddComponent<RentIsDue.Gameplay.CollectorManager>();
+
+            // 12. Cấu hình Ánh Sáng Tự Nhiên Mặt Trời Chiếu Xiên Qua Cửa Sổ
             SetupNaturalSunlight(roomRoot, -halfD, wallHeight);
 
             // 12. Playtest Logger

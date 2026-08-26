@@ -59,6 +59,14 @@ namespace RentIsDue.Core
                 }
             }
 
+            if (RentIsDue.Gameplay.CollectorManager.Instance != null)
+            {
+                foreach (var item in RentIsDue.Gameplay.CollectorManager.Instance.currentSet)
+                {
+                    data.currentCollectorSet.Add(item.id);
+                }
+            }
+
             string json = JsonUtility.ToJson(data, true);
             string path = Application.persistentDataPath + "/save.json";
             File.WriteAllText(path, json);
@@ -126,6 +134,25 @@ namespace RentIsDue.Core
                             InventoryManager.Instance.AddItem(matchedData, savedItem.condition);
                         }
                     }
+                }
+
+                if (RentIsDue.Gameplay.CollectorManager.Instance != null && data.currentCollectorSet != null && data.currentCollectorSet.Count > 0)
+                {
+                    RentIsDue.Gameplay.CollectorManager.Instance.currentSet.Clear();
+                    ItemData[] allItems = Resources.LoadAll<ItemData>("Items");
+                    System.Collections.Generic.Dictionary<string, ItemData> itemDict = new System.Collections.Generic.Dictionary<string, ItemData>();
+                    foreach (var i in allItems) itemDict[i.id] = i;
+
+                    float totalValue = 0f;
+                    foreach (var setId in data.currentCollectorSet)
+                    {
+                        if (itemDict.TryGetValue(setId, out ItemData matchedData))
+                        {
+                            RentIsDue.Gameplay.CollectorManager.Instance.currentSet.Add(matchedData);
+                            totalValue += matchedData.baseValue;
+                        }
+                    }
+                    RentIsDue.Gameplay.CollectorManager.Instance.currentReward = totalValue * 4f;
                 }
 
                 Debug.Log("Game Loaded from: " + path);
