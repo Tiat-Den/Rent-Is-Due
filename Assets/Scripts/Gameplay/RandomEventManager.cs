@@ -9,9 +9,8 @@ namespace RentIsDue.Gameplay
         None,
         MarketBoom,   // +30% giá bán
         MarketCrash,  // -30% giá bán
-        LuckyDay,     // Giảm 50% chi phí nâng cấp
         BadWeather,   // Trừ $20 tiền lò sưởi / điện
-        Thief         // Bị trộm mất 10% tiền
+        Thief         // Bị trộm mất 50% tiền
     }
 
     public class RandomEventManager : MonoBehaviour
@@ -43,8 +42,8 @@ namespace RentIsDue.Gameplay
                 return;
             }
 
-            // 70% có sự kiện, chọn ngẫu nhiên 1 trong 5
-            int eventIndex = Random.Range(1, 6); // 1 to 5
+            // 70% có sự kiện, chọn ngẫu nhiên 1 trong 4 sự kiện còn lại
+            int eventIndex = Random.Range(1, 5); // 1 to 4
             SetEvent((DailyEventType)eventIndex);
         }
 
@@ -71,12 +70,6 @@ namespace RentIsDue.Gameplay
                     eventColor = new Color(1f, 0.4f, 0.4f); // Red
                     break;
 
-                case DailyEventType.LuckyDay:
-                    eventName = "🍀 NGÀY MAY MẮN";
-                    eventDescription = "Dịch vụ nâng cấp đồ đạc giảm giá 50% hôm nay!";
-                    eventColor = Color.cyan;
-                    break;
-
                 case DailyEventType.BadWeather:
                     eventName = "⛈️ THỜI TIẾT XẤU";
                     eventDescription = "Trời lạnh và bão, bạn phải tốn thêm $20 tiền lò sưởi.";
@@ -86,11 +79,11 @@ namespace RentIsDue.Gameplay
 
                 case DailyEventType.Thief:
                     eventName = "🥷 KẺ TRỘM GHÉ THĂM";
-                    eventDescription = "Cửa nẻo lỏng lẻo, bạn bị trộm cuỗm mất 10% tiền tiết kiệm!";
+                    eventDescription = "Cửa nẻo lỏng lẻo, bạn bị trộm cuỗm mất 50% tiền tiết kiệm!";
                     eventColor = Color.red;
                     if (EconomyManager.Instance != null)
                     {
-                        float lost = EconomyManager.Instance.currentMoney * 0.1f;
+                        float lost = EconomyManager.Instance.currentMoney * 0.5f;
                         EconomyManager.Instance.currentMoney -= lost;
                     }
                     break;
