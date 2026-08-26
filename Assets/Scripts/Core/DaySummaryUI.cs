@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using RentIsDue.Economy;
 using RentIsDue.Audio;
 
@@ -75,7 +75,7 @@ namespace RentIsDue.Core
             Cursor.visible = true;
             
             if (PlaytestLogger.Instance != null) PlaytestLogger.Instance.RecordGameOver();
-            if (AudioManager.Instance != null) AudioManager.Instance.PlayError();
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayGameOver();
         }
 
         public void ShowVictory(int day, int rent, float currentMoney)
