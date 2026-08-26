@@ -36,6 +36,11 @@ namespace RentIsDue.Shop
         public int sellPriceLevel = 1;
         public int repairSpeedLevel = 1;
 
+        [Header("Unlocks")]
+        public bool isStorageUnlocked = false;
+
+        public event System.Action onUpgraded;
+
         // Data arrays based on UPGRADE_DATABASE.md
         public static readonly int[] BackpackSlots = { 8, 12, 16, 22, 30 };
         public static readonly int[] BackpackCosts = { 0, 80, 200, 450, 950 };

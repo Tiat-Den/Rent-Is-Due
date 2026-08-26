@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using RentIsDue.Economy;
 using RentIsDue.Audio;
 
@@ -26,6 +26,7 @@ namespace RentIsDue.Core
 
         public bool isShowingSummary { get; private set; } = false;
         private bool isGameOver = false;
+        private bool isVictory = false;
 
         private int dayPassed;
         private int rentPaid;
@@ -46,126 +47,143 @@ namespace RentIsDue.Core
         {
             isShowingSummary = true;
             isGameOver = false;
+            isVictory = false;
             dayPassed = day;
             rentPaid = rent;
             remainingMoney = remaining;
             nextDayRent = nextRent;
-
             Time.timeScale = 0f;
-            if (AudioManager.Instance != null) AudioManager.Instance.PlayDayPass();
+            
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            SaveManager.Instance?.SaveGame();
+            if (AudioManager.Instance != null) AudioManager.Instance.PlaySell();
         }
 
-        public void ShowGameOver(int day, int rentNeeded, float currentMoney)
+        public void ShowGameOver(int day, int missingRent, float currentMoney)
         {
             isShowingSummary = true;
             isGameOver = true;
+            isVictory = false;
             dayPassed = day;
-            rentPaid = rentNeeded;
+            nextDayRent = missingRent;
             remainingMoney = currentMoney;
-
             Time.timeScale = 0f;
-            if (AudioManager.Instance != null) AudioManager.Instance.PlayGameOver();
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            
+            if (PlaytestLogger.Instance != null) PlaytestLogger.Instance.RecordGameOver();
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayError();
+        }
+
+        public void ShowVictory(int day, int rent, float currentMoney)
+        {
+            isShowingSummary = true;
+            isGameOver = false;
+            isVictory = true;
+            dayPassed = day;
+            rentPaid = rent;
+            remainingMoney = currentMoney;
+            Time.timeScale = 0f;
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            
+            if (AudioManager.Instance != null) AudioManager.Instance.PlaySell();
+        }
+
+        public void Hide()
+        {
+            isShowingSummary = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 
         private void OnGUI()
         {
             if (!isShowingSummary) return;
 
-            float width = 420;
-            float height = 340;
-            float x = (Screen.width - width) / 2f;
-            float y = (Screen.height - height) / 2f;
-
-            string title = isGameOver ? "☠️ EVICTION NOTICE — GAME OVER" : $"🌙 DAY {dayPassed} SUMMARY";
-            GUILayout.BeginArea(new Rect(x, y, width, height), title, GUI.skin.window);
+            float w = 400f;
+            float h = 300f;
+            Rect rect = new Rect(Screen.width / 2f - w / 2f, Screen.height / 2f - h / 2f, w, h);
             
-            GUILayout.Space(20);
-
-            if (!isGameOver)
+            if (isVictory)
             {
-                GUILayout.Label($"<size=16><b>Day {dayPassed} Completed Successfully!</b></size>");
-                GUILayout.Space(10);
-                GUILayout.Label($"Rent Paid: <color=red>-${rentPaid}</color>");
-                GUILayout.Label($"Remaining Savings: <color=green><b>${remainingMoney:F1}</b></color>");
-                GUILayout.Label($"Tomorrow's Rent (Day {dayPassed + 1}): <color=yellow><b>${nextDayRent}</b></color>");
-                
-                GUILayout.Space(25);
-
-                if (GUILayout.Button("🌅 START NEXT DAY", GUILayout.Height(40)))
-                {
-                    isShowingSummary = false;
-                    Time.timeScale = 1f;
-                    if (DayManager.Instance != null)
-                    {
-                        DayManager.Instance.ProceedToNextDay();
-                    }
-                    if (FloatingFeedbackUI.Instance != null)
-                    {
-                        FloatingFeedbackUI.Instance.ShowMessage($"Day {dayPassed + 1} Started! Rent: ${nextDayRent}", Color.green, 3f);
-                    }
-                }
+                GUI.Window(9001, rect, DrawVictoryWindow, "🏆 WINNER WINNER 🏆");
+            }
+            else if (isGameOver)
+            {
+                GUI.Window(9001, rect, DrawGameOverWindow, "GAME OVER");
             }
             else
             {
-                float deficit = rentPaid - remainingMoney;
-                bool canBorrow = DebtManager.Instance != null && DebtManager.Instance.CanTakeLoan(deficit);
-                float loanWithInterest = deficit * 1.20f;
-
-                GUILayout.Label("<size=16><b><color=red>YOU ARE SHORT ON RENT!</color></b></size>");
-                GUILayout.Space(10);
-                GUILayout.Label($"Rent Due: <color=red>${rentPaid}</color> | You have: <color=yellow>${remainingMoney:F1}</color>");
-                GUILayout.Label($"Deficit: <color=red><b>-${deficit:F1}</b></color>");
-
-                if (DebtManager.Instance != null && DebtManager.Instance.currentDebt > 0f)
-                {
-                    GUILayout.Label($"Current Outstanding Debt: <color=orange>${DebtManager.Instance.currentDebt:F1}</color>");
-                }
-
-                GUILayout.Space(15);
-
-                // Nút Vay nợ khẩn cấp của chủ nhà (Lãi 20%)
-                if (canBorrow)
-                {
-                    if (GUILayout.Button($"🤝 TAKE LANDLORD LOAN (+${deficit:F1} now ➔ Owe ${loanWithInterest:F1})", GUILayout.Height(40)))
-                    {
-                        DebtManager.Instance.TakeEmergencyLoan(deficit);
-                        if (EconomyManager.Instance != null) EconomyManager.Instance.currentMoney = 0f;
-                        isShowingSummary = false;
-                        Time.timeScale = 1f;
-                        if (DayManager.Instance != null) DayManager.Instance.ProceedToNextDay();
-                        if (FloatingFeedbackUI.Instance != null)
-                        {
-                            FloatingFeedbackUI.Instance.ShowMessage($"Borrowed ${deficit:F1}! Survived to Day {dayPassed + 1}", Color.yellow, 3.5f);
-                        }
-                    }
-                    GUILayout.Space(8);
-                }
-
-                if (GUILayout.Button("🔄 RESTART FROM DAY 1", GUILayout.Height(30)))
-                {
-                    isShowingSummary = false;
-                    Time.timeScale = 1f;
-                    if (EconomyManager.Instance != null) EconomyManager.Instance.currentMoney = 0f;
-                    if (DebtManager.Instance != null) DebtManager.Instance.currentDebt = 0f;
-                    if (DayManager.Instance != null)
-                    {
-                        DayManager.Instance.currentDay = 1;
-                        DayManager.Instance.CalculateRent();
-                        TimeManager.Instance.ResetToMorning();
-                    }
-                }
-
-                GUILayout.Space(5);
-
-                if (GUILayout.Button("📂 LOAD LAST SAVE", GUILayout.Height(30)))
-                {
-                    isShowingSummary = false;
-                    Time.timeScale = 1f;
-                    if (SaveManager.Instance != null) SaveManager.Instance.LoadGame();
-                }
+                GUI.Window(9001, rect, DrawSummaryWindow, "TỔNG KẾT NGÀY");
             }
+        }
 
-            GUILayout.EndArea();
+        private void DrawSummaryWindow(int id)
+        {
+            GUI.DrawTexture(new Rect(0, 0, 400, 300), Texture2D.blackTexture);
+            GUILayout.Space(20);
+            
+            GUIStyle titleStyle = new GUIStyle(GUI.skin.label) { fontSize = 20, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
+            GUILayout.Label($"ĐÃ SỐNG SÓT QUA NGÀY " + dayPassed + "!", titleStyle);
+            
+            GUILayout.Space(20);
+            GUILayout.Label($"- Đã thanh toán nợ: ${rentPaid}");
+            GUILayout.Label($"- Tiền dư hiện tại: ${remainingMoney:F1}");
+            GUILayout.Space(10);
+            GUILayout.Label($"- TIỀN NHÀ PHẢI ĐÓNG NGÀY MAI: ${nextDayRent}", new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold });
+
+            GUILayout.Space(30);
+            if (GUILayout.Button("BẮT ĐẦU NGÀY MỚI", GUILayout.Height(50)))
+            {
+                DayManager.Instance?.ProceedToNextDay();
+            }
+        }
+
+        private void DrawGameOverWindow(int id)
+        {
+            GUI.DrawTexture(new Rect(0, 0, 400, 300), Texture2D.blackTexture);
+            GUILayout.Space(20);
+            
+            GUIStyle titleStyle = new GUIStyle(GUI.skin.label) { fontSize = 24, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
+            titleStyle.normal.textColor = Color.red;
+            GUILayout.Label("BẠN ĐÃ BỊ ĐUỔI RA KHỎI NHÀ!", titleStyle);
+            
+            GUILayout.Space(20);
+            GUILayout.Label($"Ngày tồn tại: {dayPassed}");
+            GUILayout.Label($"Tiền nhà yêu cầu: ${nextDayRent}");
+            GUILayout.Label($"Tiền bạn có: ${remainingMoney:F1}");
+            
+            GUILayout.Space(30);
+            if (GUILayout.Button("QUAY VỀ MENU CHÍNH", GUILayout.Height(50)))
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+            }
+        }
+
+        private void DrawVictoryWindow(int id)
+        {
+            GUI.DrawTexture(new Rect(0, 0, 400, 300), Texture2D.blackTexture);
+            GUILayout.Space(20);
+            
+            GUIStyle titleStyle = new GUIStyle(GUI.skin.label) { fontSize = 24, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
+            titleStyle.normal.textColor = Color.yellow;
+            GUILayout.Label("🏆 CHIẾN THẮNG 🏆", titleStyle);
+            
+            GUILayout.Space(20);
+            GUILayout.Label($"Bạn đã trả tiền nhà Ngày {dayPassed},");
+            GUILayout.Label($"Và tích lũy thành công ${remainingMoney:F1}!");
+            GUILayout.Label("Bạn đã thoát khỏi cảnh nợ nần!");
+            
+            GUILayout.Space(30);
+            if (GUILayout.Button("QUAY VỀ MENU CHÍNH", GUILayout.Height(50)))
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+            }
         }
     }
 }

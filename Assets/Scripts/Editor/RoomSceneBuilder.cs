@@ -322,7 +322,84 @@ namespace RentIsDue.Editor
                 player.transform.position = new Vector3(0, 1.0f, 0);
             }
 
-            Debug.Log($"<color=green>[RoomSceneBuilder] Successfully built {roomTitle} with Window, Door, and Ceiling Light!</color>");
+            // 13. CỬA NHÀ KHO (Trong phòng chính)
+            GameObject storageDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            storageDoor.name = "Storage_Door";
+            storageDoor.transform.SetParent(roomRoot.transform, false);
+            storageDoor.transform.localPosition = new Vector3(-halfW + 0.1f, 1.0f, 0);
+            storageDoor.transform.localScale = new Vector3(0.2f, 2.0f, 1.2f);
+            ApplyMaterial(storageDoor, "Mat_Door", new Color(0.3f, 0.2f, 0.1f));
+            storageDoor.AddComponent<RentIsDue.Gameplay.StorageDoorInteractable>();
+
+            // 14. XÂY DỰNG NHÀ KHO (STORAGE ROOM) - Nằm cách xa phòng chính
+            GameObject storageRoot = new GameObject("StorageRoom");
+            storageRoot.transform.position = new Vector3(30f, 0, 0); // Đẩy ra xa 30m
+
+            // Sàn nhà kho
+            GameObject sFloor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            sFloor.transform.SetParent(storageRoot.transform, false);
+            sFloor.transform.localScale = new Vector3(0.6f, 1f, 0.6f); // 6x6m
+            ApplyMaterial(sFloor, "Mat_StorageFloor", new Color(0.2f, 0.2f, 0.2f));
+
+            // Tường nhà kho
+            GameObject sWallN = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            sWallN.transform.SetParent(storageRoot.transform, false);
+            sWallN.transform.localPosition = new Vector3(0, 1.5f, 3f);
+            sWallN.transform.localScale = new Vector3(6f, 3f, 0.2f);
+            ApplyMaterial(sWallN, "Mat_StorageWall", new Color(0.4f, 0.4f, 0.4f));
+
+            GameObject sWallS = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            sWallS.transform.SetParent(storageRoot.transform, false);
+            sWallS.transform.localPosition = new Vector3(0, 1.5f, -3f);
+            sWallS.transform.localScale = new Vector3(6f, 3f, 0.2f);
+            ApplyMaterial(sWallS, "Mat_StorageWall", new Color(0.4f, 0.4f, 0.4f));
+
+            GameObject sWallE = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            sWallE.transform.SetParent(storageRoot.transform, false);
+            sWallE.transform.localPosition = new Vector3(3f, 1.5f, 0);
+            sWallE.transform.localScale = new Vector3(0.2f, 3f, 6f);
+            ApplyMaterial(sWallE, "Mat_StorageWall", new Color(0.4f, 0.4f, 0.4f));
+
+            GameObject sWallW = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            sWallW.transform.SetParent(storageRoot.transform, false);
+            sWallW.transform.localPosition = new Vector3(-3f, 1.5f, 0);
+            sWallW.transform.localScale = new Vector3(0.2f, 3f, 6f);
+            ApplyMaterial(sWallW, "Mat_StorageWall", new Color(0.4f, 0.4f, 0.4f));
+
+            // Cửa ra của nhà kho
+            GameObject sExitDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            sExitDoor.name = "Storage_Exit_Door";
+            sExitDoor.transform.SetParent(storageRoot.transform, false);
+            sExitDoor.transform.localPosition = new Vector3(-2.9f, 1.0f, 0);
+            sExitDoor.transform.localScale = new Vector3(0.2f, 2.0f, 1.2f);
+            ApplyMaterial(sExitDoor, "Mat_Door", new Color(0.3f, 0.2f, 0.1f));
+            sExitDoor.AddComponent<RentIsDue.Gameplay.StorageExitInteractable>();
+
+            // Điểm Spawn trong Nhà Kho
+            GameObject sSpawn = new GameObject("StorageSpawnPoint");
+            sSpawn.transform.SetParent(storageRoot.transform, false);
+            sSpawn.transform.localPosition = new Vector3(-2.0f, 1.0f, 0);
+
+            // Điểm Spawn chính (tạo nếu chưa có)
+            GameObject mSpawn = GameObject.Find("PlayerSpawnPoint");
+            if (mSpawn == null)
+            {
+                mSpawn = new GameObject("PlayerSpawnPoint");
+                mSpawn.transform.position = new Vector3(0, 1.5f, 0);
+            }
+
+            // Spawner trong Nhà kho (Loot xịn hơn)
+            GameObject sSpawner = new GameObject("Storage_LootSpawner");
+            sSpawner.transform.SetParent(storageRoot.transform, false);
+            sSpawner.transform.localPosition = Vector3.zero;
+            var sLoot = sSpawner.AddComponent<RentIsDue.Loot.RandomFloorLootSpawner>();
+            sLoot.spawnAreaSize = new Vector2(5f, 5f);
+            sLoot.minItemsPerDay = 5;
+            sLoot.maxItemsPerDay = 8;
+            var table = UnityEditor.AssetDatabase.LoadAssetAtPath<RentIsDue.Loot.LootTable>("Assets/Resources/Loot/MainLootTable.asset");
+            if (table != null) sLoot.floorLootTable = table;
+
+            Debug.Log($"<color=green>[RoomSceneBuilder] Successfully built {roomTitle} with Window, Door, Ceiling Light, and Storage Unit!</color>");
         }
 
         private static void CreateRoomShellWithWindow(GameObject parent, float width, float depth, float height, string urbanFolder)

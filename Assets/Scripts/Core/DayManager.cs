@@ -62,6 +62,20 @@ namespace RentIsDue.Core
                 EconomyManager.Instance.currentMoney -= rentToPay;
                 int nextRent = Mathf.RoundToInt(100 * Mathf.Pow(1.25f, currentDay));
 
+                // Kiểm tra điều kiện Victory
+                bool hasStorage = RentIsDue.Shop.UpgradeManager.Instance != null && RentIsDue.Shop.UpgradeManager.Instance.isStorageUnlocked;
+                if (EconomyManager.Instance.currentMoney >= 50000f && hasStorage)
+                {
+                    Debug.Log("VICTORY! Sống sót, mua nhà kho và dư $50,000!");
+                    if (DaySummaryUI.Instance != null)
+                    {
+                        // TODO: Gọi UI Victory (Hiện tạm dùng ShowGameOver hoặc tạo màn mới)
+                        // Giả sử có hàm ShowVictory
+                        DaySummaryUI.Instance.ShowVictory(currentDay, rentToPay, EconomyManager.Instance.currentMoney);
+                    }
+                    return;
+                }
+
                 if (DaySummaryUI.Instance != null)
                 {
                     DaySummaryUI.Instance.ShowDayPassed(currentDay, rentToPay, EconomyManager.Instance.currentMoney, nextRent);

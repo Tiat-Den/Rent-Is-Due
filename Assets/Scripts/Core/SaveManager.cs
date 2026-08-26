@@ -49,6 +49,8 @@ namespace RentIsDue.Core
                 data.moveSpeedLevel = UpgradeManager.Instance.moveSpeedLevel;
                 data.searchSpeedLevel = UpgradeManager.Instance.searchSpeedLevel;
                 data.sellPriceLevel = UpgradeManager.Instance.sellPriceLevel;
+                data.repairSpeedLevel = UpgradeManager.Instance.repairSpeedLevel;
+                data.isStorageUnlocked = UpgradeManager.Instance.isStorageUnlocked;
             }
 
             if (InventoryManager.Instance != null)
@@ -114,6 +116,8 @@ namespace RentIsDue.Core
                     UpgradeManager.Instance.moveSpeedLevel = data.moveSpeedLevel > 0 ? data.moveSpeedLevel : 1;
                     UpgradeManager.Instance.searchSpeedLevel = data.searchSpeedLevel > 0 ? data.searchSpeedLevel : 1;
                     UpgradeManager.Instance.sellPriceLevel = data.sellPriceLevel > 0 ? data.sellPriceLevel : 1;
+                    UpgradeManager.Instance.repairSpeedLevel = data.repairSpeedLevel > 0 ? data.repairSpeedLevel : 1;
+                    UpgradeManager.Instance.isStorageUnlocked = data.isStorageUnlocked;
 
                     UpgradeManager.Instance.ApplyAllUpgrades();
                 }
