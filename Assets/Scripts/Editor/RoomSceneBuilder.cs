@@ -290,7 +290,12 @@ namespace RentIsDue.Editor
             // 11. Cấu hình Ánh Sáng Tự Nhiên Mặt Trời Chiếu Xiên Qua Cửa Sổ
             SetupNaturalSunlight(roomRoot, -halfD, wallHeight);
 
-            // 12. Đặt Player vào tâm phòng
+            // 12. Playtest Logger
+            GameObject logger = new GameObject("Playtest_Logger");
+            logger.AddComponent<PlaytestLogger>();
+            logger.transform.SetParent(roomRoot.transform);
+
+            // 13. Đặt Player vào tâm phòng
             GameObject player = GameObject.Find("Player");
             if (player != null)
             {
