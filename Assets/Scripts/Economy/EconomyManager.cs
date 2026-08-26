@@ -25,7 +25,8 @@ namespace RentIsDue.Economy
             if (instance != null && instance.data != null)
             {
                 float sellMultiplier = RentIsDue.Shop.UpgradeManager.Instance != null ? RentIsDue.Shop.UpgradeManager.Instance.GetSellPriceMultiplier() : 1f;
-                float amount = instance.EffectiveValue * marketModifier * sellMultiplier;
+                float eventMultiplier = RentIsDue.Gameplay.RandomEventManager.Instance != null ? RentIsDue.Gameplay.RandomEventManager.Instance.GetSellMultiplier() : 1f;
+                float amount = instance.EffectiveValue * marketModifier * sellMultiplier * eventMultiplier;
                 currentMoney += amount;
                 InventoryManager.Instance?.RemoveItem(instance);
                 

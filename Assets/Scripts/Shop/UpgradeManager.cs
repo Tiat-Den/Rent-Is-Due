@@ -11,6 +11,21 @@ namespace RentIsDue.Shop
 
         public const int MAX_LEVEL = 5;
 
+        private int GetCost(int baseCost, int level)
+        {
+            float eventMultiplier = RentIsDue.Gameplay.RandomEventManager.Instance != null ? RentIsDue.Gameplay.RandomEventManager.Instance.GetUpgradeCostMultiplier() : 1f;
+            return Mathf.RoundToInt(baseCost * level * eventMultiplier);
+        }
+
+        public int GetBackpackUpgradeCost() => GetCost(50, backpackLevel);
+        public int GetCarryWeightUpgradeCost() => GetCost(40, carryWeightLevel);
+        public int GetStaminaUpgradeCost() => GetCost(60, staminaLevel);
+        public int GetStaminaRegenUpgradeCost() => GetCost(60, staminaRegenLevel);
+        public int GetMoveSpeedUpgradeCost() => GetCost(100, moveSpeedLevel);
+        public int GetSearchSpeedUpgradeCost() => GetCost(80, searchSpeedLevel);
+        public int GetSellPriceUpgradeCost() => GetCost(150, sellPriceLevel);
+        public int GetRepairSpeedUpgradeCost() => GetCost(70, repairSpeedLevel);
+
         [Header("Upgrade Levels (1-5)")]
         public int backpackLevel = 1;
         public int carryWeightLevel = 1;

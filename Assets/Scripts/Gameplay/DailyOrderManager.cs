@@ -129,7 +129,8 @@ namespace RentIsDue.Gameplay
             {
                 float sellMultiplier = UpgradeManager.Instance != null
                     ? UpgradeManager.Instance.GetSellPriceMultiplier() : 1f;
-                float bonusAmount = item.EffectiveValue * currentOrder.rewardMultiplier * sellMultiplier;
+                float eventMultiplier = RandomEventManager.Instance != null ? RandomEventManager.Instance.GetSellMultiplier() : 1f;
+                float bonusAmount = item.EffectiveValue * currentOrder.rewardMultiplier * sellMultiplier * eventMultiplier;
                 bonusTotal += bonusAmount;
                 EconomyManager.Instance.currentMoney += bonusAmount;
                 InventoryManager.Instance.RemoveItem(item);

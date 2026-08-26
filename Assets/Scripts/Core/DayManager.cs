@@ -101,6 +101,11 @@ namespace RentIsDue.Core
             {
                 TimeManager.Instance.ResetToMorning();
             }
+
+            if (RentIsDue.Gameplay.RandomEventManager.Instance != null)
+            {
+                RentIsDue.Gameplay.RandomEventManager.Instance.RollDailyEvent();
+            }
         }
     }
 }
