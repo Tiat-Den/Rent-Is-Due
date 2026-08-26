@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using RentIsDue.Player;
 using RentIsDue.Economy;
 using RentIsDue.Shop;
+using RentIsDue.Core;
 
 namespace RentIsDue.Gameplay
 {

@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 using RentIsDue.Player;
+using RentIsDue.Core;
 
 namespace RentIsDue.Gameplay
 {
