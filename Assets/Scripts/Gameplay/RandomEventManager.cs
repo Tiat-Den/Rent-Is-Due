@@ -127,7 +127,6 @@ namespace RentIsDue.Gameplay
 
         public float GetUpgradeCostMultiplier()
         {
-            if (currentEvent == DailyEventType.LuckyDay) return 0.5f;
             return 1.0f;
         }
     }
