@@ -52,7 +52,7 @@ namespace RentIsDue.Inventory
             return total;
         }
 
-        public bool AddItem(ItemData itemData)
+        public bool AddItem(ItemData itemData, float condition = 0.5f)
         {
             if (itemData == null) return false;
             
@@ -68,8 +68,8 @@ namespace RentIsDue.Inventory
                 return false;
             }
 
-            // Mặc định đồ nhặt được sẽ bị hỏng (condition = 0.5f) cần bảo dưỡng
-            ItemInstance newInst = new ItemInstance(itemData, 0.5f);
+            // Gán độ bền truyền vào, mặc định là 0.5f (đồ hỏng) nếu nhặt đồ mới tinh
+            ItemInstance newInst = new ItemInstance(itemData, condition);
             items.Add(newInst);
             
             onInventoryChanged?.Invoke();
@@ -104,6 +104,7 @@ namespace RentIsDue.Inventory
                     PickupInteractable pickup = itemObj.GetComponent<PickupInteractable>();
                     if (pickup == null) pickup = itemObj.AddComponent<PickupInteractable>();
                     pickup.itemData = instance.data;
+                    pickup.condition = instance.condition;
                 }
                 else
                 {
@@ -112,7 +113,8 @@ namespace RentIsDue.Inventory
                     placeholder.transform.position = dropPosition;
                     placeholder.transform.localScale = Vector3.one * 0.3f;
                     PickupInteractable pickup = placeholder.AddComponent<PickupInteractable>();
-                    pickup.itemData = instance.data; // Note: drops reset condition for now
+                    pickup.itemData = instance.data;
+                    pickup.condition = instance.condition;
                 }
                 
                 RemoveItem(instance);

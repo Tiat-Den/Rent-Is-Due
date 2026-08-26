@@ -23,6 +23,12 @@ namespace RentIsDue.Core
 
         public void SaveGame()
         {
+            // Tránh việc người chơi Save/Thoát game khi đang sửa đồ gây mất tiền oan
+            if (RentIsDue.Gameplay.RepairManager.Instance != null)
+            {
+                RentIsDue.Gameplay.RepairManager.Instance.CancelCurrentRepair();
+            }
+
             SaveData data = new SaveData();
             
             if (DayManager.Instance != null)
@@ -43,6 +49,14 @@ namespace RentIsDue.Core
                 data.moveSpeedLevel = UpgradeManager.Instance.moveSpeedLevel;
                 data.searchSpeedLevel = UpgradeManager.Instance.searchSpeedLevel;
                 data.sellPriceLevel = UpgradeManager.Instance.sellPriceLevel;
+            }
+
+            if (InventoryManager.Instance != null)
+            {
+                foreach (var inst in InventoryManager.Instance.items)
+                {
+                    data.inventory.Add(new SavedItem { id = inst.data.id, condition = inst.condition });
+                }
             }
 
             string json = JsonUtility.ToJson(data, true);
@@ -94,6 +108,24 @@ namespace RentIsDue.Core
                     UpgradeManager.Instance.sellPriceLevel = data.sellPriceLevel > 0 ? data.sellPriceLevel : 1;
 
                     UpgradeManager.Instance.ApplyAllUpgrades();
+                }
+
+                if (InventoryManager.Instance != null && data.inventory != null)
+                {
+                    InventoryManager.Instance.items.Clear();
+                    
+                    // Load từ Assets/Resources/Items
+                    ItemData[] allItems = Resources.LoadAll<ItemData>("Items");
+                    System.Collections.Generic.Dictionary<string, ItemData> itemDict = new System.Collections.Generic.Dictionary<string, ItemData>();
+                    foreach (var i in allItems) itemDict[i.id] = i;
+
+                    foreach (var savedItem in data.inventory)
+                    {
+                        if (itemDict.TryGetValue(savedItem.id, out ItemData matchedData))
+                        {
+                            InventoryManager.Instance.AddItem(matchedData, savedItem.condition);
+                        }
+                    }
                 }
 
                 Debug.Log("Game Loaded from: " + path);

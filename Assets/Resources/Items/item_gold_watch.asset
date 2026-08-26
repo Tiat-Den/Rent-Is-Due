@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a0000e902243bd43944672e22adc0bb, type: 3}
+  m_Name: item_gold_watch
+  m_EditorClassIdentifier: Assembly-CSharp::RentIsDue.Inventory.ItemData
+  id: item_gold_watch
+  displayName: Gold Watch
+  description: 
+  rarity: 4
+  category: 12
+  baseValue: 450
+  weight: 0.15
+  searchTimeSec: 10
+  maxStack: 1
+  collectorMultiplier: 1.65
+  icon: {fileID: 0}
+  prefab: {fileID: 1118465094971581418, guid: 3ac939285b00cb24da6c956537b1e7a9, type: 3}

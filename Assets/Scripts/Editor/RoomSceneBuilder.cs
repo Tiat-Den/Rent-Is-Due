@@ -510,7 +510,7 @@ namespace RentIsDue.Editor
         [MenuItem("Tools/📦 Link 3D Models to 30 ItemData Assets")]
         public static void LinkItemModels()
         {
-            string itemsFolder = "Assets/ScriptableObjects/Items";
+            string itemsFolder = "Assets/Resources/Items";
             string modelsFolder = "Assets/Models/FBX format";
 
             var modelMap = new System.Collections.Generic.Dictionary<string, string>

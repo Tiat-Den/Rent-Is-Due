@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a0000e902243bd43944672e22adc0bb, type: 3}
+  m_Name: item_broken_phone
+  m_EditorClassIdentifier: Assembly-CSharp::RentIsDue.Inventory.ItemData
+  id: item_broken_phone
+  displayName: Broken Phone
+  description: 
+  rarity: 2
+  category: 7
+  baseValue: 45
+  weight: 0.2
+  searchTimeSec: 5
+  maxStack: 1
+  collectorMultiplier: 1.2
+  icon: {fileID: 0}
+  prefab: {fileID: 6517390790059245112, guid: dccfd6877b0223d4ca99e2f1306d753f, type: 3}

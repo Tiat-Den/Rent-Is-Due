@@ -15,5 +15,13 @@ namespace RentIsDue.Core
         public int moveSpeedLevel = 1;
         public int searchSpeedLevel = 1;
         public int sellPriceLevel = 1;
+        public System.Collections.Generic.List<SavedItem> inventory = new System.Collections.Generic.List<SavedItem>();
+    }
+
+    [Serializable]
+    public class SavedItem
+    {
+        public string id;
+        public float condition;
     }
 }

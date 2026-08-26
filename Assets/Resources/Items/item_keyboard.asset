@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a0000e902243bd43944672e22adc0bb, type: 3}
+  m_Name: item_keyboard
+  m_EditorClassIdentifier: Assembly-CSharp::RentIsDue.Inventory.ItemData
+  id: item_keyboard
+  displayName: Old Keyboard
+  description: 
+  rarity: 1
+  category: 7
+  baseValue: 18
+  weight: 0.85
+  searchTimeSec: 4
+  maxStack: 2
+  collectorMultiplier: 1.05
+  icon: {fileID: 0}
+  prefab: {fileID: 3782228984797910137, guid: de2897bada9bcd3488eb48265d8a4759, type: 3}

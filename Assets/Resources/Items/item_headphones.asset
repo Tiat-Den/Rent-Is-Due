@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a0000e902243bd43944672e22adc0bb, type: 3}
+  m_Name: item_headphones
+  m_EditorClassIdentifier: Assembly-CSharp::RentIsDue.Inventory.ItemData
+  id: item_headphones
+  displayName: Wired Headphones
+  description: 
+  rarity: 1
+  category: 7
+  baseValue: 28
+  weight: 0.35
+  searchTimeSec: 3.5
+  maxStack: 2
+  collectorMultiplier: 1.1
+  icon: {fileID: 0}
+  prefab: {fileID: 8765956351678542068, guid: 5a0276d46be519a4186c7a55a8bb340a, type: 3}

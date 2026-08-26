@@ -100,6 +100,22 @@ namespace RentIsDue.Gameplay
             Debug.Log($"[RepairManager] Repaired '{item.data.displayName}' for ${cost:F1}");
         }
 
+        public void CancelCurrentRepair()
+        {
+            if (_isRepairing && _currentlyRepairingItem != null)
+            {
+                StopAllCoroutines();
+                // Hoàn lại tiền vì chưa sửa xong
+                float cost = _currentlyRepairingItem.data.baseValue * 0.4f;
+                if (EconomyManager.Instance != null) EconomyManager.Instance.currentMoney += cost;
+
+                _isRepairing = false;
+                _currentlyRepairingItem = null;
+                _repairProgress = 0f;
+                Debug.Log("[RepairManager] Hủy sửa chữa và hoàn lại tiền do Save Game hoặc bị ngắt quãng.");
+            }
+        }
+
         // ─── OnGUI ───────────────────────────────────────────────────────────────
 
         private void OnGUI()

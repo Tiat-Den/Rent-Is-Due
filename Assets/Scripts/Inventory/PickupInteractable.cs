@@ -7,6 +7,7 @@ namespace RentIsDue.Inventory
     public class PickupInteractable : MonoBehaviour, IInteractable
     {
         public ItemData itemData;
+        public float condition = 0.5f;
 
         private void Start()
         {
@@ -46,7 +47,7 @@ namespace RentIsDue.Inventory
         {
             if (itemData != null)
             {
-                bool added = InventoryManager.Instance.AddItem(itemData);
+                bool added = InventoryManager.Instance.AddItem(itemData, condition);
                 if (added)
                 {
                     if (RentIsDue.Audio.AudioManager.Instance != null)
