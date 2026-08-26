@@ -67,9 +67,31 @@ namespace RentIsDue.Shop
         public int GetMaxStamina() => StaminaValues[Mathf.Clamp(staminaLevel - 1, 0, 4)];
         public float GetStaminaRegenRate() => StaminaRegenValues[Mathf.Clamp(staminaRegenLevel - 1, 0, 4)];
         public float GetMoveSpeedMultiplier() => MoveSpeedMultipliers[Mathf.Clamp(moveSpeedLevel - 1, 0, 4)];
-        public float GetSearchSpeedMultiplier() => SearchSpeedMultipliers[Mathf.Clamp(searchSpeedLevel - 1, 0, 4)];
         public float GetSellPriceMultiplier() => SellPriceMultipliers[Mathf.Clamp(sellPriceLevel - 1, 0, 4)];
-        public float GetRepairSpeedMultiplier() => RepairSpeedMultipliers[Mathf.Clamp(repairSpeedLevel - 1, 0, 4)];
+
+        public float GetRepairSpeedMultiplier()
+        {
+            float mult = 1.0f + (repairSpeedLevel - 1) * 0.15f;
+            if (HasTool("item_screwdriver")) mult *= 1.5f;
+            return mult;
+        }
+
+        public float GetSearchSpeedMultiplier()
+        {
+            float mult = 1.0f - (searchSpeedLevel - 1) * 0.1f; // Smaller = faster search
+            if (HasTool("item_crowbar")) mult *= 0.6f; // Giảm 40% thời gian lục (nhanh hơn)
+            return Mathf.Clamp(mult, 0.1f, 1f);
+        }
+
+        private bool HasTool(string toolId)
+        {
+            if (RentIsDue.Inventory.InventoryManager.Instance == null) return false;
+            foreach (var item in RentIsDue.Inventory.InventoryManager.Instance.items)
+            {
+                if (item.data != null && item.data.id == toolId) return true;
+            }
+            return false;
+        }
 
         // Helper for Search duration reduction: Duration = Base / Multiplier
         public float SearchSpeedMultiplier => 1f / GetSearchSpeedMultiplier();

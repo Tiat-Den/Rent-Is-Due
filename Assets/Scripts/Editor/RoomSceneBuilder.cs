@@ -297,6 +297,16 @@ namespace RentIsDue.Editor
             bountyBoard.AddComponent<RentIsDue.Gameplay.CollectorInteractable>();
             bountyBoard.AddComponent<RentIsDue.Gameplay.CollectorManager>();
 
+            // 11.5. CỬA HÀNG ĐỒ NGHỀ (Laptop trên giường hoặc hộp gỗ)
+            GameObject toolShop = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            toolShop.name = "Tool_Shop";
+            toolShop.transform.SetParent(roomRoot.transform, false);
+            toolShop.transform.localPosition = new Vector3(halfW - 0.5f, 0.5f, -halfD + 1.0f);
+            toolShop.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+            ApplyMaterial(toolShop, "Mat_ToolShop", new Color(0.8f, 0.4f, 0.1f)); // Màu cam
+            toolShop.AddComponent<RentIsDue.Shop.ToolShopInteractable>();
+            toolShop.AddComponent<RentIsDue.Shop.ToolShopManager>();
+
             // 12. Cấu hình Ánh Sáng Tự Nhiên Mặt Trời Chiếu Xiên Qua Cửa Sổ
             SetupNaturalSunlight(roomRoot, -halfD, wallHeight);
 

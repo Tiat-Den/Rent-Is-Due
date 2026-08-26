@@ -78,13 +78,35 @@ namespace RentIsDue.Gameplay
                     break;
 
                 case DailyEventType.Thief:
-                    eventName = "🥷 KẺ TRỘM GHÉ THĂM";
-                    eventDescription = "Cửa nẻo lỏng lẻo, bạn bị trộm cuỗm mất 50% tiền tiết kiệm!";
-                    eventColor = Color.red;
-                    if (EconomyManager.Instance != null)
+                    bool hasSafe = false;
+                    if (RentIsDue.Inventory.InventoryManager.Instance != null)
                     {
-                        float lost = EconomyManager.Instance.currentMoney * 0.5f;
-                        EconomyManager.Instance.currentMoney -= lost;
+                        foreach (var item in RentIsDue.Inventory.InventoryManager.Instance.items)
+                        {
+                            if (item.data != null && item.data.id == "item_safe")
+                            {
+                                hasSafe = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (hasSafe)
+                    {
+                        eventName = "🛡️ KÉT SẮT CỨU CÁNH";
+                        eventDescription = "Có trộm đột nhập đêm qua nhưng bạn cất tiền trong Két Sắt nên không mất mát gì!";
+                        eventColor = Color.yellow;
+                    }
+                    else
+                    {
+                        eventName = "🥷 KẺ TRỘM GHÉ THĂM";
+                        eventDescription = "Cửa nẻo lỏng lẻo, bạn bị trộm cuỗm mất 50% tiền tiết kiệm!";
+                        eventColor = Color.red;
+                        if (EconomyManager.Instance != null)
+                        {
+                            float lost = EconomyManager.Instance.currentMoney * 0.5f;
+                            EconomyManager.Instance.currentMoney -= lost;
+                        }
                     }
                     break;
             }
