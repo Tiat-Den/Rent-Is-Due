@@ -22,7 +22,7 @@ namespace RentIsDue.Core
             {
                 GameObject eventSystemObj = new GameObject("EventSystem");
                 eventSystemObj.AddComponent<EventSystem>();
-                eventSystemObj.AddComponent<StandaloneInputModule>();
+                eventSystemObj.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
             }
 
             // 2. Create Canvas
@@ -56,7 +56,7 @@ namespace RentIsDue.Core
             titleText.fontSize = 100;
             titleText.color = Color.yellow;
             titleText.alignment = TextAnchor.MiddleCenter;
-            titleText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
             RectTransform titleRect = titleObj.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0.5f, 0.8f);
@@ -128,7 +128,7 @@ namespace RentIsDue.Core
             btnText.fontSize = 40;
             btnText.color = Color.white;
             btnText.alignment = TextAnchor.MiddleCenter;
-            btnText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            btnText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             
             RectTransform textRect = textObj.GetComponent<RectTransform>();
             textRect.anchorMin = Vector2.zero;
