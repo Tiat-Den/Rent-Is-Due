@@ -116,8 +116,10 @@ public class PauseMenu : MonoBehaviour
 
             if (GUILayout.Button("Quit"))
             {
-                Debug.Log("Quitting...");
-                Application.Quit();
+                Debug.Log("Quitting to Main Menu...");
+                isPaused = false;
+                Time.timeScale = 1f;
+                UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
             }
 
             GUILayout.EndArea();
