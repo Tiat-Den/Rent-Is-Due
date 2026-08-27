@@ -18,7 +18,7 @@ namespace RentIsDue.Core
         private void CreateUI()
         {
             // 1. Create EventSystem if it doesn't exist
-            if (FindObjectOfType<EventSystem>() == null)
+            if (FindAnyObjectByType<EventSystem>() == null)
             {
                 GameObject eventSystemObj = new GameObject("EventSystem");
                 eventSystemObj.AddComponent<EventSystem>();
