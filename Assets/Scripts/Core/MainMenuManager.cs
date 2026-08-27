@@ -74,7 +74,7 @@ namespace RentIsDue.Core
             Button continueBtn = CreateButton("CONTINUE", panelObj.transform, new Vector2(0, startY));
             continueBtn.interactable = hasSave;
             continueBtn.onClick.AddListener(() => {
-                SceneManager.LoadScene("RoomScene");
+                SceneManager.LoadScene("SampleScene");
             });
 
             Button newGameBtn = CreateButton("NEW GAME", panelObj.transform, new Vector2(0, startY - spacing));
@@ -83,7 +83,7 @@ namespace RentIsDue.Core
                 {
                     File.Delete(savePath);
                 }
-                SceneManager.LoadScene("RoomScene");
+                SceneManager.LoadScene("SampleScene");
             });
 
             Button quitBtn = CreateButton("QUIT", panelObj.transform, new Vector2(0, startY - spacing * 2));

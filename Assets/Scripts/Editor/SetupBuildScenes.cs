@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using System.Collections.Generic;
 
 public class SetupBuildScenes
 {
-    [MenuItem("Tools/📦 Thiết lập Game (Mốc Alpha)")]
+    [MenuItem("Tools/?? Thi?t l?p Game (M?c Alpha)")]
     public static void SetupScenes()
     {
         string scenesDir = "Assets/Scenes";
@@ -14,21 +14,21 @@ public class SetupBuildScenes
             AssetDatabase.CreateFolder("Assets", "Scenes");
         }
 
-        string roomScenePath = scenesDir + "/RoomScene.unity";
+        string roomScenePath = scenesDir + "/SampleScene.unity";
         string mainMenuPath = scenesDir + "/MainMenu.unity";
 
-        // 1. Tạo MainMenu Scene nếu chưa có
+        // 1. T?o MainMenu Scene n?u chua c�
         if (!System.IO.File.Exists(mainMenuPath))
         {
             UnityEngine.SceneManagement.Scene newScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             
-            // Thêm Camera
+            // Th�m Camera
             GameObject cam = new GameObject("Main Camera");
             var c = cam.AddComponent<Camera>();
             c.backgroundColor = Color.black;
             c.clearFlags = CameraClearFlags.SolidColor;
 
-            // Thêm MainMenuManager
+            // Th�m MainMenuManager
             GameObject manager = new GameObject("MainMenuManager");
             manager.AddComponent<RentIsDue.Core.MainMenuManager>();
 
@@ -36,7 +36,7 @@ public class SetupBuildScenes
             Debug.Log("Created MainMenu scene at " + mainMenuPath);
         }
 
-        // 2. Thêm vào Build Settings (Build Profiles trong Unity 6)
+        // 2. Th�m v�o Build Settings (Build Profiles trong Unity 6)
         List<EditorBuildSettingsScene> buildScenes = new List<EditorBuildSettingsScene>();
         
         buildScenes.Add(new EditorBuildSettingsScene(mainMenuPath, true));
@@ -46,9 +46,9 @@ public class SetupBuildScenes
         }
 
         EditorBuildSettings.scenes = buildScenes.ToArray();
-        Debug.Log("<color=green>Đã thiết lập xong Scenes vào Build Settings! Bạn có thể ấn nút Play từ MainMenu để chơi.</color>");
+        Debug.Log("<color=green>�� thi?t l?p xong Scenes v�o Build Settings! B?n c� th? ?n n�t Play t? MainMenu d? choi.</color>");
         
-        // Mở sẵn Main Menu cho user
+        // M? s?n Main Menu cho user
         EditorSceneManager.OpenScene(mainMenuPath);
     }
 }
