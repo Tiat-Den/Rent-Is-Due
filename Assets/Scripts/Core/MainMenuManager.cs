@@ -1,19 +1,49 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.IO;
+using System.Collections.Generic;
 
 namespace RentIsDue.Core
 {
     public class MainMenuManager : MonoBehaviour
     {
+        private GraphicRaycaster _raycaster;
+
         private void Start()
         {
             Time.timeScale = 1f;
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
             CreateUI();
+        }
+
+        private void Update()
+        {
+            if (UnityEngine.InputSystem.Mouse.current != null && UnityEngine.InputSystem.Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                if (_raycaster == null) _raycaster = FindAnyObjectByType<GraphicRaycaster>();
+                if (_raycaster != null && EventSystem.current != null)
+                {
+                    PointerEventData pointerData = new PointerEventData(EventSystem.current)
+                    {
+                        position = UnityEngine.InputSystem.Mouse.current.position.ReadValue()
+                    };
+                    List<RaycastResult> results = new List<RaycastResult>();
+                    _raycaster.Raycast(pointerData, results);
+                    
+                    foreach (var result in results)
+                    {
+                        Button btn = result.gameObject.GetComponentInParent<Button>();
+                        if (btn != null && btn.interactable)
+                        {
+                            btn.onClick.Invoke();
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         private void CreateUI()
@@ -23,6 +53,7 @@ namespace RentIsDue.Core
             {
                 GameObject eventSystemObj = new GameObject("EventSystem");
                 eventSystemObj.AddComponent<EventSystem>();
+                // We add the module to avoid warnings, but we handle clicks manually in Update
                 eventSystemObj.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
             }
 
@@ -35,7 +66,7 @@ namespace RentIsDue.Core
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080);
             
-            canvasObj.AddComponent<GraphicRaycaster>();
+            _raycaster = canvasObj.AddComponent<GraphicRaycaster>();
 
             // 3. Create Background Panel
             GameObject panelObj = new GameObject("Background");
@@ -100,7 +131,7 @@ namespace RentIsDue.Core
         {
             GameObject btnObj = new GameObject(text + "Button");
             btnObj.transform.SetParent(parent, false);
-            
+
             Image btnImage = btnObj.AddComponent<Image>();
             btnImage.color = new Color(0.2f, 0.2f, 0.2f, 1f);
 
@@ -141,5 +172,3 @@ namespace RentIsDue.Core
         }
     }
 }
-
-
