@@ -21,6 +21,12 @@ namespace RentIsDue.Core
             Instance = this;
         }
 
+        private void Start()
+        {
+            // Tự động load save nếu có khi màn chơi (SampleScene) vừa khởi tạo
+            LoadGame();
+        }
+
         public void SaveGame()
         {
             // Tránh việc người chơi Save/Thoát game khi đang sửa đồ gây mất tiền oan
