@@ -90,7 +90,7 @@ namespace RentIsDue.Core
                 Debug.Log("GAME OVER: Not enough money for rent.");
                 if (DaySummaryUI.Instance != null)
                 {
-                    DaySummaryUI.Instance.ShowGameOver(currentDay, currentRent, EconomyManager.Instance.currentMoney);
+                    DaySummaryUI.Instance.ShowGameOver(currentDay, EconomyManager.Instance.currentMoney, currentRent);
                 }
                 else
                 {

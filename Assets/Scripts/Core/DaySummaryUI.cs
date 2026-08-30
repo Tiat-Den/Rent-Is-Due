@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using RentIsDue.Economy;
 using RentIsDue.Audio;
 
@@ -62,7 +62,7 @@ namespace RentIsDue.Core
             if (AudioManager.Instance != null) AudioManager.Instance.PlayDayPass();
         }
 
-        public void ShowGameOver(int day, int currentMoney, int missingRent)
+        public void ShowGameOver(int day, float currentMoney, int missingRent)
         {
             isShowingSummary = true;
             isGameOver = true;
