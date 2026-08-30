@@ -295,25 +295,64 @@ namespace RentIsDue.Editor
             alleyFloor.transform.SetParent(alleyRoot.transform, false);
             alleyFloor.transform.localPosition = new Vector3(0, 0, 30f);
             alleyFloor.transform.localScale = new Vector3(2f, 1f, 1f); // 20m x 10m
-            ApplyMaterial(alleyFloor, "Mat_AlleyFloor", new Color(0.2f, 0.2f, 0.2f));
+            ApplyMaterial(alleyFloor, "Mat_AlleyFloor", new Color(0.12f, 0.12f, 0.14f));
+
+            float alleyWallHeight = 12f; // Tường hẻm cao hơn phòng nhiều
 
             // Walls for alley
-            CreateWall("AlleyWall_North", "Mat_AlleyWall", new Vector3(0, wallHeight / 2, 35f), new Vector3(20, wallHeight, 0.2f), alleyRoot, new Color(0.3f, 0.3f, 0.3f)); 
-            CreateWall("AlleyWall_South", "Mat_AlleyWall", new Vector3(0, wallHeight / 2, 25f), new Vector3(20, wallHeight, 0.2f), alleyRoot, new Color(0.3f, 0.3f, 0.3f));
-            CreateWall("AlleyWall_West", "Mat_AlleyWall", new Vector3(-10f, wallHeight / 2, 30f), new Vector3(0.2f, wallHeight, 10f), alleyRoot, new Color(0.3f, 0.3f, 0.3f)); 
-            CreateWall("AlleyWall_East", "Mat_AlleyWall", new Vector3(10f, wallHeight / 2, 30f), new Vector3(0.2f, wallHeight, 10f), alleyRoot, new Color(0.3f, 0.3f, 0.3f));
+            CreateWall("AlleyWall_North", "Mat_AlleyWall", new Vector3(0, alleyWallHeight / 2, 35f), new Vector3(20, alleyWallHeight, 0.2f), alleyRoot, new Color(0.2f, 0.2f, 0.2f)); 
+            CreateWall("AlleyWall_South", "Mat_AlleyWall", new Vector3(0, alleyWallHeight / 2, 25f), new Vector3(20, alleyWallHeight, 0.2f), alleyRoot, new Color(0.2f, 0.2f, 0.2f));
+            CreateWall("AlleyWall_West", "Mat_AlleyWall", new Vector3(-10f, alleyWallHeight / 2, 30f), new Vector3(0.2f, alleyWallHeight, 10f), alleyRoot, new Color(0.25f, 0.25f, 0.25f)); 
+            CreateWall("AlleyWall_East", "Mat_AlleyWall", new Vector3(10f, alleyWallHeight / 2, 30f), new Vector3(0.2f, alleyWallHeight, 10f), alleyRoot, new Color(0.25f, 0.25f, 0.25f));
             
+            // Alley Ceiling (Blocks the sun to make it dark/moody)
+            GameObject alleyCeiling = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            alleyCeiling.name = "Alley_Ceiling";
+            alleyCeiling.transform.SetParent(alleyRoot.transform, false);
+            alleyCeiling.transform.localPosition = new Vector3(0, alleyWallHeight, 30f);
+            alleyCeiling.transform.localScale = new Vector3(2f, 1f, 1f); // 20m x 10m
+            // Rotate upside down so it's visible from below
+            alleyCeiling.transform.localRotation = Quaternion.Euler(180, 0, 0);
+            ApplyMaterial(alleyCeiling, "Mat_AlleyFloor", new Color(0.1f, 0.1f, 0.1f));
+
             // Alley Decorations
             SpawnModel(urbanFolder, "detail-dumpster-open.fbx", new Vector3(8f, 0, 34f), Quaternion.Euler(0, -20, 0), alleyRoot, 1f);
             SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(6f, 0, 34.5f), Quaternion.Euler(0, -5, 0), alleyRoot, 1f);
             SpawnModel(urbanFolder, "pallet.fbx", new Vector3(-7f, 0, 34f), Quaternion.Euler(0, 45, 0), alleyRoot, 1f);
             SpawnModel(urbanFolder, "pallet-small.fbx", new Vector3(-7.5f, 0.2f, 34.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 1f);
             SpawnModel(urbanFolder, "detail-bench.fbx", new Vector3(-8f, 0, 26f), Quaternion.Euler(0, 180, 0), alleyRoot, 1f);
-            SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(9f, 0, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 1f);
-            SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-9f, 0, 30f), Quaternion.Euler(0, 90, 0), alleyRoot, 1f);
+            
+            // Street Lamps with actual Light components
+            GameObject lamp1 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(8.5f, 0, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 1f);
+            GameObject lamp2 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-8.5f, 0, 30f), Quaternion.Euler(0, 90, 0), alleyRoot, 1f);
+            if (lamp1 != null) {
+                GameObject l1 = new GameObject("LightSource");
+                l1.transform.SetParent(lamp1.transform, false);
+                l1.transform.localPosition = new Vector3(0, 4.5f, 1.5f);
+                Light pt1 = l1.AddComponent<Light>();
+                pt1.type = LightType.Spot;
+                pt1.color = new Color(1f, 0.8f, 0.5f);
+                pt1.intensity = 20f;
+                pt1.range = 15f;
+                pt1.spotAngle = 100f;
+            }
+            if (lamp2 != null) {
+                GameObject l2 = new GameObject("LightSource");
+                l2.transform.SetParent(lamp2.transform, false);
+                l2.transform.localPosition = new Vector3(0, 4.5f, 1.5f);
+                Light pt2 = l2.AddComponent<Light>();
+                pt2.type = LightType.Spot;
+                pt2.color = new Color(1f, 0.8f, 0.5f);
+                pt2.intensity = 20f;
+                pt2.range = 15f;
+                pt2.spotAngle = 100f;
+            }
+
             SpawnModel(urbanFolder, "detail-barrier-type-a.fbx", new Vector3(5f, 0, 26f), Quaternion.Euler(0, 15, 0), alleyRoot, 1f);
-            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(-9f, 0, 34f), Quaternion.identity, alleyRoot, 1f);
-            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(9f, 0, 34f), Quaternion.identity, alleyRoot, 1f);
+            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(-9f, 0, 34f), Quaternion.identity, alleyRoot, 1.5f);
+            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(9f, 0, 34f), Quaternion.identity, alleyRoot, 1.5f);
+            SpawnModel(urbanFolder, "detail-awning-wide.fbx", new Vector3(-4f, 3f, 34.5f), Quaternion.Euler(0, 0, 0), alleyRoot, 1.2f);
+            SpawnModel(urbanFolder, "detail-awning-wide.fbx", new Vector3(4f, 3f, 34.5f), Quaternion.Euler(0, 0, 0), alleyRoot, 1.2f);
             
             // Cửa ra Khu Phố (nằm ở phòng)
             GameObject streetDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
