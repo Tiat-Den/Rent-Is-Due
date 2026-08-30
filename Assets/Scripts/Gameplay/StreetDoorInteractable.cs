@@ -33,6 +33,9 @@ namespace RentIsDue.Gameplay
         {
             if (playerTransform != null)
             {
+                CharacterController cc = playerTransform.GetComponent<CharacterController>();
+                if (cc != null) cc.enabled = false;
+
                 if (playerTransform.position.z > 15f)
                 {
                     // Teleport to room
@@ -43,6 +46,8 @@ namespace RentIsDue.Gameplay
                     // Teleport to alley
                     playerTransform.position = new Vector3(0, 1.5f, 25f);
                 }
+
+                if (cc != null) cc.enabled = true;
             }
         }
     }
