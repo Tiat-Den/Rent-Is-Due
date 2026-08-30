@@ -6,6 +6,11 @@ public class PauseMenu : MonoBehaviour
     public bool isPaused { get; private set; } = false;
     private bool isSettingsOpen = false;
 
+    void Start()
+    {
+        AudioListener.volume = PlayerPrefs.GetFloat("MasterVolume", 1f);
+    }
+
     void Update()
     {
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
@@ -59,10 +64,26 @@ public class PauseMenu : MonoBehaviour
                 float defaultSens = 0.8f;
                 if (cam != null) cam.mouseSensitivity = defaultSens;
                 PlayerPrefs.SetFloat("MouseSensitivity", defaultSens);
+                
+                AudioListener.volume = 1f;
+                PlayerPrefs.SetFloat("MasterVolume", 1f);
+                
                 PlayerPrefs.Save();
             }
 
-            GUILayout.Space(10);
+            GUILayout.Space(15);
+            
+            float currentVol = AudioListener.volume;
+            GUILayout.Label($"Master Volume: {currentVol * 100f:F0}%");
+            float newVol = GUILayout.HorizontalSlider(currentVol, 0f, 1f);
+            if (Mathf.Abs(newVol - currentVol) > 0.001f)
+            {
+                AudioListener.volume = newVol;
+                PlayerPrefs.SetFloat("MasterVolume", newVol);
+                PlayerPrefs.Save();
+            }
+
+            GUILayout.Space(15);
 
             if (GUILayout.Button("Back"))
             {
