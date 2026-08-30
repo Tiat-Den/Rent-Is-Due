@@ -32,6 +32,7 @@ namespace RentIsDue.Audio
         public AudioClip gameOverClip;
 
         private AudioSource sfxSource;
+        private AudioSource bgmSource;
 
         private void Awake()
         {
@@ -51,6 +52,11 @@ namespace RentIsDue.Audio
             sfxSource.spatialBlend = 0f; // 2D Sound (Phát trực tiếp vào tai không bị giảm âm theo khoảng cách)
             sfxSource.volume = 1f;
 
+            bgmSource = gameObject.AddComponent<AudioSource>();
+            bgmSource.loop = true;
+            bgmSource.volume = 0.5f;
+            bgmSource.playOnAwake = false;
+
             // Đảm bảo trong Scene luôn có 1 AudioListener để nghe được âm thanh
             if (Object.FindAnyObjectByType<AudioListener>() == null)
             {
@@ -64,6 +70,46 @@ namespace RentIsDue.Audio
                     gameObject.AddComponent<AudioListener>();
                 }
             }
+        }
+
+        private void Start()
+        {
+            PlayAmbientBGM();
+        }
+
+        public void PlayAmbientBGM()
+        {
+            if (bgmSource == null) return;
+
+            int sampleRate = 44100;
+            float duration = 2.0f;
+            int sampleCount = Mathf.CeilToInt(sampleRate * duration);
+            float[] samples = new float[sampleCount];
+
+            // Tự động tạo âm thanh nền Ambient (Drone/Pad)
+            for (int i = 0; i < sampleCount; i++)
+            {
+                float time = (float)i / sampleRate;
+                
+                // Trộn vài sóng sine ở tần số thấp để tạo drone pad
+                float wave1 = Mathf.Sin(2 * Mathf.PI * 55f * time); // A1
+                float wave2 = Mathf.Sin(2 * Mathf.PI * 55.5f * time); // Chênh phô nhẹ (detune)
+                float wave3 = Mathf.Sin(2 * Mathf.PI * 110f * time); // A2
+
+                float sample = (wave1 + wave2 + wave3) / 3f;
+                
+                // LFO điều biến nhẹ âm lượng
+                float modulation = Mathf.Sin(2 * Mathf.PI * 0.5f * time); 
+                sample *= 0.5f + (0.5f * modulation);
+
+                samples[i] = sample * 0.3f;
+            }
+
+            AudioClip clip = AudioClip.Create("AmbientDrone", sampleCount, 1, sampleRate, false);
+            clip.SetData(samples, 0);
+            
+            bgmSource.clip = clip;
+            bgmSource.Play();
         }
 
         public void PlayPickup()
