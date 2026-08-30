@@ -180,6 +180,34 @@ namespace RentIsDue.Audio
             }
         }
 
+        public AudioClip CreateStreetNoise()
+        {
+            int sampleRate = 44100;
+            float duration = 3.0f;
+            int sampleCount = Mathf.CeilToInt(sampleRate * duration);
+            float[] samples = new float[sampleCount];
+
+            for (int i = 0; i < sampleCount; i++)
+            {
+                // Generate pink-ish noise for wind/street rumble
+                float white = Random.Range(-1f, 1f);
+                
+                // Simple low-pass filter
+                float lastOut = i > 0 ? samples[i-1] : 0;
+                float filtered = (lastOut * 0.9f) + (white * 0.1f);
+                
+                // Modulate with slow sine wave for wind gusts
+                float time = (float)i / sampleRate;
+                float gust = Mathf.Sin(2 * Mathf.PI * 0.2f * time);
+                
+                samples[i] = filtered * (0.3f + (0.15f * gust)) * 0.15f; 
+            }
+
+            AudioClip clip = AudioClip.Create("StreetNoise", sampleCount, 1, sampleRate, false);
+            clip.SetData(samples, 0);
+            return clip;
+        }
+
         // Tự động tạo âm thanh tổng hợp (Procedural Audio) tức thì
         private void PlayProceduralBeep(float startFreq, float endFreq, float duration, float volume)
         {

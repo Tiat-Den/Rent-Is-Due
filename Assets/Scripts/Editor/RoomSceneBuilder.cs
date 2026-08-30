@@ -275,7 +275,20 @@ namespace RentIsDue.Editor
             // 10. ALLEYWAY (Khu Phố hẻm)
             GameObject alleyRoot = new GameObject("Alleyway_Environment");
             alleyRoot.transform.SetParent(roomRoot.transform, false);
+
+            // Street Ambience Audio
+            AudioSource alleyAudio = alleyRoot.AddComponent<AudioSource>();
+            alleyAudio.spatialBlend = 1.0f; // 3D sound
+            alleyAudio.rolloffMode = AudioRolloffMode.Linear;
+            alleyAudio.minDistance = 5f;
+            alleyAudio.maxDistance = 25f;
+            alleyAudio.loop = true;
+            alleyAudio.playOnAwake = true;
+            alleyAudio.volume = 0.6f;
             
+            // It will generate and play the street noise at runtime using a small helper script attached to it.
+            alleyRoot.AddComponent<RentIsDue.Audio.StreetAmbiencePlayer>();
+
             // Floor for alley
             GameObject alleyFloor = GameObject.CreatePrimitive(PrimitiveType.Plane);
             alleyFloor.name = "Alley_Floor";
@@ -289,6 +302,18 @@ namespace RentIsDue.Editor
             CreateWall("AlleyWall_South", "Mat_AlleyWall", new Vector3(0, wallHeight / 2, 25f), new Vector3(20, wallHeight, 0.2f), alleyRoot, new Color(0.3f, 0.3f, 0.3f));
             CreateWall("AlleyWall_West", "Mat_AlleyWall", new Vector3(-10f, wallHeight / 2, 30f), new Vector3(0.2f, wallHeight, 10f), alleyRoot, new Color(0.3f, 0.3f, 0.3f)); 
             CreateWall("AlleyWall_East", "Mat_AlleyWall", new Vector3(10f, wallHeight / 2, 30f), new Vector3(0.2f, wallHeight, 10f), alleyRoot, new Color(0.3f, 0.3f, 0.3f));
+            
+            // Alley Decorations
+            SpawnModel(urbanFolder, "detail-dumpster-open.fbx", new Vector3(8f, 0, 34f), Quaternion.Euler(0, -20, 0), alleyRoot, 1f);
+            SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(6f, 0, 34.5f), Quaternion.Euler(0, -5, 0), alleyRoot, 1f);
+            SpawnModel(urbanFolder, "pallet.fbx", new Vector3(-7f, 0, 34f), Quaternion.Euler(0, 45, 0), alleyRoot, 1f);
+            SpawnModel(urbanFolder, "pallet-small.fbx", new Vector3(-7.5f, 0.2f, 34.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 1f);
+            SpawnModel(urbanFolder, "detail-bench.fbx", new Vector3(-8f, 0, 26f), Quaternion.Euler(0, 180, 0), alleyRoot, 1f);
+            SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(9f, 0, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 1f);
+            SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-9f, 0, 30f), Quaternion.Euler(0, 90, 0), alleyRoot, 1f);
+            SpawnModel(urbanFolder, "detail-barrier-type-a.fbx", new Vector3(5f, 0, 26f), Quaternion.Euler(0, 15, 0), alleyRoot, 1f);
+            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(-9f, 0, 34f), Quaternion.identity, alleyRoot, 1f);
+            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(9f, 0, 34f), Quaternion.identity, alleyRoot, 1f);
             
             // Cửa ra Khu Phố (nằm ở phòng)
             GameObject streetDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
