@@ -10,7 +10,7 @@ namespace RentIsDue.Gameplay
 
         private void Start()
         {
-            var p = FindAnyObjectByType<RentIsDue.Player.PlayerController>();
+            var p = FindAnyObjectByType<RentIsDue.Player.PlayerMovement>();
             if (p != null) playerTransform = p.transform;
         }
 
