@@ -24,9 +24,9 @@ namespace RentIsDue.Gameplay
             // If player is in room (z near 0), text is 'Exit to Alley'. If in alley (z near 30), text is 'Enter Room'.
             if (playerTransform != null && playerTransform.position.z > 15f)
             {
-                return "Vo PhA?ng (Enter Room)";
+                return "Vào Phòng (Enter Room)";
             }
-            return "Ra Khu PhA^' (Exit to Alley)";
+            return "Ra Khu Phố (Exit to Alley)";
         }
 
         public void Interact(PlayerInteractor player)
