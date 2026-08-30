@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
 using RentIsDue.Core;
@@ -14,19 +14,19 @@ namespace RentIsDue.Editor
     {
         private const string SAVED_ROOM_PREFAB_PATH = "Assets/Prefabs/Environments/SavedGiantRoom.prefab";
 
-        [MenuItem("Tools/ðŸ  Build Giant Room (25m x 20m - SiÃªu Rá»™ng RÃ£i)")]
+        [MenuItem("Tools/🏠 Build Giant Room (25m x 20m - Siêu Rộng Rãi)")]
         public static void BuildGiantRoom()
         {
             BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
         }
 
-        [MenuItem("Tools/ðŸ’¾ Save Current Room Layout as Custom Template")]
+        [MenuItem("Tools/💾 Save Current Room Layout as Custom Template")]
         public static void SaveCurrentRoomLayout()
         {
             GameObject roomRoot = GameObject.Find("TinyRoom_Environment");
             if (roomRoot == null)
             {
-                EditorUtility.DisplayDialog("Room Not Found", "KhÃ´ng tÃ¬m tháº¥y GameObject 'TinyRoom_Environment' trong Hierarchy Ä‘á»ƒ lÆ°u! HÃ£y cháº¯c cháº¯n cÄƒn phÃ²ng Ä‘ang má»Ÿ trong Scene.", "OK");
+                EditorUtility.DisplayDialog("Room Not Found", "Không tìm thấy GameObject 'TinyRoom_Environment' trong Hierarchy để lưu! Hãy chắc chắn căn phòng đang mở trong Scene.", "OK");
                 return;
             }
 
@@ -40,16 +40,16 @@ namespace RentIsDue.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            EditorUtility.DisplayDialog("Room Saved! ðŸ’¾", "ÄÃ£ lÆ°u thÃ nh cÃ´ng toÃ n bá»™ cÃ¡ch sáº¯p xáº¿p cÄƒn phÃ²ng cá»§a báº¡n vÃ o Template Prefab (SavedGiantRoom.prefab)!\n\nTá»« bÃ¢y giá» báº¡n cÃ³ thá»ƒ náº¡p láº¡i báº¥t cá»© lÃºc nÃ o qua menu 'Restore Saved Custom Room Template'.", "Tuyá»‡t vá»i!");
+            EditorUtility.DisplayDialog("Room Saved! 💾", "Đã lưu thành công toàn bộ cách sắp xếp căn phòng của bạn vào Template Prefab (SavedGiantRoom.prefab)!\n\nTừ bây giờ bạn có thể nạp lại bất cứ lúc nào qua menu 'Restore Saved Custom Room Template'.", "Tuyệt vời!");
             Debug.Log($"<color=green>[RoomSceneBuilder] Successfully saved room layout to {SAVED_ROOM_PREFAB_PATH}!</color>");
         }
 
-        [MenuItem("Tools/ðŸ  Restore Saved Custom Room Template (Náº¡p PhÃ²ng ÄÃ£ LÆ°u)")]
+        [MenuItem("Tools/🏠 Restore Saved Custom Room Template (Nạp Phòng Đã Lưu)")]
         public static void RestoreSavedRoom()
         {
             if (!File.Exists(SAVED_ROOM_PREFAB_PATH))
             {
-                EditorUtility.DisplayDialog("No Saved Room", "ChÆ°a cÃ³ file phÃ²ng máº«u nÃ o Ä‘Æ°á»£c lÆ°u! HÃ£y báº¥m 'Save Current Room Layout as Custom Template' trÆ°á»›c.", "OK");
+                EditorUtility.DisplayDialog("No Saved Room", "Chưa có file phòng mẫu nào được lưu! Hãy bấm 'Save Current Room Layout as Custom Template' trước.", "OK");
                 return;
             }
 
@@ -78,13 +78,13 @@ namespace RentIsDue.Editor
             }
         }
 
-        [MenuItem("Tools/ðŸ  Build Spacious Room (16m x 14m)")]
+        [MenuItem("Tools/🏠 Build Spacious Room (16m x 14m)")]
         public static void BuildSpaciousRoom()
         {
             BuildRoomInternal("Spacious Room (16m x 14m)", 16f, 14f, 4.0f);
         }
 
-        [MenuItem("Tools/ðŸ  Custom Room Builder Window (TÃ¹y Chá»‰nh KÃ­ch ThÆ°á»›c)")]
+        [MenuItem("Tools/🏠 Custom Room Builder Window (Tùy Chỉnh Kích Thước)")]
         public static void OpenWindow()
         {
             RoomSceneBuilder window = GetWindow<RoomSceneBuilder>("Room Builder");
@@ -98,38 +98,38 @@ namespace RentIsDue.Editor
 
         private void OnGUI()
         {
-            GUILayout.Label("ðŸ  <b>RENT IS DUE â€” 3D ROOM BUILDER</b>", EditorStyles.boldLabel);
+            GUILayout.Label("🏠 <b>RENT IS DUE — 3D ROOM BUILDER</b>", EditorStyles.boldLabel);
             GUILayout.Space(10);
 
-            if (GUILayout.Button("ðŸ’¾ LÆ¯U Bá» Cá»¤C PHÃ’NG HIá»†N Táº I VÃ€O TEMPLATE", GUILayout.Height(32)))
+            if (GUILayout.Button("💾 LƯU BỐ CỤC PHÒNG HIỆN TẠI VÀO TEMPLATE", GUILayout.Height(32)))
             {
                 SaveCurrentRoomLayout();
             }
 
-            if (GUILayout.Button("ðŸ  Náº P Láº I PHÃ’NG ÄÃƒ LÆ¯U TÃ™Y CHá»ˆNH", GUILayout.Height(32)))
+            if (GUILayout.Button("🏠 NẠP LẠI PHÒNG ĐÃ LƯU TÙY CHỈNH", GUILayout.Height(32)))
             {
                 RestoreSavedRoom();
             }
 
             GUILayout.Space(10);
-            EditorGUILayout.HelpBox("Báº¡n cÃ³ thá»ƒ tá»± do kÃ©o tháº£, dá»‹ch chuyá»ƒn ná»™i tháº¥t theo Ã½ thÃ­ch rá»“i báº¥m 'LÆ¯U Bá» Cá»¤C PHÃ’NG' á»Ÿ trÃªn Ä‘á»ƒ lÆ°u vÄ©nh viá»…n.", MessageType.Info);
+            EditorGUILayout.HelpBox("Bạn có thể tự do kéo thả, dịch chuyển nội thất theo ý thích rồi bấm 'LƯU BỐ CỤC PHÒNG' ở trên để lưu vĩnh viễn.", MessageType.Info);
             GUILayout.Space(10);
 
-            customWidth = EditorGUILayout.Slider("Chiá»u Rá»™ng (Width - mÃ©t):", customWidth, 10f, 50f);
-            customDepth = EditorGUILayout.Slider("Chiá»u DÃ i (Depth - mÃ©t):", customDepth, 10f, 50f);
-            customHeight = EditorGUILayout.Slider("Chiá»u Cao Tráº§n (Height):", customHeight, 3f, 8f);
+            customWidth = EditorGUILayout.Slider("Chiều Rộng (Width - mét):", customWidth, 10f, 50f);
+            customDepth = EditorGUILayout.Slider("Chiều Dài (Depth - mét):", customDepth, 10f, 50f);
+            customHeight = EditorGUILayout.Slider("Chiều Cao Trần (Height):", customHeight, 3f, 8f);
 
             GUILayout.Space(10);
-            GUILayout.Label($"Diá»‡n tÃ­ch sÃ n: <b>{(int)(customWidth * customDepth)} mÂ²</b>", EditorStyles.helpBox);
+            GUILayout.Label($"Diện tích sàn: <b>{(int)(customWidth * customDepth)} m²</b>", EditorStyles.helpBox);
 
             GUILayout.Space(10);
-            if (GUILayout.Button($"ðŸš€ XÃ‚Y Láº I Tá»ª Äáº¦U ({customWidth:F0}m x {customDepth:F0}m)", GUILayout.Height(35)))
+            if (GUILayout.Button($"🚀 XÂY LẠI TỪ ĐẦU ({customWidth:F0}m x {customDepth:F0}m)", GUILayout.Height(35)))
             {
                 BuildRoomInternal($"Custom Room ({customWidth:F0}m x {customDepth:F0}m)", customWidth, customDepth, customHeight);
             }
 
             GUILayout.Space(10);
-            if (GUILayout.Button("ðŸ“¦ Link 3D Models to 30 ItemData Assets", GUILayout.Height(25)))
+            if (GUILayout.Button("📦 Link 3D Models to 30 ItemData Assets", GUILayout.Height(25)))
             {
                 LinkItemModels();
             }
@@ -152,20 +152,20 @@ namespace RentIsDue.Editor
             roomRoot.transform.localScale = Vector3.one;
             Undo.RegisterCreatedObjectUndo(roomRoot, $"Build {roomTitle}");
 
-            // 1. Táº¡o Vá» PhÃ²ng (SÃ n, 3 TÆ°á»ng bao, TÆ°á»ng Cá»­a Sá»• phÃ­a Nam cÃ³ khoÃ©t khung kÃ­nh)
+            // 1. Tạo Vỏ Phòng (Sàn, 3 Tường bao, Tường Cửa Sổ phía Nam có khoét khung kính)
             CreateRoomShellWithWindow(roomRoot, roomWidth, roomDepth, wallHeight, urbanFolder);
 
             float halfW = roomWidth / 2f;
             float halfD = roomDepth / 2f;
 
-            // 2. ðŸšª Cá»¬A RA VÃ€O (Äáº·t á»Ÿ mÃ©p tÆ°á»ng phÃ­a TÃ¢y - Scale chuáº©n 0.75x)
+            // 2. 🚪 CỬA RA VÀO (Đặt ở mép tường phía Tây - Scale chuẩn 0.75x)
             GameObject door = SpawnModel(urbanFolder, "door-type-a.fbx", new Vector3(-halfW + 0.15f, 0, -halfD + 4.0f), Quaternion.Euler(0, 90, 0), roomRoot, 0.75f);
             if (door != null)
             {
                 EnsureCollider(door);
             }
 
-            // ðŸŽ›ï¸ CÃ”NG Táº®C ÄÃˆN TRáº¦N (Gáº¯n tÆ°á»ng cáº¡nh cá»­a ra vÃ o)
+            // 🎛️ CÔNG TẮC ĐÈN TRẦN (Gắn tường cạnh cửa ra vào)
             GameObject switchBox = GameObject.CreatePrimitive(PrimitiveType.Cube);
             switchBox.name = "Light_Switch_Wall";
             switchBox.transform.SetParent(roomRoot.transform, false);
@@ -173,7 +173,7 @@ namespace RentIsDue.Editor
             switchBox.transform.localScale = new Vector3(0.08f, 0.14f, 0.10f);
             ApplyMaterial(switchBox, "Mat_LightSwitch", new Color(0.95f, 0.95f, 0.95f));
 
-            // 3. ðŸ’¡ ÄÃˆN TRáº¦N & BÃ“NG CHIáº¾U Tá»ª TRÃŠN XUá»NG (Treo giá»¯a phÃ²ng)
+            // 3. 💡 ĐÈN TRẦN & BÓNG CHIẾU TỪ TRÊN XUỐNG (Treo giữa phòng)
             GameObject ceilingLamp = SpawnModel(modelsFolder, "lampSquareCeiling.fbx", new Vector3(0, wallHeight - 0.15f, 0), Quaternion.identity, roomRoot, 0.75f);
             
             GameObject ceilingLightObj = new GameObject("Ceiling_Light_Source");
@@ -182,45 +182,39 @@ namespace RentIsDue.Editor
 
             Light ceilingLight = ceilingLightObj.AddComponent<Light>();
             ceilingLight.type = LightType.Point;
-            ceilingLight.color = new Color(1f, 0.94f, 0.82f); // Ãnh sÃ¡ng Ä‘Ã¨n áº¥m cÃºng
+            ceilingLight.color = new Color(1f, 0.94f, 0.82f); // Ánh sáng đèn ấm cúng
             ceilingLight.intensity = 20f;
             ceilingLight.range = 22f;
             ceilingLight.shadows = LightShadows.Soft;
-            ceilingLight.enabled = false; // Máº·c Ä‘á»‹nh táº¯t ban ngÃ y Ä‘á»ƒ Ä‘Ã³n náº¯ng cá»­a sá»•
+            ceilingLight.enabled = false; // Mặc định tắt ban ngày để đón nắng cửa sổ
 
-            // Gáº¯n tÆ°Æ¡ng tÃ¡c cÃ´ng táº¯c báº­t/táº¯t Ä‘Ã¨n
+            // Gắn tương tác công tắc bật/tắt đèn
             CeilingLightSwitch lightSwitch = switchBox.AddComponent<CeilingLightSwitch>();
             lightSwitch.ceilingLight = ceilingLight;
             lightSwitch.isLightOn = false;
 
-            // 4. ðŸ›ï¸ GÃ“C GIÆ¯á»œNG NGá»¦ (GÃ³c TÃ¢y Báº¯c - Scale 0.35x)
+            // 4. 🛏️ GÓC GIƯỜNG NGỦ (Góc Tây Bắc - Scale 0.35x)
             GameObject bed = SpawnModel(modelsFolder, "bedSingle.fbx", new Vector3(-halfW + 2.0f, 0, halfD - 2.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
             SpawnModel(modelsFolder, "cabinetBed.fbx", new Vector3(-halfW + 2.0f, 0, halfD - 4.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
             SpawnModel(modelsFolder, "lampRoundFloor.fbx", new Vector3(-halfW + 1.0f, 0, halfD - 4.5f), Quaternion.identity, roomRoot, 0.35f);
             if (bed != null)
             {
                 EnsureCollider(bed);
-                bed.AddComponent<RentIsDue.Gameplay.BedInteractable>(); // ðŸ˜´ Ngá»§ Ä‘á»ƒ káº¿t thÃºc ngÃ y
+                bed.AddComponent<RentIsDue.Gameplay.BedInteractable>(); // 😴 Ngủ để kết thúc ngày
             }
 
-            // ðŸ”§ BÃ€N Sá»¬A Äá»’ (GÃ³c TÃ¢y Nam gáº§n cá»­a - Scale 0.35x)
-            GameObject repairBench = SpawnModel(modelsFolder, "tableCoffee.fbx", new Vector3(-halfW + 3.5f, 0, -halfD + 2.5f), Quaternion.identity, roomRoot, 0.35f);
-            if (repairBench != null)
-            {
-                EnsureCollider(repairBench);
-                repairBench.AddComponent<RentIsDue.Gameplay.RepairManager>(); // ðŸ”§ Sá»­a Ä‘á»“
-            }
 
-            // 5. ðŸ’» BÃ€N LÃ€M VIá»†C & NÃ‚NG Cáº¤P (PhÃ­a ÄÃ´ng Báº¯c - Scale 0.35x)
+
+            // 5. 💻 BÀN LÀM VIỆC & NÂNG CẤP (Phía Đông Bắc - Scale 0.35x)
             GameObject desk = SpawnModel(modelsFolder, "desk.fbx", new Vector3(3.0f, 0, halfD - 1.5f), Quaternion.Euler(0, 180, 0), roomRoot, 0.35f);
             SpawnModel(modelsFolder, "chairDesk.fbx", new Vector3(3.0f, 0, halfD - 2.4f), Quaternion.identity, roomRoot, 0.35f);
             
-            // Laptop trÃªn bÃ n
+            // Laptop trên bàn
             GameObject laptop = SpawnModel(modelsFolder, "laptop.fbx", new Vector3(3.0f, 0.32f, halfD - 1.5f), Quaternion.Euler(0, 180, 0), roomRoot, 0.20f);
             if (laptop != null)
             {
                 EnsureCollider(laptop);
-                
+
             }
 
             if (desk != null)
@@ -232,7 +226,7 @@ namespace RentIsDue.Editor
                 deskSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/DeskLootTable.asset");
             }
 
-            // 6. ðŸ—‘ï¸ GÃ“C THÃ™NG RÃC (GÃ³c ÄÃ´ng Báº¯c sÃ¡t tÆ°á»ng - Scale 0.35x)
+            // 6. 🗑️ GÓC THÙNG RÁC (Góc Đông Bắc sát tường - Scale 0.35x)
             GameObject trash = SpawnModel(modelsFolder, "cardboardBoxOpen.fbx", new Vector3(halfW - 1.8f, 0, halfD - 1.8f), Quaternion.Euler(0, -35, 0), roomRoot, 0.35f);
             if (trash != null)
             {
@@ -243,7 +237,7 @@ namespace RentIsDue.Editor
                 trashSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/TrashLootTable.asset");
             }
 
-            // 7. ðŸ³ KHU Báº¾P (MÃ©p tÆ°á»ng phÃ­a ÄÃ´ng - Scale 0.35x)
+            // 7. 🍳 KHU BẾP (Mép tường phía Đông - Scale 0.35x)
             GameObject kitchen = SpawnModel(modelsFolder, "kitchenCabinet.fbx", new Vector3(halfW - 1.2f, 0, 0.5f), Quaternion.Euler(0, -90, 0), roomRoot, 0.35f);
             SpawnModel(modelsFolder, "kitchenSink.fbx", new Vector3(halfW - 1.2f, 0, -1.0f), Quaternion.Euler(0, -90, 0), roomRoot, 0.35f);
             if (kitchen != null)
@@ -255,7 +249,7 @@ namespace RentIsDue.Editor
                 kitchenSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/KitchenLootTable.asset");
             }
 
-            // 8. ðŸšª Tá»¦ QUáº¦N ÃO & GIÃ SÃCH (MÃ©p tÆ°á»ng phÃ­a TÃ¢y - Scale 0.35x)
+            // 8. 🚪 TỦ QUẦN ÁO & GIÁ SÁCH (Mép tường phía Tây - Scale 0.35x)
             GameObject wardrobe = SpawnModel(modelsFolder, "bookcaseClosed.fbx", new Vector3(-halfW + 1.2f, 0, -0.5f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
             SpawnModel(modelsFolder, "bookcaseOpen.fbx", new Vector3(-halfW + 1.2f, 0, -2.0f), Quaternion.Euler(0, 90, 0), roomRoot, 0.35f);
             if (wardrobe != null)
@@ -267,7 +261,7 @@ namespace RentIsDue.Editor
                 wardrobeSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/WardrobeLootTable.asset");
             }
 
-            // 9. ðŸ”’ KÃ‰T Sáº®T BÃ Máº¬T (GÃ³c TÃ¢y Nam - Scale 0.35x)
+            // 9. 🔒 KÉT SẮT BÍ MẬT (Góc Tây Nam - Scale 0.35x)
             GameObject safe = SpawnModel(modelsFolder, "cardboardBoxClosed.fbx", new Vector3(-halfW + 2.0f, 0, -halfD + 2.0f), Quaternion.Euler(0, 45, 0), roomRoot, 0.35f);
             if (safe != null)
             {
@@ -278,36 +272,70 @@ namespace RentIsDue.Editor
                 safeSearch.lootTable = AssetDatabase.LoadAssetAtPath<LootTable>("Assets/ScriptableObjects/LootTables/SecretSafeLootTable.asset");
             }
 
-            // 10. ðŸ‘¤ QUáº¦Y DEALER VE CHAI (GÃ³c ÄÃ´ng Nam - Scale 0.35x)
-            GameObject dealerDesk = SpawnModel(modelsFolder, "bench.fbx", new Vector3(halfW - 2.5f, 0, -halfD + 2.5f), Quaternion.Euler(0, -45, 0), roomRoot, 0.35f);
+            // 10. ALLEYWAY (Khu Phố hẻm)
+            GameObject alleyRoot = new GameObject("Alleyway_Environment");
+            alleyRoot.transform.SetParent(roomRoot.transform, false);
+            
+            // Floor for alley
+            GameObject alleyFloor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            alleyFloor.name = "Alley_Floor";
+            alleyFloor.transform.SetParent(alleyRoot.transform, false);
+            alleyFloor.transform.localPosition = new Vector3(0, 0, 30f);
+            alleyFloor.transform.localScale = new Vector3(2f, 1f, 1f); // 20m x 10m
+            ApplyMaterial(alleyFloor, "Mat_AlleyFloor", new Color(0.2f, 0.2f, 0.2f));
+
+            // Walls for alley
+            CreateWall("AlleyWall_North", "Mat_AlleyWall", new Vector3(0, wallHeight / 2, 35f), new Vector3(20, wallHeight, 0.2f), alleyRoot, new Color(0.3f, 0.3f, 0.3f)); 
+            CreateWall("AlleyWall_South", "Mat_AlleyWall", new Vector3(0, wallHeight / 2, 25f), new Vector3(20, wallHeight, 0.2f), alleyRoot, new Color(0.3f, 0.3f, 0.3f));
+            CreateWall("AlleyWall_West", "Mat_AlleyWall", new Vector3(-10f, wallHeight / 2, 30f), new Vector3(0.2f, wallHeight, 10f), alleyRoot, new Color(0.3f, 0.3f, 0.3f)); 
+            CreateWall("AlleyWall_East", "Mat_AlleyWall", new Vector3(10f, wallHeight / 2, 30f), new Vector3(0.2f, wallHeight, 10f), alleyRoot, new Color(0.3f, 0.3f, 0.3f));
+            
+            // Cửa ra Khu Phố (nằm ở phòng)
+            GameObject streetDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            streetDoor.name = "Street_Door";
+            streetDoor.transform.SetParent(roomRoot.transform, false);
+            streetDoor.transform.localPosition = new Vector3(0, 1.25f, halfD - 0.2f);
+            streetDoor.transform.localScale = new Vector3(1.5f, 2.5f, 0.2f);
+            ApplyMaterial(streetDoor, "Mat_StreetDoor", new Color(0.5f, 0.3f, 0.1f));
+            streetDoor.AddComponent<RentIsDue.Gameplay.StreetDoorInteractable>();
+
+            // Cửa từ Khu Phố về Phòng
+            GameObject alleyDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            alleyDoor.name = "Alley_Door";
+            alleyDoor.transform.SetParent(alleyRoot.transform, false);
+            alleyDoor.transform.localPosition = new Vector3(0, 1.25f, 25.2f);
+            alleyDoor.transform.localScale = new Vector3(1.5f, 2.5f, 0.2f);
+            ApplyMaterial(alleyDoor, "Mat_StreetDoor", new Color(0.5f, 0.3f, 0.1f));
+            alleyDoor.AddComponent<RentIsDue.Gameplay.StreetDoorInteractable>();
+
+            // 11. DEALER Ngoài hẻm
+            GameObject dealerDesk = SpawnModel(modelsFolder, "bench.fbx", new Vector3(4f, 0, 32f), Quaternion.Euler(0, -45, 0), alleyRoot, 0.35f);
             if (dealerDesk != null)
             {
                 EnsureCollider(dealerDesk);
                 dealerDesk.AddComponent<DealerInteractable>();
-                dealerDesk.AddComponent<RentIsDue.Gameplay.DailyOrderManager>(); // ðŸ“‹ ÄÆ¡n Ä‘áº·t hÃ ng háº±ng ngÃ y
+                dealerDesk.AddComponent<RentIsDue.Gameplay.DailyOrderManager>();
             }
 
-            // 11. Báº¢NG NHIá»†M Vá»¤ VIP (GÃ³c ÄÃ´ng, treo tÆ°á»ng)
-            GameObject bountyBoard = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            bountyBoard.name = "Collector_Board";
-            bountyBoard.transform.SetParent(roomRoot.transform, false);
-            bountyBoard.transform.localPosition = new Vector3(halfW - 0.05f, 1.8f, 3.0f);
-            bountyBoard.transform.localScale = new Vector3(0.1f, 1.5f, 2.5f);
-            ApplyMaterial(bountyBoard, "Mat_BountyBoard", new Color(0.15f, 0.35f, 0.15f)); // Báº£ng xanh lÃ¡ Ä‘áº­m
-            bountyBoard.AddComponent<RentIsDue.Gameplay.CollectorInteractable>();
-            bountyBoard.AddComponent<RentIsDue.Gameplay.CollectorManager>();
-
-            // 11.5. Cá»¬A HÃ€NG Äá»’ NGHá»€ (Laptop trÃªn giÆ°á»ng hoáº·c há»™p gá»—)
+            // 12. CỬA HÀNG ĐỒ NGHỀ (Tool Shop)
             GameObject toolShop = GameObject.CreatePrimitive(PrimitiveType.Cube);
             toolShop.name = "Tool_Shop";
-            toolShop.transform.SetParent(roomRoot.transform, false);
-            toolShop.transform.localPosition = new Vector3(halfW - 0.5f, 0.5f, -halfD + 1.0f);
+            toolShop.transform.SetParent(alleyRoot.transform, false);
+            toolShop.transform.localPosition = new Vector3(-4f, 0.5f, 32f);
             toolShop.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
-            ApplyMaterial(toolShop, "Mat_ToolShop", new Color(0.8f, 0.4f, 0.1f)); // MÃ u cam
+            ApplyMaterial(toolShop, "Mat_ToolShop", new Color(0.8f, 0.4f, 0.1f));
             toolShop.AddComponent<RentIsDue.Shop.ToolShopInteractable>();
             toolShop.AddComponent<RentIsDue.Shop.ToolShopManager>();
 
-            // 12. Cáº¥u hÃ¬nh Ãnh SÃ¡ng Tá»± NhiÃªn Máº·t Trá»i Chiáº¿u XiÃªn Qua Cá»­a Sá»•
+            // 13. BÀN SỬA ĐỒ (Repair Bench)
+            GameObject repairBenchAlley = SpawnModel(modelsFolder, "tableCoffee.fbx", new Vector3(0, 0, 32f), Quaternion.identity, alleyRoot, 0.35f);
+            if (repairBenchAlley != null)
+            {
+                EnsureCollider(repairBenchAlley);
+                repairBenchAlley.AddComponent<RentIsDue.Gameplay.RepairManager>();
+            }
+
+            // 12. Cấu hình Ánh Sáng Tự Nhiên Mặt Trời Chiếu Xiên Qua Cửa Sổ
             SetupNaturalSunlight(roomRoot, -halfD, wallHeight);
 
             // 12. Playtest Logger
@@ -315,14 +343,14 @@ namespace RentIsDue.Editor
             logger.AddComponent<PlaytestLogger>();
             logger.transform.SetParent(roomRoot.transform);
 
-            // 13. Äáº·t Player vÃ o tÃ¢m phÃ²ng
+            // 13. Đặt Player vào tâm phòng
             GameObject player = GameObject.Find("Player");
             if (player != null)
             {
                 player.transform.position = new Vector3(0, 1.0f, 0);
             }
 
-            // 13. Cá»¬A NHÃ€ KHO (Trong phÃ²ng chÃ­nh)
+            // 13. CỬA NHÀ KHO (Trong phòng chính)
             GameObject storageDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             storageDoor.name = "Storage_Door";
             storageDoor.transform.SetParent(roomRoot.transform, false);
@@ -331,17 +359,17 @@ namespace RentIsDue.Editor
             ApplyMaterial(storageDoor, "Mat_Door", new Color(0.3f, 0.2f, 0.1f));
             storageDoor.AddComponent<RentIsDue.Gameplay.StorageDoorInteractable>();
 
-            // 14. XÃ‚Y Dá»°NG NHÃ€ KHO (STORAGE ROOM) - Náº±m cÃ¡ch xa phÃ²ng chÃ­nh
+            // 14. XÂY DỰNG NHÀ KHO (STORAGE ROOM) - Nằm cách xa phòng chính
             GameObject storageRoot = new GameObject("StorageRoom");
-            storageRoot.transform.position = new Vector3(30f, 0, 0); // Äáº©y ra xa 30m
+            storageRoot.transform.position = new Vector3(30f, 0, 0); // Đẩy ra xa 30m
 
-            // SÃ n nhÃ  kho
+            // Sàn nhà kho
             GameObject sFloor = GameObject.CreatePrimitive(PrimitiveType.Plane);
             sFloor.transform.SetParent(storageRoot.transform, false);
             sFloor.transform.localScale = new Vector3(0.6f, 1f, 0.6f); // 6x6m
             ApplyMaterial(sFloor, "Mat_StorageFloor", new Color(0.2f, 0.2f, 0.2f));
 
-            // TÆ°á»ng nhÃ  kho
+            // Tường nhà kho
             GameObject sWallN = GameObject.CreatePrimitive(PrimitiveType.Cube);
             sWallN.transform.SetParent(storageRoot.transform, false);
             sWallN.transform.localPosition = new Vector3(0, 1.5f, 3f);
@@ -366,7 +394,7 @@ namespace RentIsDue.Editor
             sWallW.transform.localScale = new Vector3(0.2f, 3f, 6f);
             ApplyMaterial(sWallW, "Mat_StorageWall", new Color(0.4f, 0.4f, 0.4f));
 
-            // Cá»­a ra cá»§a nhÃ  kho
+            // Cửa ra của nhà kho
             GameObject sExitDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             sExitDoor.name = "Storage_Exit_Door";
             sExitDoor.transform.SetParent(storageRoot.transform, false);
@@ -375,12 +403,12 @@ namespace RentIsDue.Editor
             ApplyMaterial(sExitDoor, "Mat_Door", new Color(0.3f, 0.2f, 0.1f));
             sExitDoor.AddComponent<RentIsDue.Gameplay.StorageExitInteractable>();
 
-            // Äiá»ƒm Spawn trong NhÃ  Kho
+            // Điểm Spawn trong Nhà Kho
             GameObject sSpawn = new GameObject("StorageSpawnPoint");
             sSpawn.transform.SetParent(storageRoot.transform, false);
             sSpawn.transform.localPosition = new Vector3(-2.0f, 1.0f, 0);
 
-            // Äiá»ƒm Spawn chÃ­nh (táº¡o náº¿u chÆ°a cÃ³)
+            // Điểm Spawn chính (tạo nếu chưa có)
             GameObject mSpawn = GameObject.Find("PlayerSpawnPoint");
             if (mSpawn == null)
             {
@@ -388,7 +416,7 @@ namespace RentIsDue.Editor
                 mSpawn.transform.position = new Vector3(0, 1.5f, 0);
             }
 
-            // Spawner trong NhÃ  kho (Loot xá»‹n hÆ¡n)
+            // Spawner trong Nhà kho (Loot xịn hơn)
             GameObject sSpawner = new GameObject("Storage_LootSpawner");
             sSpawner.transform.SetParent(storageRoot.transform, false);
             sSpawner.transform.localPosition = Vector3.zero;
@@ -408,7 +436,7 @@ namespace RentIsDue.Editor
             float halfD = depth / 2f;
             float halfH = height / 2f;
 
-            // SÃ n nhÃ  dÃ y
+            // Sàn nhà dày
             GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             floor.name = "Room_Floor";
             floor.transform.SetParent(parent.transform, false);
@@ -416,29 +444,29 @@ namespace RentIsDue.Editor
             floor.transform.localScale = new Vector3(width, 0.3f, depth);
             ApplyMaterial(floor, "Mat_Room_Floor", new Color(0.32f, 0.25f, 0.20f));
 
-            // TÆ°á»ng Báº¯c (PhÃ­a sau bÃ n lÃ m viá»‡c & giÆ°á»ng)
+            // Tường Bắc (Phía sau bàn làm việc & giường)
             CreateWall("Wall_North", "Mat_Room_Wall", new Vector3(0, halfH, halfD), new Vector3(width, height, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
 
-            // TÆ°á»ng TÃ¢y & ÄÃ´ng
+            // Tường Tây & Đông
             CreateWall("Wall_West", "Mat_Room_Wall", new Vector3(-halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, new Color(0.82f, 0.80f, 0.76f));
             CreateWall("Wall_East", "Mat_Room_Wall", new Vector3(halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, new Color(0.82f, 0.80f, 0.76f));
 
-            // TÆ¯á»œNG NAM (KHOÃ‰T KHUNG Cá»¬A Sá»” Lá»šN ÄÃ“N Náº®NG)
+            // TƯỜNG NAM (KHOÉT KHUNG CỬA SỔ LỚN ĐÓN NẮNG)
             float windowWidth = 6.0f;
             float windowHeight = 2.4f;
             float windowBottomY = 1.0f;
 
-            // Pháº§n tÆ°á»ng dÆ°á»›i cá»­a sá»•
+            // Phần tường dưới cửa sổ
             CreateWall("Wall_South_Bottom", "Mat_Room_Wall", new Vector3(0, windowBottomY / 2f, -halfD), new Vector3(width, windowBottomY, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
-            // Pháº§n tÆ°á»ng trÃªn cá»­a sá»•
+            // Phần tường trên cửa sổ
             float topWallHeight = height - (windowBottomY + windowHeight);
             CreateWall("Wall_South_Top", "Mat_Room_Wall", new Vector3(0, height - (topWallHeight / 2f), -halfD), new Vector3(width, topWallHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
-            // Pháº§n tÆ°á»ng 2 bÃªn cá»­a sá»•
+            // Phần tường 2 bên cửa sổ
             float sideWallWidth = (width - windowWidth) / 2f;
             CreateWall("Wall_South_Left", "Mat_Room_Wall", new Vector3(-halfW + (sideWallWidth / 2f), windowBottomY + (windowHeight / 2f), -halfD), new Vector3(sideWallWidth, windowHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
             CreateWall("Wall_South_Right", "Mat_Room_Wall", new Vector3(halfW - (sideWallWidth / 2f), windowBottomY + (windowHeight / 2f), -halfD), new Vector3(sideWallWidth, windowHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
 
-            // KÃ­nh Cá»­a Sá»• Trong Suá»‘t
+            // Kính Cửa Sổ Trong Suốt
             GameObject windowGlass = GameObject.CreatePrimitive(PrimitiveType.Cube);
             windowGlass.name = "Window_Glass_Pane";
             windowGlass.transform.SetParent(parent.transform, false);
@@ -446,11 +474,11 @@ namespace RentIsDue.Editor
             windowGlass.transform.localScale = new Vector3(windowWidth, windowHeight, 0.04f);
             ApplyMaterial(windowGlass, "Mat_Window_Glass", new Color(0.80f, 0.92f, 1.0f, 0.3f));
 
-            // Khung cá»­a sá»• má»¹ thuáº­t
+            // Khung cửa sổ mỹ thuật
             GameObject windowFrame = SpawnModel(urbanFolder, "window-wide-type-a.fbx", new Vector3(0, windowBottomY + (windowHeight / 2f) - 0.2f, -halfD + 0.05f), Quaternion.identity, parent, 1.2f);
             if (windowFrame != null) EnsureCollider(windowFrame);
 
-            // Tráº§n nhÃ 
+            // Trần nhà
             GameObject ceiling = GameObject.CreatePrimitive(PrimitiveType.Cube);
             ceiling.name = "Room_Ceiling";
             ceiling.transform.SetParent(parent.transform, false);
@@ -461,7 +489,7 @@ namespace RentIsDue.Editor
 
         private static void SetupNaturalSunlight(GameObject parent, float southZ, float wallHeight)
         {
-            // TÃ¬m Directional Light (Máº·t trá»i) chÃ­nh cá»§a Scene vÃ  chá»‰nh gÃ³c chiáº¿u xiÃªn qua cá»­a sá»•
+            // Tìm Directional Light (Mặt trời) chính của Scene và chỉnh góc chiếu xiên qua cửa sổ
             Light sunLight = null;
             Light[] allLights = Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude);
             foreach (var l in allLights)
@@ -480,13 +508,13 @@ namespace RentIsDue.Editor
                 sunLight.type = LightType.Directional;
             }
 
-            // GÃ³c chiáº¿u xiÃªn tá»« ngoÃ i cá»­a sá»• vÃ o phÃ²ng (Tia náº¯ng áº¥m Ã¡p ban ngÃ y)
+            // Góc chiếu xiên từ ngoài cửa sổ vào phòng (Tia nắng ấm áp ban ngày)
             sunLight.transform.rotation = Quaternion.Euler(28f, 25f, 0f);
-            sunLight.color = new Color(1.0f, 0.95f, 0.84f); // Ãnh náº¯ng vÃ ng áº¥m tá»± nhiÃªn
+            sunLight.color = new Color(1.0f, 0.95f, 0.84f); // Ánh nắng vàng ấm tự nhiên
             sunLight.intensity = 1.35f;
             sunLight.shadows = LightShadows.Soft;
 
-            // ÄÃ¨n viá»n háº¯t sÃ¡ng tá»« cá»­a sá»• (Window Glow Light)
+            // Đèn viền hắt sáng từ cửa sổ (Window Glow Light)
             GameObject windowGlow = new GameObject("Window_Sun_Glow");
             windowGlow.transform.SetParent(parent.transform, false);
             windowGlow.transform.localPosition = new Vector3(0, 2.2f, southZ + 0.8f);
@@ -598,13 +626,13 @@ namespace RentIsDue.Editor
 
             Light ptLight = lightObj.AddComponent<Light>();
             ptLight.type = LightType.Point;
-            ptLight.color = new Color(1f, 0.92f, 0.78f); // Ãnh sÃ¡ng vÃ ng áº¥m
+            ptLight.color = new Color(1f, 0.92f, 0.78f); // Ánh sáng vàng ấm
             ptLight.intensity = 18f;
             ptLight.range = 14f;
             ptLight.shadows = LightShadows.Soft;
         }
 
-        [MenuItem("Tools/ðŸ“¦ Link 3D Models to 30 ItemData Assets")]
+        [MenuItem("Tools/📦 Link 3D Models to 30 ItemData Assets")]
         public static void LinkItemModels()
         {
             string itemsFolder = "Assets/Resources/Items";
@@ -671,6 +699,3 @@ namespace RentIsDue.Editor
         }
     }
 }
-
-
-
