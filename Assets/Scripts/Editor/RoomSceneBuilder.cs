@@ -323,8 +323,11 @@ namespace RentIsDue.Editor
             SpawnModel(urbanFolder, "detail-bench.fbx", new Vector3(-6f, 0, 26f), Quaternion.Euler(0, 180, 0), alleyRoot, 2.5f);
             
             // Street Lamps with actual Light components
-            GameObject lamp1 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(8.5f, 0, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 2.5f);
-            GameObject lamp2 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-8.5f, 0, 30f), Quaternion.Euler(0, 90, 0), alleyRoot, 2.5f);
+            GameObject lamp1 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(8.5f, 0, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 5f);
+            GameObject lamp2 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-8.5f, 0, 30f), Quaternion.Euler(0, 90, 0), alleyRoot, 5f);
+            // DayNightCycle setup
+            RentIsDue.Environment.DayNightCycle dnc = alleyRoot.AddComponent<RentIsDue.Environment.DayNightCycle>();
+            
             if (lamp1 != null) {
                 GameObject l1 = new GameObject("LightSource");
                 l1.transform.SetParent(lamp1.transform, false);
@@ -333,8 +336,9 @@ namespace RentIsDue.Editor
                 pt1.type = LightType.Spot;
                 pt1.color = new Color(1f, 0.8f, 0.5f);
                 pt1.intensity = 50f; // Tăng sáng vì đèn ở trên cao hơn
-                pt1.range = 25f;
+                pt1.range = 30f;
                 pt1.spotAngle = 110f;
+                dnc.streetLamps.Add(pt1);
             }
             if (lamp2 != null) {
                 GameObject l2 = new GameObject("LightSource");
@@ -344,8 +348,9 @@ namespace RentIsDue.Editor
                 pt2.type = LightType.Spot;
                 pt2.color = new Color(1f, 0.8f, 0.5f);
                 pt2.intensity = 50f;
-                pt2.range = 25f;
+                pt2.range = 30f;
                 pt2.spotAngle = 110f;
+                dnc.streetLamps.Add(pt2);
             }
 
             SpawnModel(urbanFolder, "detail-barrier-type-a.fbx", new Vector3(5f, 0, 26f), Quaternion.Euler(0, 15, 0), alleyRoot, 2.0f);
