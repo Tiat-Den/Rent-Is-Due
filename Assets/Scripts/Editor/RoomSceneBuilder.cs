@@ -316,43 +316,43 @@ namespace RentIsDue.Editor
             ApplyMaterial(alleyCeiling, "Mat_AlleyFloor", new Color(0.1f, 0.1f, 0.1f));
 
             // Alley Decorations
-            SpawnModel(urbanFolder, "detail-dumpster-open.fbx", new Vector3(8f, 0, 34f), Quaternion.Euler(0, -20, 0), alleyRoot, 1f);
-            SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(6f, 0, 34.5f), Quaternion.Euler(0, -5, 0), alleyRoot, 1f);
-            SpawnModel(urbanFolder, "pallet.fbx", new Vector3(-7f, 0, 34f), Quaternion.Euler(0, 45, 0), alleyRoot, 1f);
-            SpawnModel(urbanFolder, "pallet-small.fbx", new Vector3(-7.5f, 0.2f, 34.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 1f);
-            SpawnModel(urbanFolder, "detail-bench.fbx", new Vector3(-8f, 0, 26f), Quaternion.Euler(0, 180, 0), alleyRoot, 1f);
+            SpawnModel(urbanFolder, "detail-dumpster-open.fbx", new Vector3(8f, 0, 34f), Quaternion.Euler(0, -20, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(3f, 0, 34.5f), Quaternion.Euler(0, -5, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "pallet.fbx", new Vector3(-7f, 0, 34f), Quaternion.Euler(0, 45, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "pallet-small.fbx", new Vector3(-7.5f, 0.3f, 34.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-bench.fbx", new Vector3(-6f, 0, 26f), Quaternion.Euler(0, 180, 0), alleyRoot, 2.5f);
             
             // Street Lamps with actual Light components
-            GameObject lamp1 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(8.5f, 0, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 1f);
-            GameObject lamp2 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-8.5f, 0, 30f), Quaternion.Euler(0, 90, 0), alleyRoot, 1f);
+            GameObject lamp1 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(8.5f, 0, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 2.5f);
+            GameObject lamp2 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-8.5f, 0, 30f), Quaternion.Euler(0, 90, 0), alleyRoot, 2.5f);
             if (lamp1 != null) {
                 GameObject l1 = new GameObject("LightSource");
                 l1.transform.SetParent(lamp1.transform, false);
-                l1.transform.localPosition = new Vector3(0, 4.5f, 1.5f);
+                l1.transform.localPosition = new Vector3(0, 4.2f, 1.2f);
                 Light pt1 = l1.AddComponent<Light>();
                 pt1.type = LightType.Spot;
                 pt1.color = new Color(1f, 0.8f, 0.5f);
-                pt1.intensity = 20f;
-                pt1.range = 15f;
-                pt1.spotAngle = 100f;
+                pt1.intensity = 50f; // Tăng sáng vì đèn ở trên cao hơn
+                pt1.range = 25f;
+                pt1.spotAngle = 110f;
             }
             if (lamp2 != null) {
                 GameObject l2 = new GameObject("LightSource");
                 l2.transform.SetParent(lamp2.transform, false);
-                l2.transform.localPosition = new Vector3(0, 4.5f, 1.5f);
+                l2.transform.localPosition = new Vector3(0, 4.2f, 1.2f);
                 Light pt2 = l2.AddComponent<Light>();
                 pt2.type = LightType.Spot;
                 pt2.color = new Color(1f, 0.8f, 0.5f);
-                pt2.intensity = 20f;
-                pt2.range = 15f;
-                pt2.spotAngle = 100f;
+                pt2.intensity = 50f;
+                pt2.range = 25f;
+                pt2.spotAngle = 110f;
             }
 
-            SpawnModel(urbanFolder, "detail-barrier-type-a.fbx", new Vector3(5f, 0, 26f), Quaternion.Euler(0, 15, 0), alleyRoot, 1f);
-            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(-9f, 0, 34f), Quaternion.identity, alleyRoot, 1.5f);
-            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(9f, 0, 34f), Quaternion.identity, alleyRoot, 1.5f);
-            SpawnModel(urbanFolder, "detail-awning-wide.fbx", new Vector3(-4f, 3f, 34.5f), Quaternion.Euler(0, 0, 0), alleyRoot, 1.2f);
-            SpawnModel(urbanFolder, "detail-awning-wide.fbx", new Vector3(4f, 3f, 34.5f), Quaternion.Euler(0, 0, 0), alleyRoot, 1.2f);
+            SpawnModel(urbanFolder, "detail-barrier-type-a.fbx", new Vector3(5f, 0, 26f), Quaternion.Euler(0, 15, 0), alleyRoot, 2.0f);
+            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(-9f, 0, 34f), Quaternion.identity, alleyRoot, 3.5f);
+            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(9f, 0, 34f), Quaternion.identity, alleyRoot, 3.5f);
+            SpawnModel(urbanFolder, "detail-awning-wide.fbx", new Vector3(-4f, 4.5f, 34.5f), Quaternion.Euler(0, 0, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-awning-wide.fbx", new Vector3(4f, 4.5f, 34.5f), Quaternion.Euler(0, 0, 0), alleyRoot, 2.5f);
             
             // Cửa ra Khu Phố (nằm ở phòng)
             GameObject streetDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
