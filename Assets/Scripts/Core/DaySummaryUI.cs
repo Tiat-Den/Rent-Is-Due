@@ -116,23 +116,23 @@ namespace RentIsDue.Core
             }
             else
             {
-                GUI.Window(0, new Rect(x, y, width, height), DrawSummaryWindow, "DAY SUMMARY");
+                GUI.Window(0, new Rect(x, y, width, height), DrawSummaryWindow, "TONG KET NGAY");
             }
         }
 
         private void DrawSummaryWindow(int windowID)
         {
-            GUILayout.Label($"<b>K.T THC NGA?Y {dayPassed}</b>", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 24 });
+            GUILayout.Label($"<b>KET THUC NGAY {dayPassed}</b>", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 24 });
             GUILayout.Space(20);
 
-            GUILayout.Label($"- ?A TR TI?N NHA?: ", new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold });
-            GUILayout.Label($"- S' TI?N CzN LI: ", new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold });
+            GUILayout.Label($"- DA TRA TIEN NHA: ${rentPaid}", new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold });
+            GUILayout.Label($"- SO TIEN CON LAI: ${remainingMoney:F1}", new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold });
             
             GUILayout.Space(10);
-            GUILayout.Label($"- TI?N NHA? PHI ?A"NG NGA?Y MAI: ", new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold });
+            GUILayout.Label($"- TIEN NHA PHAI DONG NGAY MAI: ${nextDayRent}", new GUIStyle(GUI.skin.label) { fontStyle = FontStyle.Bold });
 
             GUILayout.Space(30);
-            if (GUILayout.Button("NG / MUA NA,NG C P", GUILayout.Height(50)))
+            if (GUILayout.Button("NGU / MUA NANG CAP", GUILayout.Height(50)))
             {
                 isShowingSummary = false;
                 if (RentIsDue.Shop.UpgradeUI.Instance != null)
@@ -148,13 +148,13 @@ namespace RentIsDue.Core
 
         private void DrawGameOverWindow(int windowID)
         {
-            GUILayout.Label($"<b>NGA?Y {dayPassed} - K.T THC</b>", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 24 });
+            GUILayout.Label($"<b>NGAY {dayPassed} - KET THUC</b>", new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 24 });
             GUILayout.Space(20);
-            GUILayout.Label($"Bn khA'ng   ti?n A3ng ti?n nhA vA A b u?i ra ngoAi.");
-            GUILayout.Label($"Ti?n bn cA3: ");
+            GUILayout.Label("Ban khong du tien dong nha va bi duoi ra ngoai.");
+            GUILayout.Label($"Tien ban co: ${remainingMoney:F1}");
             
             GUILayout.Space(30);
-            if (GUILayout.Button("QUAY V? MENU CHA?NH", GUILayout.Height(50)))
+            if (GUILayout.Button("QUAY VE MENU CHINH", GUILayout.Height(50)))
             {
                 UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
             }
@@ -162,10 +162,10 @@ namespace RentIsDue.Core
 
         private void DrawVictoryWindow(int windowID)
         {
-            GUILayout.Label("Bn A thoAt kh?i cnh n n n!");
+            GUILayout.Label("Ban da thoat khoi canh no nan!");
             
             GUILayout.Space(30);
-            if (GUILayout.Button("QUAY V? MENU CHA?NH", GUILayout.Height(50)))
+            if (GUILayout.Button("QUAY VE MENU CHINH", GUILayout.Height(50)))
             {
                 UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
             }

@@ -65,7 +65,7 @@ namespace RentIsDue.Shop
             if (UpgradeManager.Instance == null || EconomyManager.Instance == null)
             {
                 GUILayout.Label("Missing Managers!");
-                if (GUILayout.Button("NG / START NEXT DAY")) 
+                if (GUILayout.Button("NGU / START NEXT DAY")) 
                 {
                     HideUI();
                     DayManager.Instance.ProceedToNextDay();
@@ -77,8 +77,8 @@ namespace RentIsDue.Shop
             float money = EconomyManager.Instance.currentMoney;
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label($"TiA?n bn cA3: <b>${money:F1}</b>", GUILayout.Height(25));
-            if (GUILayout.Button("NG / NEXT DAY", GUILayout.Width(150), GUILayout.Height(25)))
+            GUILayout.Label($"Tien ban co: <b>${money:F1}</b>", GUILayout.Height(25));
+            if (GUILayout.Button("NGU / NEXT DAY", GUILayout.Width(150), GUILayout.Height(25)))
             {
                 HideUI();
                 DayManager.Instance.ProceedToNextDay();
@@ -112,15 +112,15 @@ namespace RentIsDue.Shop
             GUILayout.BeginHorizontal();
             if (level < 5)
             {
-                GUILayout.Label($"Effect: {currentVal} z" <b>{nextVal}</b>");
+                GUILayout.Label($"Effect: {currentVal} -> <b>{nextVal}</b>");
                 if (currentMoney >= cost)
                 {
-                    if (GUILayout.Button($"[ UPGRADE  ]", GUILayout.Width(130), GUILayout.Height(26))) onUpgrade?.Invoke();
+                    if (GUILayout.Button($"[ UPGRADE ${cost} ]", GUILayout.Width(130), GUILayout.Height(26))) onUpgrade?.Invoke();
                 }
                 else
                 {
                     GUI.enabled = false;
-                    GUILayout.Button($"[ NEED  ]", GUILayout.Width(130), GUILayout.Height(26));
+                    GUILayout.Button($"[ NEED ${cost} ]", GUILayout.Width(130), GUILayout.Height(26));
                     GUI.enabled = true;
                 }
             }
