@@ -44,7 +44,7 @@ namespace RentIsDue.Gameplay
                 else
                 {
                     // Teleport to alley
-                    playerTransform.position = new Vector3(0, 1.5f, 25f);
+                    playerTransform.position = new Vector3(0, 1.5f, 28f);
                 }
 
                 if (cc != null) cc.enabled = true;
