@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using RentIsDue.Core;
 using System.Collections.Generic;
 
@@ -15,7 +15,7 @@ namespace RentIsDue.Environment
         {
             if (sunLight == null)
             {
-                Light[] allLights = FindObjectsByType<Light>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+                Light[] allLights = FindObjectsByType<Light>(FindObjectsInactive.Exclude);
                 foreach (var l in allLights)
                 {
                     if (l.type == LightType.Directional)
