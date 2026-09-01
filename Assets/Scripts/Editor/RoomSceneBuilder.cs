@@ -289,44 +289,57 @@ namespace RentIsDue.Editor
             // It will generate and play the street noise at runtime using a small helper script attached to it.
             alleyRoot.AddComponent<RentIsDue.Audio.StreetAmbiencePlayer>();
 
-            // Floor for alley (Modular)
-            float zStart = 24f;
-            float zEnd = 40f;
-            float step = 8f;         // bằng chiều dài wall sau scale để khớp nhau
-            float roadScale = 8f;    // đường và vỉa hè scale đồng đều
+            // === SÀN HẺM ===
+            GameObject alleyFloor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            alleyFloor.name = "Alley_Floor";
+            alleyFloor.transform.SetParent(alleyRoot.transform, false);
+            alleyFloor.transform.localPosition = new Vector3(0, -0.1f, 32f);
+            alleyFloor.transform.localScale = new Vector3(16f, 0.2f, 20f);
+            ApplyMaterial(alleyFloor, "Mat_AlleyFloor", new Color(0.18f, 0.17f, 0.16f));
 
-            // Tường xoay 90° Y → local X chạy theo world Z (dọc đường)
-            // Nên X=8 (dài dọc đường), Y=2 (cao), Z=0.3 (mỏng vào đường)
-            Vector3 wallScaleL = new Vector3(8f, 2f, 0.3f);
-            Vector3 wallScaleR = new Vector3(8f, 2f, 0.3f);
+            // === TƯỜNG 2 BÊN (primitive) ===
+            float alleyWallHeight = 12f;
 
-            for (float z = zStart; z <= zEnd; z += step)
+            // Tường Trái (West)
+            CreateWall("AlleyWall_West", "Mat_AlleyWall",
+                new Vector3(-8f, alleyWallHeight * 0.5f, 32f),
+                new Vector3(0.3f, alleyWallHeight, 20f),
+                alleyRoot, new Color(0.28f, 0.24f, 0.20f));
+
+            // Tường Phải (East)
+            CreateWall("AlleyWall_East", "Mat_AlleyWall",
+                new Vector3(8f, alleyWallHeight * 0.5f, 32f),
+                new Vector3(0.3f, alleyWallHeight, 20f),
+                alleyRoot, new Color(0.28f, 0.24f, 0.20f));
+
+            // Tường Cuối Bắc
+            CreateWall("AlleyWall_North", "Mat_AlleyWall",
+                new Vector3(0, alleyWallHeight * 0.5f, 42f),
+                new Vector3(16f, alleyWallHeight, 0.3f),
+                alleyRoot, new Color(0.25f, 0.22f, 0.18f));
+
+            // Tường Phía Trong (nối với phòng) — bịt một phần, chừa lỗ cửa ở giữa trái
+            CreateWall("AlleyWall_South_Left", "Mat_AlleyWall",
+                new Vector3(-5f, alleyWallHeight * 0.5f, 22f),
+                new Vector3(6f, alleyWallHeight, 0.3f),
+                alleyRoot, new Color(0.25f, 0.22f, 0.18f));
+            CreateWall("AlleyWall_South_Right", "Mat_AlleyWall",
+                new Vector3(5f, alleyWallHeight * 0.5f, 22f),
+                new Vector3(6f, alleyWallHeight, 0.3f),
+                alleyRoot, new Color(0.25f, 0.22f, 0.18f));
+            CreateWall("AlleyWall_South_Top", "Mat_AlleyWall",
+                new Vector3(0, alleyWallHeight - 1.5f, 22f),
+                new Vector3(4f, 3f, 0.3f),
+                alleyRoot, new Color(0.25f, 0.22f, 0.18f));
+
+            // === FBX TRANG TRÍ dọc tường (đặt sát tường, không scale bất thường) ===
+            float urbanScale = 2.5f;
+            // Hàng rào phân cách vỉa hè
+            for (float z = 25f; z <= 40f; z += 5f)
             {
-                // Road center
-                SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.identity, alleyRoot, roadScale);
-                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(-4f, 0, z), Quaternion.identity, alleyRoot, roadScale);
-                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(4f, 0, z), Quaternion.Euler(0, 180, 0), alleyRoot, roadScale);
-                
-                // Walls Left (West) — X=-8, xoay 90° Y, scale (8,2,0.3)
-                SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(-8f, 0, z),   Quaternion.Euler(0, 90, 0),  alleyRoot, wallScaleL);
-                SpawnModel(urbanFolder, "wall-a-window.fbx",  new Vector3(-8f, 4f, z),  Quaternion.Euler(0, 90, 0),  alleyRoot, wallScaleL);
-                SpawnModel(urbanFolder, "wall-a.fbx",          new Vector3(-8f, 8f, z),  Quaternion.Euler(0, 90, 0),  alleyRoot, wallScaleL);
-                
-                // Walls Right (East) — X=8, xoay -90° Y
-                SpawnModel(urbanFolder, "wall-b-garage.fbx",  new Vector3(8f, 0, z),    Quaternion.Euler(0, -90, 0), alleyRoot, wallScaleR);
-                SpawnModel(urbanFolder, "wall-a-window.fbx",  new Vector3(8f, 4f, z),   Quaternion.Euler(0, -90, 0), alleyRoot, wallScaleR);
-                SpawnModel(urbanFolder, "wall-a.fbx",          new Vector3(8f, 8f, z),   Quaternion.Euler(0, -90, 0), alleyRoot, wallScaleR);
+                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(-6.5f, 0, z), Quaternion.identity, alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(6.5f, 0, z), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
             }
-
-            // Block Ends of Alley
-            for (float x = -8f; x <= 8f; x += 4f) // Phủ kín từ -8 đến 8
-            {
-                SpawnModel(urbanFolder, "wall-fence.fbx", new Vector3(x, 0, 42f), Quaternion.identity, alleyRoot, roadScale);
-                SpawnModel(urbanFolder, "wall-broken-type-a.fbx", new Vector3(x, 0, 22f), Quaternion.Euler(0, 180, 0), alleyRoot, roadScale);
-            }
-
-            float alleyWallHeight = 12f; 
-            // Alley Ceiling (Blocks the sun to make it dark/moody)
             GameObject alleyCeiling = GameObject.CreatePrimitive(PrimitiveType.Plane);
             alleyCeiling.name = "Alley_Ceiling";
             alleyCeiling.transform.SetParent(alleyRoot.transform, false);
