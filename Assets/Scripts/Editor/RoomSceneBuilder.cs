@@ -290,67 +290,44 @@ namespace RentIsDue.Editor
             alleyRoot.AddComponent<RentIsDue.Audio.StreetAmbiencePlayer>();
 
             // === SÀN HẺM ===
-            GameObject alleyFloor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            GameObject alleyFloor = GameObject.CreatePrimitive(PrimitiveType.Plane);
             alleyFloor.name = "Alley_Floor";
             alleyFloor.transform.SetParent(alleyRoot.transform, false);
-            alleyFloor.transform.localPosition = new Vector3(0, -0.1f, 32f);
-            alleyFloor.transform.localScale = new Vector3(16f, 0.2f, 20f);
-            ApplyMaterial(alleyFloor, "Mat_AlleyFloor", new Color(0.18f, 0.17f, 0.16f));
+            alleyFloor.transform.localPosition = new Vector3(0, 0, 30f);
+            alleyFloor.transform.localScale = new Vector3(2f, 1f, 1.2f);
+            ApplyMaterial(alleyFloor, "Mat_AlleyFloor", new Color(0.12f, 0.12f, 0.14f));
 
-            // === TƯỜNG 2 BÊN (primitive) ===
+            // === TƯỜNG HẺM ===
             float alleyWallHeight = 12f;
+            CreateWall("AlleyWall_North", "Mat_AlleyWall", new Vector3(0, alleyWallHeight/2f, 36f), new Vector3(20f, alleyWallHeight, 0.3f), alleyRoot, new Color(0.22f, 0.20f, 0.18f));
+            CreateWall("AlleyWall_South", "Mat_AlleyWall", new Vector3(0, alleyWallHeight/2f, 24f), new Vector3(20f, alleyWallHeight, 0.3f), alleyRoot, new Color(0.22f, 0.20f, 0.18f));
+            CreateWall("AlleyWall_West",  "Mat_AlleyWall", new Vector3(-10f, alleyWallHeight/2f, 30f), new Vector3(0.3f, alleyWallHeight, 12f), alleyRoot, new Color(0.26f, 0.23f, 0.20f));
+            CreateWall("AlleyWall_East",  "Mat_AlleyWall", new Vector3(10f,  alleyWallHeight/2f, 30f), new Vector3(0.3f, alleyWallHeight, 12f), alleyRoot, new Color(0.26f, 0.23f, 0.20f));
 
-            // Tường Trái (West)
-            CreateWall("AlleyWall_West", "Mat_AlleyWall",
-                new Vector3(-8f, alleyWallHeight * 0.5f, 32f),
-                new Vector3(0.3f, alleyWallHeight, 20f),
-                alleyRoot, new Color(0.28f, 0.24f, 0.20f));
-
-            // Tường Phải (East)
-            CreateWall("AlleyWall_East", "Mat_AlleyWall",
-                new Vector3(8f, alleyWallHeight * 0.5f, 32f),
-                new Vector3(0.3f, alleyWallHeight, 20f),
-                alleyRoot, new Color(0.28f, 0.24f, 0.20f));
-
-            // Tường Cuối Bắc
-            CreateWall("AlleyWall_North", "Mat_AlleyWall",
-                new Vector3(0, alleyWallHeight * 0.5f, 42f),
-                new Vector3(16f, alleyWallHeight, 0.3f),
-                alleyRoot, new Color(0.25f, 0.22f, 0.18f));
-
-            // Tường Phía Trong (nối với phòng) — bịt một phần, chừa lỗ cửa ở giữa trái
-            CreateWall("AlleyWall_South_Left", "Mat_AlleyWall",
-                new Vector3(-5f, alleyWallHeight * 0.5f, 22f),
-                new Vector3(6f, alleyWallHeight, 0.3f),
-                alleyRoot, new Color(0.25f, 0.22f, 0.18f));
-            CreateWall("AlleyWall_South_Right", "Mat_AlleyWall",
-                new Vector3(5f, alleyWallHeight * 0.5f, 22f),
-                new Vector3(6f, alleyWallHeight, 0.3f),
-                alleyRoot, new Color(0.25f, 0.22f, 0.18f));
-            CreateWall("AlleyWall_South_Top", "Mat_AlleyWall",
-                new Vector3(0, alleyWallHeight - 1.5f, 22f),
-                new Vector3(4f, 3f, 0.3f),
-                alleyRoot, new Color(0.25f, 0.22f, 0.18f));
-
-            // === FBX TRANG TRÍ dọc tường (đặt sát tường, không scale bất thường) ===
-            float urbanScale = 2.5f;
-            // Hàng rào phân cách vỉa hè
-            for (float z = 25f; z <= 40f; z += 5f)
-            {
-                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(-6.5f, 0, z), Quaternion.identity, alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(6.5f, 0, z), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
-            }
+            // === TRẦN (Chặn ánh sáng mặt trời) ===
             GameObject alleyCeiling = GameObject.CreatePrimitive(PrimitiveType.Plane);
             alleyCeiling.name = "Alley_Ceiling";
             alleyCeiling.transform.SetParent(alleyRoot.transform, false);
-            alleyCeiling.transform.localPosition = new Vector3(0, alleyWallHeight, 32f);
-            alleyCeiling.transform.localScale = new Vector3(1.6f, 1f, 2f); // Width 16m, Length 20m
-            // Rotate upside down so it's visible from below
+            alleyCeiling.transform.localPosition = new Vector3(0, alleyWallHeight, 30f);
+            alleyCeiling.transform.localScale = new Vector3(2f, 1f, 1.2f);
             alleyCeiling.transform.localRotation = Quaternion.Euler(180, 0, 0);
-            ApplyMaterial(alleyCeiling, "Mat_AlleyFloor", new Color(0.1f, 0.1f, 0.1f));
+            ApplyMaterial(alleyCeiling, "Mat_AlleyFloor", new Color(0.08f, 0.08f, 0.08f));
 
-            // Alley Decorations
-            SpawnModel(urbanFolder, "detail-cables-type-a.fbx", new Vector3(0, 8f, 28f), Quaternion.Euler(0, 90, 0), alleyRoot, 6.0f);
+            // === TRANG TRÍ FBX ===
+            float urbanScale = 2.5f;
+            SpawnModel(urbanFolder, "detail-dumpster-open.fbx",   new Vector3(8f,  0, 34f),   Quaternion.Euler(0, -20, 0), alleyRoot, urbanScale);
+            SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(3f,  0, 34.5f), Quaternion.Euler(0, -5,  0), alleyRoot, urbanScale);
+            SpawnModel(urbanFolder, "pallet.fbx",                 new Vector3(-7f, 0, 34f),   Quaternion.Euler(0,  45, 0), alleyRoot, urbanScale);
+            SpawnModel(urbanFolder, "pallet-small.fbx",           new Vector3(-7.5f, 0.3f, 34.2f), Quaternion.Euler(0, 30, 0), alleyRoot, urbanScale);
+            SpawnModel(urbanFolder, "detail-bench.fbx",           new Vector3(-8f, 0, 26f),   Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
+            SpawnModel(urbanFolder, "detail-barrier-type-a.fbx",  new Vector3(5f,  0, 26f),   Quaternion.Euler(0,  15, 0), alleyRoot, 2.0f);
+            SpawnModel(urbanFolder, "tree-shrub.fbx",             new Vector3(-9f, 0, 34f),   Quaternion.identity,         alleyRoot, 3.5f);
+            SpawnModel(urbanFolder, "tree-shrub.fbx",             new Vector3(9f,  0, 34f),   Quaternion.identity,         alleyRoot, 3.5f);
+            SpawnModel(urbanFolder, "detail-awning-wide.fbx",     new Vector3(-4f, 4.5f, 35f), Quaternion.identity,        alleyRoot, urbanScale);
+            SpawnModel(urbanFolder, "detail-awning-wide.fbx",     new Vector3(4f,  4.5f, 35f), Quaternion.identity,        alleyRoot, urbanScale);
+            SpawnModel(urbanFolder, "detail-cables-type-a.fbx",   new Vector3(0,   8f,   28f), Quaternion.Euler(0, 90, 0), alleyRoot, 4.0f);
+
+            // === ĐÈN ĐƯỜNG (scale 5x) ===
             SpawnModel(urbanFolder, "detail-cables-type-a.fbx", new Vector3(0, 9f, 32f), Quaternion.Euler(0, -90, 0), alleyRoot, 6.0f);
             SpawnModel(urbanFolder, "scaffolding-structure.fbx", new Vector3(-6.5f, 0, 36f), Quaternion.Euler(0, 90, 0), alleyRoot, 6.0f);
             SpawnModel(urbanFolder, "balcony-type-a.fbx", new Vector3(8f, 4f, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 6f);
