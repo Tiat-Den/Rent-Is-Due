@@ -320,8 +320,8 @@ namespace RentIsDue.Editor
             // Block Ends of Alley
             for (float x = -8f; x <= 8f; x += 4f) // Phủ kín từ -8 đến 8
             {
-                SpawnModel(urbanFolder, "wall-fence.fbx", new Vector3(x, 0, 42f), Quaternion.identity, alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-broken-type-a.fbx", new Vector3(x, 0, 22f), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-fence.fbx", new Vector3(x, 0, 42f), Quaternion.identity, alleyRoot, roadScale);
+                SpawnModel(urbanFolder, "wall-broken-type-a.fbx", new Vector3(x, 0, 22f), Quaternion.Euler(0, 180, 0), alleyRoot, roadScale);
             }
 
             float alleyWallHeight = 12f; 
