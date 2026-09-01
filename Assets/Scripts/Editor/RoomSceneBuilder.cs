@@ -292,7 +292,6 @@ namespace RentIsDue.Editor
             // Floor for alley (Modular)
             float zStart = 24f;
             float zEnd = 38f;
-            float step = 4f * 2.5f; // Giả sử model gốc 4m, scale 2.5 = 10m. Thay vì tính quá phức tạp, cứ đặt dày sát nhau.
             float urbanScale = 2.5f;
 
             for (float z = zStart; z <= zEnd; z += 5f) // spawn mỗi 5 units để overlap tạo dãy phố
