@@ -68,7 +68,7 @@ namespace RentIsDue.Core
             }
 
             // Save các vật phẩm bị vứt ra ngoài sàn hoặc cất trong kho
-            PickupInteractable[] floorItems = FindObjectsByType<PickupInteractable>(FindObjectsSortMode.None);
+            PickupInteractable[] floorItems = FindObjectsByType<PickupInteractable>(FindObjectsInactive.Exclude);
             foreach (var fItem in floorItems)
             {
                 if (fItem.itemData != null)
@@ -166,7 +166,7 @@ namespace RentIsDue.Core
                     }
 
                     // Xóa đồ cũ rớt trên sàn (tránh x2 đồ khi load lại nhiều lần)
-                    PickupInteractable[] existingFloorItems = FindObjectsByType<PickupInteractable>(FindObjectsSortMode.None);
+                    PickupInteractable[] existingFloorItems = FindObjectsByType<PickupInteractable>(FindObjectsInactive.Exclude);
                     foreach (var oldItem in existingFloorItems)
                     {
                         Destroy(oldItem.gameObject);
