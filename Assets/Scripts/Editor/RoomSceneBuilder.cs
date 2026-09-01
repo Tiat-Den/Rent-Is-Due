@@ -291,55 +291,60 @@ namespace RentIsDue.Editor
 
             // Floor for alley (Modular)
             float zStart = 24f;
-            float zEnd = 38f;
-            float urbanScale = 2.5f;
+            float zEnd = 40f;
+            float urbanScale = 4f;
 
-            for (float z = zStart; z <= zEnd; z += 5f) // spawn mỗi 5 units để overlap tạo dãy phố
+            for (float z = zStart; z <= zEnd; z += 4f)
             {
                 // Road
-                SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.identity, alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(-6f, 0, z), Quaternion.identity, alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(6f, 0, z), Quaternion.identity, alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(-4f, 0, z), Quaternion.identity, alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(4f, 0, z), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
                 
                 // Walls Left (West)
-                SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(-9.5f, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(-9.5f, 8f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(-6f, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(-6f, 4f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a.fbx", new Vector3(-6f, 8f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
                 
                 // Walls Right (East)
-                SpawnModel(urbanFolder, "wall-b-garage.fbx", new Vector3(9.5f, 0, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(9.5f, 8f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-b-garage.fbx", new Vector3(6f, 0, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(6f, 4f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a.fbx", new Vector3(6f, 8f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
             }
 
             // Block Ends of Alley
-            SpawnModel(urbanFolder, "wall-fence.fbx", new Vector3(0, 0, 38f), Quaternion.identity, alleyRoot, urbanScale);
-            SpawnModel(urbanFolder, "wall-broken-type-a.fbx", new Vector3(0, 0, 24f), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
+            for (float x = -4f; x <= 4f; x += 4f)
+            {
+                SpawnModel(urbanFolder, "wall-fence.fbx", new Vector3(x, 0, 42f), Quaternion.identity, alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-broken-type-a.fbx", new Vector3(x, 0, 22f), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
+            }
 
-            float alleyWallHeight = 15f; 
+            float alleyWallHeight = 12f; 
             // Alley Ceiling (Blocks the sun to make it dark/moody)
             GameObject alleyCeiling = GameObject.CreatePrimitive(PrimitiveType.Plane);
             alleyCeiling.name = "Alley_Ceiling";
             alleyCeiling.transform.SetParent(alleyRoot.transform, false);
-            alleyCeiling.transform.localPosition = new Vector3(0, alleyWallHeight, 30f);
-            alleyCeiling.transform.localScale = new Vector3(2f, 1f, 1f); // 20m x 10m
+            alleyCeiling.transform.localPosition = new Vector3(0, alleyWallHeight, 32f);
+            alleyCeiling.transform.localScale = new Vector3(1.2f, 1f, 2f); // Width 12m, Length 20m
             // Rotate upside down so it's visible from below
             alleyCeiling.transform.localRotation = Quaternion.Euler(180, 0, 0);
             ApplyMaterial(alleyCeiling, "Mat_AlleyFloor", new Color(0.1f, 0.1f, 0.1f));
 
             // Alley Decorations
-            SpawnModel(urbanFolder, "detail-cables-type-a.fbx", new Vector3(0, 10f, 28f), Quaternion.Euler(0, 90, 0), alleyRoot, 3.0f);
-            SpawnModel(urbanFolder, "detail-cables-type-a.fbx", new Vector3(0, 11f, 32f), Quaternion.Euler(0, -90, 0), alleyRoot, 3.0f);
-            SpawnModel(urbanFolder, "scaffolding-structure.fbx", new Vector3(-8f, 0, 36f), Quaternion.Euler(0, 90, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "balcony-type-a.fbx", new Vector3(9.5f, 6.5f, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-cables-type-a.fbx", new Vector3(0, 8f, 28f), Quaternion.Euler(0, 90, 0), alleyRoot, 3.0f);
+            SpawnModel(urbanFolder, "detail-cables-type-a.fbx", new Vector3(0, 9f, 32f), Quaternion.Euler(0, -90, 0), alleyRoot, 3.0f);
+            SpawnModel(urbanFolder, "scaffolding-structure.fbx", new Vector3(-5f, 0, 36f), Quaternion.Euler(0, 90, 0), alleyRoot, 3.0f);
+            SpawnModel(urbanFolder, "balcony-type-a.fbx", new Vector3(6f, 4f, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 4f);
             
-            SpawnModel(urbanFolder, "detail-dumpster-open.fbx", new Vector3(8f, 0, 34f), Quaternion.Euler(0, -20, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(3f, 0, 34.5f), Quaternion.Euler(0, -5, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "pallet.fbx", new Vector3(-7f, 0, 34f), Quaternion.Euler(0, 45, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "pallet-small.fbx", new Vector3(-7.5f, 0.3f, 34.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "detail-bench.fbx", new Vector3(-6f, 0, 26f), Quaternion.Euler(0, 180, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-dumpster-open.fbx", new Vector3(4.5f, 0, 34f), Quaternion.Euler(0, -20, 0), alleyRoot, 3f);
+            SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(4.5f, 0, 38f), Quaternion.Euler(0, -5, 0), alleyRoot, 3f);
+            SpawnModel(urbanFolder, "pallet.fbx", new Vector3(-4.5f, 0, 34f), Quaternion.Euler(0, 45, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "pallet-small.fbx", new Vector3(-5f, 0.3f, 34.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-bench.fbx", new Vector3(-4.5f, 0, 26f), Quaternion.Euler(0, 180, 0), alleyRoot, 3f);
             
             // Street Lamps with actual Light components
-            GameObject lamp1 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(8.5f, 0, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 5f);
-            GameObject lamp2 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-8.5f, 0, 30f), Quaternion.Euler(0, 90, 0), alleyRoot, 5f);
+            GameObject lamp1 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(5f, 0, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 5f);
+            GameObject lamp2 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-5f, 0, 30f), Quaternion.Euler(0, 90, 0), alleyRoot, 5f);
             // DayNightCycle setup
             RentIsDue.Environment.DayNightCycle dnc = alleyRoot.AddComponent<RentIsDue.Environment.DayNightCycle>();
             
