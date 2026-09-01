@@ -303,8 +303,9 @@ namespace RentIsDue.Editor
             {
                 // Đường và vỉa hè
                 SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.identity, alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(-2f, 0, z), Quaternion.identity, alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(2f, 0, z), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
+                // Vỉa hè có pivot bị lệch, nên cần bù trừ Z để không đâm vào phòng
+                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(-2f, 0, z + 2f), Quaternion.identity, alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(2f, 0, z - 2f), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
                 
                 // Tường trái (X = -4)
                 SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(-4f, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
@@ -460,7 +461,13 @@ namespace RentIsDue.Editor
             storageDoor.AddComponent<RentIsDue.Gameplay.StorageDoorInteractable>();
 
             // 14. XÂY DỰNG NHÀ KHO (STORAGE ROOM) - Nằm cách xa phòng chính
-            GameObject storageRoot = new GameObject("StorageRoom");
+            GameObject storageRoot = GameObject.Find("StorageRoom");
+            if (storageRoot != null)
+            {
+                Undo.DestroyObjectImmediate(storageRoot);
+            }
+            
+            storageRoot = new GameObject("StorageRoom");
             storageRoot.transform.position = new Vector3(30f, 0, 0); // Đẩy ra xa 30m
 
             // Sàn nhà kho
