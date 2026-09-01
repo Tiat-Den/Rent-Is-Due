@@ -290,8 +290,9 @@ namespace RentIsDue.Editor
             alleyRoot.AddComponent<RentIsDue.Audio.StreetAmbiencePlayer>();
 
             // === SÀN HẺM & TƯỜNG (MODULAR) ===
-            float zStart = 24f;
-            float zEnd = 40f;
+            float zStart = halfD;
+            float alleyLength = 16f;
+            float zEnd = zStart + alleyLength;
             float urbanScale = 4f; 
             float step = 2f; 
 
@@ -316,33 +317,33 @@ namespace RentIsDue.Editor
             // Bít 2 đầu hẻm
             for (float x = -2f; x <= 2f; x += 2f)
             {
-                SpawnModel(urbanFolder, "wall-fence.fbx", new Vector3(x, 0, 42f), Quaternion.identity, alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-broken-type-a.fbx", new Vector3(x, 0, 22f), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-fence.fbx", new Vector3(x, 0, zEnd + 2f), Quaternion.identity, alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-broken-type-a.fbx", new Vector3(x, 0, zStart - 2f), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
             }
 
             // Trần che bớt sáng
             GameObject alleyCeiling = GameObject.CreatePrimitive(PrimitiveType.Plane);
             alleyCeiling.name = "Alley_Ceiling";
             alleyCeiling.transform.SetParent(alleyRoot.transform, false);
-            alleyCeiling.transform.localPosition = new Vector3(0, 8f, 32f);
+            alleyCeiling.transform.localPosition = new Vector3(0, 8f, zStart + 8f);
             alleyCeiling.transform.localScale = new Vector3(1f, 1f, 2f);
             alleyCeiling.transform.localRotation = Quaternion.Euler(180, 0, 0);
             ApplyMaterial(alleyCeiling, "Mat_AlleyFloor", new Color(0.05f, 0.05f, 0.05f));
 
             // === TRANG TRÍ FBX ===
-            SpawnModel(urbanFolder, "detail-dumpster-open.fbx",   new Vector3(2.5f,  0, 34f),   Quaternion.Euler(0, -20, 0), alleyRoot, 3f);
-            SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(2.5f,  0, 36f), Quaternion.Euler(0, -5,  0), alleyRoot, 3f);
-            SpawnModel(urbanFolder, "pallet.fbx",                 new Vector3(-2.5f, 0, 34f),   Quaternion.Euler(0,  45, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "pallet-small.fbx",           new Vector3(-3f, 0.3f, 34.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "detail-bench.fbx",           new Vector3(-2.5f, 0, 26f),   Quaternion.Euler(0, 180, 0), alleyRoot, 3f);
-            SpawnModel(urbanFolder, "detail-awning-wide.fbx",     new Vector3(-3.5f, 2.2f, 35f), Quaternion.Euler(0, 90, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "detail-awning-wide.fbx",     new Vector3(3.5f,  2.2f, 35f), Quaternion.Euler(0, -90, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "detail-cables-type-a.fbx",   new Vector3(0,   4f,   28f), Quaternion.Euler(0, 90, 0), alleyRoot, 3.0f);
-            SpawnModel(urbanFolder, "scaffolding-structure.fbx",  new Vector3(-3f, 0, 38f), Quaternion.Euler(0, 90, 0), alleyRoot, 3.0f);
+            SpawnModel(urbanFolder, "detail-dumpster-open.fbx",   new Vector3(2.5f,  0, zStart + 10f),   Quaternion.Euler(0, -20, 0), alleyRoot, 3f);
+            SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(2.5f,  0, zStart + 12f), Quaternion.Euler(0, -5,  0), alleyRoot, 3f);
+            SpawnModel(urbanFolder, "pallet.fbx",                 new Vector3(-2.5f, 0, zStart + 10f),   Quaternion.Euler(0,  45, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "pallet-small.fbx",           new Vector3(-3f, 0.3f, zStart + 10.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-bench.fbx",           new Vector3(-2.5f, 0, zStart + 2f),   Quaternion.Euler(0, 180, 0), alleyRoot, 3f);
+            SpawnModel(urbanFolder, "detail-awning-wide.fbx",     new Vector3(-3.5f, 2.2f, zStart + 11f), Quaternion.Euler(0, 90, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-awning-wide.fbx",     new Vector3(3.5f,  2.2f, zStart + 11f), Quaternion.Euler(0, -90, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-cables-type-a.fbx",   new Vector3(0,   4f,   zStart + 4f), Quaternion.Euler(0, 90, 0), alleyRoot, 3.0f);
+            SpawnModel(urbanFolder, "scaffolding-structure.fbx",  new Vector3(-3f, 0, zStart + 14f), Quaternion.Euler(0, 90, 0), alleyRoot, 3.0f);
 
             // === ĐÈN ĐƯỜNG ===
-            GameObject lamp1 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(3f, 0, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 3f);
-            GameObject lamp2 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-3f, 0, 30f), Quaternion.Euler(0, 90, 0), alleyRoot, 3f);
+            GameObject lamp1 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(3f, 0, zStart + 6f), Quaternion.Euler(0, -90, 0), alleyRoot, 3f);
+            GameObject lamp2 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-3f, 0, zStart + 6f), Quaternion.Euler(0, 90, 0), alleyRoot, 3f);
             // DayNightCycle setup
             RentIsDue.Environment.DayNightCycle dnc = alleyRoot.AddComponent<RentIsDue.Environment.DayNightCycle>();
             
@@ -371,9 +372,9 @@ namespace RentIsDue.Editor
                 dnc.streetLamps.Add(pt2);
             }
 
-            SpawnModel(urbanFolder, "detail-barrier-type-a.fbx", new Vector3(2.5f, 0, 26f), Quaternion.Euler(0, 15, 0), alleyRoot, 2.0f);
-            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(-3.5f, 0, 40f), Quaternion.identity, alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(3.5f, 0, 40f), Quaternion.identity, alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-barrier-type-a.fbx", new Vector3(2.5f, 0, zStart + 2f), Quaternion.Euler(0, 15, 0), alleyRoot, 2.0f);
+            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(-3.5f, 0, zStart + 16f), Quaternion.identity, alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(3.5f, 0, zStart + 16f), Quaternion.identity, alleyRoot, 2.5f);
             
             // Cửa ra Khu Phố (nằm ở phòng)
             GameObject streetDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -388,13 +389,17 @@ namespace RentIsDue.Editor
             GameObject alleyDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             alleyDoor.name = "Alley_Door";
             alleyDoor.transform.SetParent(alleyRoot.transform, false);
-            alleyDoor.transform.localPosition = new Vector3(-3.8f, 1.25f, 26f);
+            alleyDoor.transform.localPosition = new Vector3(-3.8f, 1.25f, zStart + 2f);
             alleyDoor.transform.localScale = new Vector3(0.2f, 2.5f, 1.5f);
             ApplyMaterial(alleyDoor, "Mat_StreetDoor", new Color(0.5f, 0.3f, 0.1f));
             alleyDoor.AddComponent<RentIsDue.Gameplay.StreetDoorInteractable>();
 
             // 11. DEALER Ngoài hẻm
-            GameObject dealerDesk = SpawnModel(modelsFolder, "bench.fbx", new Vector3(2.5f, 0, 32f), Quaternion.Euler(0, -45, 0), alleyRoot, 0.35f);
+            GameObject dealerAnchor = new GameObject("Dealer_Anchor");
+            dealerAnchor.transform.SetParent(alleyRoot.transform, false);
+            dealerAnchor.transform.localPosition = new Vector3(2.5f, 0, zStart + 8f);
+            
+            GameObject dealerDesk = SpawnModel(modelsFolder, "bench.fbx", Vector3.zero, Quaternion.Euler(0, -45, 0), dealerAnchor, 0.35f);
             if (dealerDesk != null)
             {
                 EnsureCollider(dealerDesk);
@@ -403,17 +408,25 @@ namespace RentIsDue.Editor
             }
 
             // 12. CỬA HÀNG ĐỒ NGHỀ (Tool Shop)
+            GameObject toolShopAnchor = new GameObject("ToolShop_Anchor");
+            toolShopAnchor.transform.SetParent(alleyRoot.transform, false);
+            toolShopAnchor.transform.localPosition = new Vector3(-3f, 0.5f, zStart + 8f);
+            
             GameObject toolShop = GameObject.CreatePrimitive(PrimitiveType.Cube);
             toolShop.name = "Tool_Shop";
-            toolShop.transform.SetParent(alleyRoot.transform, false);
-            toolShop.transform.localPosition = new Vector3(-3f, 0.5f, 32f);
+            toolShop.transform.SetParent(toolShopAnchor.transform, false);
+            toolShop.transform.localPosition = Vector3.zero;
             toolShop.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
             ApplyMaterial(toolShop, "Mat_ToolShop", new Color(0.8f, 0.4f, 0.1f));
             toolShop.AddComponent<RentIsDue.Shop.ToolShopInteractable>();
             toolShop.AddComponent<RentIsDue.Shop.ToolShopManager>();
 
             // 13. BÀN SỬA ĐỒ (Repair Bench)
-            GameObject repairBenchAlley = SpawnModel(modelsFolder, "tableCoffee.fbx", new Vector3(0, 0, 38f), Quaternion.identity, alleyRoot, 0.35f);
+            GameObject repairAnchor = new GameObject("Repair_Anchor");
+            repairAnchor.transform.SetParent(alleyRoot.transform, false);
+            repairAnchor.transform.localPosition = new Vector3(0, 0, zStart + 14f);
+            
+            GameObject repairBenchAlley = SpawnModel(modelsFolder, "tableCoffee.fbx", Vector3.zero, Quaternion.identity, repairAnchor, 0.35f);
             if (repairBenchAlley != null)
             {
                 EnsureCollider(repairBenchAlley);
@@ -529,8 +542,18 @@ namespace RentIsDue.Editor
             floor.transform.localScale = new Vector3(width, 0.3f, depth);
             ApplyMaterial(floor, "Mat_Room_Floor", new Color(0.32f, 0.25f, 0.20f));
 
-            // Tường Bắc (Phía sau bàn làm việc & giường)
-            CreateWall("Wall_North", "Mat_Room_Wall", new Vector3(0, halfH, halfD), new Vector3(width, height, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            // Tường Bắc (Có khoét khung cửa ra hẻm)
+            float doorW = 1.5f;
+            float doorH = 2.5f;
+
+            // Phần tường trên cửa
+            float topH = height - doorH;
+            CreateWall("Wall_North_Top", "Mat_Room_Wall", new Vector3(0, height - (topH / 2f), halfD), new Vector3(doorW, topH, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+
+            // Phần tường 2 bên cửa
+            float sideW = (width - doorW) / 2f;
+            CreateWall("Wall_North_Left", "Mat_Room_Wall", new Vector3(-halfW + (sideW / 2f), halfH, halfD), new Vector3(sideW, height, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            CreateWall("Wall_North_Right", "Mat_Room_Wall", new Vector3(halfW - (sideW / 2f), halfH, halfD), new Vector3(sideW, height, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
 
             // Tường Tây & Đông
             CreateWall("Wall_West", "Mat_Room_Wall", new Vector3(-halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, new Color(0.82f, 0.80f, 0.76f));
