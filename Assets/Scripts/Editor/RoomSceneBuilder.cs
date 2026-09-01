@@ -685,11 +685,21 @@ namespace RentIsDue.Editor
             foreach (var lg in lodGroups)
             {
                 LOD[] lods = lg.GetLODs();
+                for (int i = 1; i < lods.Length; i++) 
+                {
+                    foreach (Renderer r in lods[i].renderers) 
+                    {
+                        if (r != null) r.enabled = false; // Tắt hoàn toàn lưới của LOD thấp
+                    }
+                }
                 if (lods.Length > 0)
                 {
-                    lods[0].screenRelativeTransitionHeight = 0.0001f; // Ép LOD0 luôn hiển thị kể cả khi ở rất xa
-                    lg.SetLODs(new LOD[] { lods[0] });
+                    foreach (Renderer r in lods[0].renderers) 
+                    {
+                        if (r != null) r.enabled = true; // Đảm bảo LOD cao nhất luôn bật
+                    }
                 }
+                Object.DestroyImmediate(lg); // Xóa component LODGroup để nó không can thiệp nữa
             }
 
             EnsureCollider(instance);
