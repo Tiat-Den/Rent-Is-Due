@@ -290,11 +290,14 @@ namespace RentIsDue.Editor
             alleyRoot.AddComponent<RentIsDue.Audio.StreetAmbiencePlayer>();
 
             // === SÀN HẺM & TƯỜNG (MODULAR) ===
-            float zStart = halfD + 1f; // +1f offset because the 2m tile pivot is in the center
-            float alleyLength = 16f;
-            float zEnd = zStart + alleyLength;
+            // Kích thước thật của 1 module ở scale 1 là 1m x 1m.
+            // Nên với urbanScale = 4f, mỗi block sẽ dài 4m. Tâm (pivot) nằm ở giữa.
             float urbanScale = 4f; 
-            float step = 2f; 
+            float step = 4f; 
+            
+            float zStart = halfD + (step / 2f); // Bắt đầu từ mép ngoài của phòng
+            float alleyLength = 20f;
+            float zEnd = zStart + alleyLength;
 
             for (float z = zStart; z <= zEnd; z += step)
             {
@@ -317,7 +320,7 @@ namespace RentIsDue.Editor
             // Bít cuối hẻm (Không bít đầu hẻm vì đã nối vào phòng)
             for (float x = -2f; x <= 2f; x += 2f)
             {
-                SpawnModel(urbanFolder, "wall-fence.fbx", new Vector3(x, 0, zEnd + 2f), Quaternion.identity, alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-fence.fbx", new Vector3(x, 0, zEnd + (step / 2f)), Quaternion.identity, alleyRoot, urbanScale);
             }
 
             // Trần che bớt sáng
