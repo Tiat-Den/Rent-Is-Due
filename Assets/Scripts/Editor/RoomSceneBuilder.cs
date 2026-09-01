@@ -115,9 +115,22 @@ namespace RentIsDue.Editor
             EditorGUILayout.HelpBox("Bạn có thể tự do kéo thả, dịch chuyển nội thất theo ý thích rồi bấm 'LƯU BỐ CỤC PHÒNG' ở trên để lưu vĩnh viễn.", MessageType.Info);
             GUILayout.Space(10);
 
-            customWidth = EditorGUILayout.Slider("Chiều Rộng (Width - mét):", customWidth, 10f, 50f);
-            customDepth = EditorGUILayout.Slider("Chiều Dài (Depth - mét):", customDepth, 10f, 50f);
-            customHeight = EditorGUILayout.Slider("Chiều Cao Trần (Height):", customHeight, 3f, 8f);
+            GUILayout.Label("--- CÁC MẪU PHÒNG (PRESETS) ---", EditorStyles.boldLabel);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Tiny Room (8x6)")) { customWidth = 8f; customDepth = 6f; customHeight = 3f; }
+            if (GUILayout.Button("Apartment (12x9)")) { customWidth = 12f; customDepth = 9f; customHeight = 3.5f; }
+            if (GUILayout.Button("Basement (16x12)")) { customWidth = 16f; customDepth = 12f; customHeight = 3.5f; }
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Garage (20x14)")) { customWidth = 20f; customDepth = 14f; customHeight = 4f; }
+            if (GUILayout.Button("Warehouse (24x18)")) { customWidth = 24f; customDepth = 18f; customHeight = 4f; }
+            GUILayout.EndHorizontal();
+            GUILayout.Space(10);
+
+            customWidth = EditorGUILayout.Slider("Chiều Rộng (Width - mét):", customWidth, 5f, 50f);
+            customDepth = EditorGUILayout.Slider("Chiều Dài (Depth - mét):", customDepth, 5f, 50f);
+            customHeight = EditorGUILayout.Slider("Chiều Cao Trần (Height):", customHeight, 2.5f, 8f);
 
             GUILayout.Space(10);
             GUILayout.Label($"Diện tích sàn: <b>{(int)(customWidth * customDepth)} m²</b>", EditorStyles.helpBox);
@@ -468,7 +481,8 @@ namespace RentIsDue.Editor
             }
             
             storageRoot = new GameObject("StorageRoom");
-            storageRoot.transform.position = new Vector3(30f, 0, 0); // Đẩy ra xa 30m
+            // Đặt StorageRoom ra phía sau hẻm (zEnd + 20m) để không bao giờ bị đè lấn
+            storageRoot.transform.position = new Vector3(0, 0, zEnd + 20f); 
 
             // Sàn nhà kho
             GameObject sFloor = GameObject.CreatePrimitive(PrimitiveType.Plane);
