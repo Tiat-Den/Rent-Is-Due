@@ -401,15 +401,6 @@ namespace RentIsDue.Editor
             ApplyMaterial(streetDoor, "Mat_StreetDoor", new Color(0.5f, 0.3f, 0.1f));
             streetDoor.AddComponent<RentIsDue.Gameplay.StreetDoorInteractable>();
 
-            // Cửa từ Khu Phố về Phòng (đặt ép vào tường trái)
-            GameObject alleyDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            alleyDoor.name = "Alley_Door";
-            alleyDoor.transform.SetParent(alleyRoot.transform, false);
-            alleyDoor.transform.localPosition = new Vector3(-3.8f, 1.25f, zStart + 2f);
-            alleyDoor.transform.localScale = new Vector3(0.2f, 2.5f, 1.5f);
-            ApplyMaterial(alleyDoor, "Mat_StreetDoor", new Color(0.5f, 0.3f, 0.1f));
-            alleyDoor.AddComponent<RentIsDue.Gameplay.StreetDoorInteractable>();
-
             // 11. DEALER Ngoài hẻm
             GameObject dealerAnchor = new GameObject("Dealer_Anchor");
             dealerAnchor.transform.SetParent(alleyRoot.transform, false);

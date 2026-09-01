@@ -67,6 +67,26 @@ namespace RentIsDue.Core
                 }
             }
 
+            // Save các vật phẩm bị vứt ra ngoài sàn hoặc cất trong kho
+            PickupInteractable[] floorItems = FindObjectsByType<PickupInteractable>(FindObjectsSortMode.None);
+            foreach (var fItem in floorItems)
+            {
+                if (fItem.itemData != null)
+                {
+                    data.floorItems.Add(new SavedFloorItem {
+                        id = fItem.itemData.id,
+                        condition = fItem.condition,
+                        posX = fItem.transform.position.x,
+                        posY = fItem.transform.position.y,
+                        posZ = fItem.transform.position.z,
+                        rotX = fItem.transform.rotation.x,
+                        rotY = fItem.transform.rotation.y,
+                        rotZ = fItem.transform.rotation.z,
+                        rotW = fItem.transform.rotation.w
+                    });
+                }
+            }
+
             if (RentIsDue.Gameplay.CollectorManager.Instance != null)
             {
                 foreach (var item in RentIsDue.Gameplay.CollectorManager.Instance.currentSet)
@@ -142,6 +162,32 @@ namespace RentIsDue.Core
                         if (itemDict.TryGetValue(savedItem.id, out ItemData matchedData))
                         {
                             InventoryManager.Instance.AddItem(matchedData, savedItem.condition);
+                        }
+                    }
+
+                    // Xóa đồ cũ rớt trên sàn (tránh x2 đồ khi load lại nhiều lần)
+                    PickupInteractable[] existingFloorItems = FindObjectsByType<PickupInteractable>(FindObjectsSortMode.None);
+                    foreach (var oldItem in existingFloorItems)
+                    {
+                        Destroy(oldItem.gameObject);
+                    }
+
+                    // Load đồ mới rớt trên sàn
+                    if (data.floorItems != null)
+                    {
+                        foreach (var floorItem in data.floorItems)
+                        {
+                            if (itemDict.TryGetValue(floorItem.id, out ItemData matchedData))
+                            {
+                                if (matchedData.prefab != null)
+                                {
+                                    GameObject dropped = Instantiate(matchedData.prefab, new Vector3(floorItem.posX, floorItem.posY, floorItem.posZ), new Quaternion(floorItem.rotX, floorItem.rotY, floorItem.rotZ, floorItem.rotW));
+                                    var interactable = dropped.GetComponent<PickupInteractable>();
+                                    if (interactable == null) interactable = dropped.AddComponent<PickupInteractable>();
+                                    interactable.itemData = matchedData;
+                                    interactable.condition = floorItem.condition;
+                                }
+                            }
                         }
                     }
                 }

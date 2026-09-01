@@ -18,6 +18,7 @@ namespace RentIsDue.Core
         public int repairSpeedLevel = 1;
         public bool isStorageUnlocked = false;
         public System.Collections.Generic.List<SavedItem> inventory = new System.Collections.Generic.List<SavedItem>();
+        public System.Collections.Generic.List<SavedFloorItem> floorItems = new System.Collections.Generic.List<SavedFloorItem>();
         public System.Collections.Generic.List<string> currentCollectorSet = new System.Collections.Generic.List<string>();
     }
 
@@ -26,5 +27,14 @@ namespace RentIsDue.Core
     {
         public string id;
         public float condition;
+    }
+
+    [Serializable]
+    public class SavedFloorItem
+    {
+        public string id;
+        public float condition;
+        public float posX, posY, posZ;
+        public float rotX, rotY, rotZ, rotW;
     }
 }

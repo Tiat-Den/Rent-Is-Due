@@ -1,18 +1,11 @@
 using UnityEngine;
 using RentIsDue.Player;
-using RentIsDue.Core;
 
 namespace RentIsDue.Gameplay
 {
     public class StreetDoorInteractable : MonoBehaviour, IInteractable
     {
-        private Transform playerTransform;
-
-        private void Start()
-        {
-            var p = FindAnyObjectByType<RentIsDue.Player.PlayerMovement>();
-            if (p != null) playerTransform = p.transform;
-        }
+        private bool isOpen = false;
 
         public bool CanInteract(PlayerInteractor player)
         {
@@ -21,33 +14,25 @@ namespace RentIsDue.Gameplay
 
         public string GetInteractionText()
         {
-            // If player is in room (z near 0), text is 'Exit to Alley'. If in alley (z near 30), text is 'Enter Room'.
-            if (playerTransform != null && playerTransform.position.z > 15f)
-            {
-                return "Vào Phòng (Enter Room)";
-            }
-            return "Ra Khu Phố (Exit to Alley)";
+            return isOpen ? "[Đóng cửa]" : "[Mở cửa ra Hẻm]";
         }
 
         public void Interact(PlayerInteractor player)
         {
-            if (playerTransform != null)
+            isOpen = !isOpen;
+            
+            if (isOpen)
             {
-                CharacterController cc = playerTransform.GetComponent<CharacterController>();
-                if (cc != null) cc.enabled = false;
-
-                if (playerTransform.position.z > 15f)
-                {
-                    // Teleport to room
-                    playerTransform.position = new Vector3(0, 1.5f, 5f);
-                }
-                else
-                {
-                    // Teleport to alley
-                    playerTransform.position = new Vector3(0, 1.5f, 28f);
-                }
-
-                if (cc != null) cc.enabled = true;
+                // Mở cửa: Xoay đi 90 độ và tắt collider để đi qua dễ hơn (hoặc giữ collider nếu xoay chuẩn)
+                transform.localRotation = Quaternion.Euler(0, 90, 0);
+                // Dịch sang mép tường để không chắn đường (vì tâm cube nằm ở giữa)
+                transform.localPosition += new Vector3(-0.75f, 0, 0.75f);
+            }
+            else
+            {
+                // Đóng cửa
+                transform.localRotation = Quaternion.identity;
+                transform.localPosition -= new Vector3(-0.75f, 0, 0.75f);
             }
         }
     }
