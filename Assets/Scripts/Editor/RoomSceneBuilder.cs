@@ -292,12 +292,13 @@ namespace RentIsDue.Editor
             // Floor for alley (Modular)
             float zStart = 24f;
             float zEnd = 40f;
-            float step = 4f;
-            float roadScale = 8f; // scale đường và vỉa hè đồng đều (dài rộng)
-            
-            // Wall scale: dài theo Z (8x), cao (2x), nhưng MỎNG theo X (0.3x) để không lấn vào đường
-            Vector3 wallScaleL = new Vector3(0.3f, 2f, 8f); // tường trái (hướng X âm, mỏng theo X)
-            Vector3 wallScaleR = new Vector3(0.3f, 2f, 8f); // tường phải
+            float step = 8f;         // bằng chiều dài wall sau scale để khớp nhau
+            float roadScale = 8f;    // đường và vỉa hè scale đồng đều
+
+            // Tường xoay 90° Y → local X chạy theo world Z (dọc đường)
+            // Nên X=8 (dài dọc đường), Y=2 (cao), Z=0.3 (mỏng vào đường)
+            Vector3 wallScaleL = new Vector3(8f, 2f, 0.3f);
+            Vector3 wallScaleR = new Vector3(8f, 2f, 0.3f);
 
             for (float z = zStart; z <= zEnd; z += step)
             {
@@ -306,12 +307,12 @@ namespace RentIsDue.Editor
                 SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(-4f, 0, z), Quaternion.identity, alleyRoot, roadScale);
                 SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(4f, 0, z), Quaternion.Euler(0, 180, 0), alleyRoot, roadScale);
                 
-                // Walls Left (West) — X = -8, scale mỏng không tràn vào đường
+                // Walls Left (West) — X=-8, xoay 90° Y, scale (8,2,0.3)
                 SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(-8f, 0, z),   Quaternion.Euler(0, 90, 0),  alleyRoot, wallScaleL);
                 SpawnModel(urbanFolder, "wall-a-window.fbx",  new Vector3(-8f, 4f, z),  Quaternion.Euler(0, 90, 0),  alleyRoot, wallScaleL);
                 SpawnModel(urbanFolder, "wall-a.fbx",          new Vector3(-8f, 8f, z),  Quaternion.Euler(0, 90, 0),  alleyRoot, wallScaleL);
                 
-                // Walls Right (East) — X = 8
+                // Walls Right (East) — X=8, xoay -90° Y
                 SpawnModel(urbanFolder, "wall-b-garage.fbx",  new Vector3(8f, 0, z),    Quaternion.Euler(0, -90, 0), alleyRoot, wallScaleR);
                 SpawnModel(urbanFolder, "wall-a-window.fbx",  new Vector3(8f, 4f, z),   Quaternion.Euler(0, -90, 0), alleyRoot, wallScaleR);
                 SpawnModel(urbanFolder, "wall-a.fbx",          new Vector3(8f, 8f, z),   Quaternion.Euler(0, -90, 0), alleyRoot, wallScaleR);
