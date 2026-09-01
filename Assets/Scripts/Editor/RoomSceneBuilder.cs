@@ -680,6 +680,18 @@ namespace RentIsDue.Editor
             instance.transform.localRotation = rot;
             instance.transform.localScale = Vector3.one * scale;
 
+            // Bỏ hiệu ứng LOD (Level Of Detail) gây biến dạng model khi zoom out
+            LODGroup[] lodGroups = instance.GetComponentsInChildren<LODGroup>();
+            foreach (var lg in lodGroups)
+            {
+                LOD[] lods = lg.GetLODs();
+                if (lods.Length > 0)
+                {
+                    lods[0].screenRelativeTransitionHeight = 0.0001f; // Ép LOD0 luôn hiển thị kể cả khi ở rất xa
+                    lg.SetLODs(new LOD[] { lods[0] });
+                }
+            }
+
             EnsureCollider(instance);
             return instance;
         }
