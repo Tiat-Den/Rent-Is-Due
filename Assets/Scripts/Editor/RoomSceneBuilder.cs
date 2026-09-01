@@ -292,12 +292,13 @@ namespace RentIsDue.Editor
             // Floor for alley (Modular)
             float zStart = 24f;
             float zEnd = 40f;
-            float urbanScale = 4f;
+            float urbanScale = 8f; // Gấp 8 lần vì model gốc cực kỳ nhỏ (chỉ 0.5m)
+            float step = 4f;
 
-            for (float z = zStart; z <= zEnd; z += 4f)
+            for (float z = zStart; z <= zEnd; z += step)
             {
                 // Road
-                SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.identity, alleyRoot, urbanScale);
                 SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(-4f, 0, z), Quaternion.identity, alleyRoot, urbanScale);
                 SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(4f, 0, z), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
                 
@@ -331,20 +332,20 @@ namespace RentIsDue.Editor
             ApplyMaterial(alleyCeiling, "Mat_AlleyFloor", new Color(0.1f, 0.1f, 0.1f));
 
             // Alley Decorations
-            SpawnModel(urbanFolder, "detail-cables-type-a.fbx", new Vector3(0, 8f, 28f), Quaternion.Euler(0, 90, 0), alleyRoot, 3.0f);
-            SpawnModel(urbanFolder, "detail-cables-type-a.fbx", new Vector3(0, 9f, 32f), Quaternion.Euler(0, -90, 0), alleyRoot, 3.0f);
-            SpawnModel(urbanFolder, "scaffolding-structure.fbx", new Vector3(-5f, 0, 36f), Quaternion.Euler(0, 90, 0), alleyRoot, 3.0f);
-            SpawnModel(urbanFolder, "balcony-type-a.fbx", new Vector3(6f, 4f, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 4f);
+            SpawnModel(urbanFolder, "detail-cables-type-a.fbx", new Vector3(0, 8f, 28f), Quaternion.Euler(0, 90, 0), alleyRoot, 6.0f);
+            SpawnModel(urbanFolder, "detail-cables-type-a.fbx", new Vector3(0, 9f, 32f), Quaternion.Euler(0, -90, 0), alleyRoot, 6.0f);
+            SpawnModel(urbanFolder, "scaffolding-structure.fbx", new Vector3(-5f, 0, 36f), Quaternion.Euler(0, 90, 0), alleyRoot, 6.0f);
+            SpawnModel(urbanFolder, "balcony-type-a.fbx", new Vector3(6f, 4f, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 6f);
             
-            SpawnModel(urbanFolder, "detail-dumpster-open.fbx", new Vector3(4.5f, 0, 34f), Quaternion.Euler(0, -20, 0), alleyRoot, 3f);
-            SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(4.5f, 0, 38f), Quaternion.Euler(0, -5, 0), alleyRoot, 3f);
-            SpawnModel(urbanFolder, "pallet.fbx", new Vector3(-4.5f, 0, 34f), Quaternion.Euler(0, 45, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "pallet-small.fbx", new Vector3(-5f, 0.3f, 34.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "detail-bench.fbx", new Vector3(-4.5f, 0, 26f), Quaternion.Euler(0, 180, 0), alleyRoot, 3f);
+            SpawnModel(urbanFolder, "detail-dumpster-open.fbx", new Vector3(4.5f, 0, 34f), Quaternion.Euler(0, -20, 0), alleyRoot, 5f);
+            SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(4.5f, 0, 38f), Quaternion.Euler(0, -5, 0), alleyRoot, 5f);
+            SpawnModel(urbanFolder, "pallet.fbx", new Vector3(-4.5f, 0, 34f), Quaternion.Euler(0, 45, 0), alleyRoot, 4f);
+            SpawnModel(urbanFolder, "pallet-small.fbx", new Vector3(-5f, 0.3f, 34.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 4f);
+            SpawnModel(urbanFolder, "detail-bench.fbx", new Vector3(-4.5f, 0, 26f), Quaternion.Euler(0, 180, 0), alleyRoot, 5f);
             
             // Street Lamps with actual Light components
-            GameObject lamp1 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(5f, 0, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 5f);
-            GameObject lamp2 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-5f, 0, 30f), Quaternion.Euler(0, 90, 0), alleyRoot, 5f);
+            GameObject lamp1 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(4.5f, 0, 30f), Quaternion.Euler(0, -90, 0), alleyRoot, 5f);
+            GameObject lamp2 = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(-4.5f, 0, 30f), Quaternion.Euler(0, 90, 0), alleyRoot, 5f);
             // DayNightCycle setup
             RentIsDue.Environment.DayNightCycle dnc = alleyRoot.AddComponent<RentIsDue.Environment.DayNightCycle>();
             
@@ -388,12 +389,12 @@ namespace RentIsDue.Editor
             ApplyMaterial(streetDoor, "Mat_StreetDoor", new Color(0.5f, 0.3f, 0.1f));
             streetDoor.AddComponent<RentIsDue.Gameplay.StreetDoorInteractable>();
 
-            // Cửa từ Khu Phố về Phòng
+            // Cửa từ Khu Phố về Phòng (đặt ép vào tường trái)
             GameObject alleyDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             alleyDoor.name = "Alley_Door";
             alleyDoor.transform.SetParent(alleyRoot.transform, false);
-            alleyDoor.transform.localPosition = new Vector3(0, 1.25f, 25.2f);
-            alleyDoor.transform.localScale = new Vector3(1.5f, 2.5f, 0.2f);
+            alleyDoor.transform.localPosition = new Vector3(-5.8f, 1.25f, 26f);
+            alleyDoor.transform.localScale = new Vector3(0.2f, 2.5f, 1.5f);
             ApplyMaterial(alleyDoor, "Mat_StreetDoor", new Color(0.5f, 0.3f, 0.1f));
             alleyDoor.AddComponent<RentIsDue.Gameplay.StreetDoorInteractable>();
 
