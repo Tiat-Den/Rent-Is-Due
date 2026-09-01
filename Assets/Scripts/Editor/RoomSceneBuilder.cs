@@ -290,7 +290,7 @@ namespace RentIsDue.Editor
             alleyRoot.AddComponent<RentIsDue.Audio.StreetAmbiencePlayer>();
 
             // === SÀN HẺM & TƯỜNG (MODULAR) ===
-            float zStart = halfD;
+            float zStart = halfD + 1f; // +1f offset because the 2m tile pivot is in the center
             float alleyLength = 16f;
             float zEnd = zStart + alleyLength;
             float urbanScale = 4f; 
@@ -314,11 +314,10 @@ namespace RentIsDue.Editor
                 SpawnModel(urbanFolder, "wall-a.fbx", new Vector3(4f, 4f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
             }
 
-            // Bít 2 đầu hẻm
+            // Bít cuối hẻm (Không bít đầu hẻm vì đã nối vào phòng)
             for (float x = -2f; x <= 2f; x += 2f)
             {
                 SpawnModel(urbanFolder, "wall-fence.fbx", new Vector3(x, 0, zEnd + 2f), Quaternion.identity, alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-broken-type-a.fbx", new Vector3(x, 0, zStart - 2f), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
             }
 
             // Trần che bớt sáng
