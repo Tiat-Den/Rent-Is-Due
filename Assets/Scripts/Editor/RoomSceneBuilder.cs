@@ -292,25 +292,29 @@ namespace RentIsDue.Editor
             // Floor for alley (Modular)
             float zStart = 24f;
             float zEnd = 40f;
-            float urbanScale = 8f; // Gấp 8 lần vì model gốc cực kỳ nhỏ (chỉ 0.5m)
             float step = 4f;
+            float roadScale = 8f; // scale đường và vỉa hè đồng đều (dài rộng)
+            
+            // Wall scale: dài theo Z (8x), cao (2x), nhưng MỎNG theo X (0.3x) để không lấn vào đường
+            Vector3 wallScaleL = new Vector3(0.3f, 2f, 8f); // tường trái (hướng X âm, mỏng theo X)
+            Vector3 wallScaleR = new Vector3(0.3f, 2f, 8f); // tường phải
 
             for (float z = zStart; z <= zEnd; z += step)
             {
-                // Road
-                SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.identity, alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(-4f, 0, z), Quaternion.identity, alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(4f, 0, z), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
+                // Road center
+                SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.identity, alleyRoot, roadScale);
+                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(-4f, 0, z), Quaternion.identity, alleyRoot, roadScale);
+                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(4f, 0, z), Quaternion.Euler(0, 180, 0), alleyRoot, roadScale);
                 
-                // Walls Left (West) - dời ra X = -8f để không lẹm vào vỉa hè
-                SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(-8f, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(-8f, 4f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a.fbx", new Vector3(-8f, 8f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
+                // Walls Left (West) — X = -8, scale mỏng không tràn vào đường
+                SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(-8f, 0, z),   Quaternion.Euler(0, 90, 0),  alleyRoot, wallScaleL);
+                SpawnModel(urbanFolder, "wall-a-window.fbx",  new Vector3(-8f, 4f, z),  Quaternion.Euler(0, 90, 0),  alleyRoot, wallScaleL);
+                SpawnModel(urbanFolder, "wall-a.fbx",          new Vector3(-8f, 8f, z),  Quaternion.Euler(0, 90, 0),  alleyRoot, wallScaleL);
                 
-                // Walls Right (East) - dời ra X = 8f
-                SpawnModel(urbanFolder, "wall-b-garage.fbx", new Vector3(8f, 0, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(8f, 4f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a.fbx", new Vector3(8f, 8f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
+                // Walls Right (East) — X = 8
+                SpawnModel(urbanFolder, "wall-b-garage.fbx",  new Vector3(8f, 0, z),    Quaternion.Euler(0, -90, 0), alleyRoot, wallScaleR);
+                SpawnModel(urbanFolder, "wall-a-window.fbx",  new Vector3(8f, 4f, z),   Quaternion.Euler(0, -90, 0), alleyRoot, wallScaleR);
+                SpawnModel(urbanFolder, "wall-a.fbx",          new Vector3(8f, 8f, z),   Quaternion.Euler(0, -90, 0), alleyRoot, wallScaleR);
             }
 
             // Block Ends of Alley
@@ -663,7 +667,17 @@ namespace RentIsDue.Editor
             }
         }
 
+        private static GameObject SpawnModel(string folder, string fileName, Vector3 pos, Quaternion rot, GameObject parent, Vector3 scaleV3)
+        {
+            return SpawnModelInternal(folder, fileName, pos, rot, parent, scaleV3);
+        }
+
         private static GameObject SpawnModel(string folder, string fileName, Vector3 pos, Quaternion rot, GameObject parent, float scale = 1f)
+        {
+            return SpawnModelInternal(folder, fileName, pos, rot, parent, Vector3.one * scale);
+        }
+
+        private static GameObject SpawnModelInternal(string folder, string fileName, Vector3 pos, Quaternion rot, GameObject parent, Vector3 scale)
         {
             string path = $"{folder}/{fileName}";
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
@@ -678,7 +692,7 @@ namespace RentIsDue.Editor
             instance.transform.SetParent(parent.transform, false);
             instance.transform.localPosition = pos;
             instance.transform.localRotation = rot;
-            instance.transform.localScale = Vector3.one * scale;
+            instance.transform.localScale = scale;
 
             // Bỏ hiệu ứng LOD (Level Of Detail) gây biến dạng model khi zoom out
             LODGroup[] lodGroups = instance.GetComponentsInChildren<LODGroup>();
