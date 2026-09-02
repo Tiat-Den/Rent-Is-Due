@@ -389,14 +389,50 @@ namespace RentIsDue.Editor
             SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(-3.5f, 0, zStart + 16f), Quaternion.identity, alleyRoot, 2.5f);
             SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(3.5f, 0, zStart + 16f), Quaternion.identity, alleyRoot, 2.5f);
             
-            // Cửa ra Khu Phố (nằm ở phòng, dùng texture cửa thật của khu phố)
+            // Cửa ra Khu Phố (nằm ở phòng)
             GameObject streetDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             streetDoor.name = "Street_Door";
             streetDoor.transform.SetParent(roomRoot.transform, false);
             streetDoor.transform.localPosition = new Vector3(0, 1.25f, halfD - 0.2f);
             streetDoor.transform.localScale = new Vector3(1.5f, 2.5f, 0.2f);
-            ApplyTexturedMaterial(streetDoor, "Mat_StreetDoor", "Assets/Models_Item/FBX format/Textures/doors.png", new Color(0.45f, 0.28f, 0.15f), new Vector2(1f, 1f));
+            // Chỉ lấy đúng nửa bên trái của texture doors.png (cửa panel gỗ xám cổ điển, loại bỏ nửa đỏ)
+            ApplyTexturedMaterial(streetDoor, "Mat_StreetDoor", "Assets/Models_Item/FBX format/Textures/doors.png", new Color(0.35f, 0.35f, 0.35f), new Vector2(0.5f, 1f), Vector2.zero, 0.15f);
             streetDoor.AddComponent<RentIsDue.Gameplay.StreetDoorInteractable>();
+
+            // Tay nắm cửa kim loại
+            GameObject doorknob = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            doorknob.name = "Door_Handle";
+            doorknob.transform.SetParent(streetDoor.transform, false);
+            doorknob.transform.localPosition = new Vector3(0.38f, 0, -0.55f);
+            doorknob.transform.localScale = new Vector3(0.08f, 0.04f, 0.08f);
+            doorknob.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            ApplyMaterial(doorknob, "Mat_MetalRim", new Color(0.85f, 0.82f, 0.75f), 0.8f);
+
+            // Khung nẹp bao cửa bên trong phòng (Interior Door Frame) đồng bộ với nẹp chân tường
+            GameObject intDoorFrame = new GameObject("Interior_Door_Frame");
+            intDoorFrame.transform.SetParent(roomRoot.transform, false);
+            float intFrameZ = halfD - 0.16f;
+
+            GameObject intPillarL = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            intPillarL.name = "Int_Door_Pillar_L";
+            intPillarL.transform.SetParent(intDoorFrame.transform, false);
+            intPillarL.transform.localPosition = new Vector3(-0.82f, 1.25f, intFrameZ);
+            intPillarL.transform.localScale = new Vector3(0.14f, 2.5f, 0.06f);
+            ApplyMaterial(intPillarL, "Mat_Baseboard", new Color(0.32f, 0.19f, 0.11f));
+
+            GameObject intPillarR = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            intPillarR.name = "Int_Door_Pillar_R";
+            intPillarR.transform.SetParent(intDoorFrame.transform, false);
+            intPillarR.transform.localPosition = new Vector3(0.82f, 1.25f, intFrameZ);
+            intPillarR.transform.localScale = new Vector3(0.14f, 2.5f, 0.06f);
+            ApplyMaterial(intPillarR, "Mat_Baseboard", new Color(0.32f, 0.19f, 0.11f));
+
+            GameObject intLintel = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            intLintel.name = "Int_Door_Lintel";
+            intLintel.transform.SetParent(intDoorFrame.transform, false);
+            intLintel.transform.localPosition = new Vector3(0, 2.55f, intFrameZ);
+            intLintel.transform.localScale = new Vector3(1.78f, 0.14f, 0.06f);
+            ApplyMaterial(intLintel, "Mat_Baseboard", new Color(0.32f, 0.19f, 0.11f));
 
             // === MẶT TIỀN TÒA NHÀ KHU PHỐ (ALLEY BUILDING ENTRANCE FACADE) ===
             // Biến mặt ngoài của phòng thành tầng 1 của tòa chung cư 2 tầng cao 8m đồng bộ với phố
@@ -791,7 +827,7 @@ namespace RentIsDue.Editor
             ApplyMaterial(wall, matName, wallColor);
         }
 
-        private static void ApplyMaterial(GameObject obj, string matName, Color color)
+        private static void ApplyMaterial(GameObject obj, string matName, Color color, float smoothness = 0.05f)
         {
             Renderer rend = obj.GetComponent<Renderer>();
             if (rend != null)
@@ -812,22 +848,22 @@ namespace RentIsDue.Editor
                     if (shader == null) shader = Shader.Find("Diffuse");
 
                     mat = new Material(shader);
-                    mat.color = color;
-                    if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
                     AssetDatabase.CreateAsset(mat, matPath);
                 }
-                else
-                {
-                    mat.color = color;
-                    if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
-                    EditorUtility.SetDirty(mat);
-                }
+
+                mat.color = color;
+                if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
+                if (mat.HasProperty("_Color")) mat.SetColor("_Color", color);
+                if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", smoothness);
+                if (mat.HasProperty("_Glossiness")) mat.SetFloat("_Glossiness", smoothness);
+                if (mat.HasProperty("_Metallic")) mat.SetFloat("_Metallic", 0f);
+                EditorUtility.SetDirty(mat);
 
                 rend.sharedMaterial = mat;
             }
         }
 
-        private static void ApplyTexturedMaterial(GameObject obj, string matName, string texturePath, Color fallbackColor, Vector2 tiling)
+        private static void ApplyTexturedMaterial(GameObject obj, string matName, string texturePath, Color fallbackColor, Vector2 tiling, Vector2 offset = default, float smoothness = 0.1f)
         {
             Renderer rend = obj.GetComponent<Renderer>();
             if (rend != null)
@@ -858,6 +894,8 @@ namespace RentIsDue.Editor
                     if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", tex);
                     mat.mainTextureScale = tiling;
                     if (mat.HasProperty("_BaseMap")) mat.SetTextureScale("_BaseMap", tiling);
+                    mat.mainTextureOffset = offset;
+                    if (mat.HasProperty("_BaseMap")) mat.SetTextureOffset("_BaseMap", offset);
                     mat.color = Color.white;
                     if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", Color.white);
                 }
@@ -866,6 +904,8 @@ namespace RentIsDue.Editor
                     mat.color = fallbackColor;
                     if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", fallbackColor);
                 }
+                if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", smoothness);
+                if (mat.HasProperty("_Glossiness")) mat.SetFloat("_Glossiness", smoothness);
                 EditorUtility.SetDirty(mat);
                 rend.sharedMaterial = mat;
             }
