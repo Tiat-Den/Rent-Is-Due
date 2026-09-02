@@ -389,14 +389,103 @@ namespace RentIsDue.Editor
             SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(-3.5f, 0, zStart + 16f), Quaternion.identity, alleyRoot, 2.5f);
             SpawnModel(urbanFolder, "tree-shrub.fbx", new Vector3(3.5f, 0, zStart + 16f), Quaternion.identity, alleyRoot, 2.5f);
             
-            // Cửa ra Khu Phố (nằm ở phòng)
+            // Cửa ra Khu Phố (nằm ở phòng, dùng texture cửa thật của khu phố)
             GameObject streetDoor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             streetDoor.name = "Street_Door";
             streetDoor.transform.SetParent(roomRoot.transform, false);
             streetDoor.transform.localPosition = new Vector3(0, 1.25f, halfD - 0.2f);
             streetDoor.transform.localScale = new Vector3(1.5f, 2.5f, 0.2f);
-            ApplyMaterial(streetDoor, "Mat_StreetDoor", new Color(0.5f, 0.3f, 0.1f));
+            ApplyTexturedMaterial(streetDoor, "Mat_StreetDoor", "Assets/Models_Item/FBX format/Textures/doors.png", new Color(0.45f, 0.28f, 0.15f), new Vector2(1f, 1f));
             streetDoor.AddComponent<RentIsDue.Gameplay.StreetDoorInteractable>();
+
+            // === MẶT TIỀN TÒA NHÀ KHU PHỐ (ALLEY BUILDING ENTRANCE FACADE) ===
+            // Biến mặt ngoài của phòng thành tầng 1 của tòa chung cư 2 tầng cao 8m đồng bộ với phố
+            GameObject facadeRoot = new GameObject("Alley_Building_Facade");
+            facadeRoot.transform.SetParent(alleyRoot.transform, false);
+            float facadeZ = halfD + 0.16f;
+
+            // 1. Tầng 1 (Trệt): Vách gạch 2 bên cửa ra vào (X từ -4 đến -0.75 và +0.75 đến +4, cao 4m)
+            GameObject facadeGroundLeft = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            facadeGroundLeft.name = "Facade_Ground_Left";
+            facadeGroundLeft.transform.SetParent(facadeRoot.transform, false);
+            facadeGroundLeft.transform.localPosition = new Vector3(-2.375f, 2.0f, facadeZ);
+            facadeGroundLeft.transform.localScale = new Vector3(3.25f, 4.0f, 0.05f);
+            ApplyTexturedMaterial(facadeGroundLeft, "Mat_FacadeBrick", "Assets/Models_Item/FBX format/Textures/wall.png", new Color(0.6f, 0.28f, 0.22f), new Vector2(1.5f, 1f));
+
+            GameObject facadeGroundRight = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            facadeGroundRight.name = "Facade_Ground_Right";
+            facadeGroundRight.transform.SetParent(facadeRoot.transform, false);
+            facadeGroundRight.transform.localPosition = new Vector3(2.375f, 2.0f, facadeZ);
+            facadeGroundRight.transform.localScale = new Vector3(3.25f, 4.0f, 0.05f);
+            ApplyTexturedMaterial(facadeGroundRight, "Mat_FacadeBrick", "Assets/Models_Item/FBX format/Textures/wall.png", new Color(0.6f, 0.28f, 0.22f), new Vector2(1.5f, 1f));
+
+            // Vách gạch trên đầu cửa tầng 1 (Y từ 2.5 đến 4m)
+            GameObject facadeGroundTop = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            facadeGroundTop.name = "Facade_Ground_Top";
+            facadeGroundTop.transform.SetParent(facadeRoot.transform, false);
+            facadeGroundTop.transform.localPosition = new Vector3(0, 3.25f, facadeZ);
+            facadeGroundTop.transform.localScale = new Vector3(1.5f, 1.5f, 0.05f);
+            ApplyTexturedMaterial(facadeGroundTop, "Mat_FacadeBrick", "Assets/Models_Item/FBX format/Textures/wall.png", new Color(0.6f, 0.28f, 0.22f), new Vector2(0.8f, 0.5f));
+
+            // 2. Tầng 2 (Lầu): Tường gạch cao từ 4m đến 8m bít kín toàn bộ khoảng trời hở
+            GameObject facadeUpperWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            facadeUpperWall.name = "Facade_Upper_Wall";
+            facadeUpperWall.transform.SetParent(facadeRoot.transform, false);
+            facadeUpperWall.transform.localPosition = new Vector3(0, 6.0f, facadeZ);
+            facadeUpperWall.transform.localScale = new Vector3(8.0f, 4.0f, 0.05f);
+            ApplyTexturedMaterial(facadeUpperWall, "Mat_FacadeBrick", "Assets/Models_Item/FBX format/Textures/wall.png", new Color(0.6f, 0.28f, 0.22f), new Vector2(3.0f, 1f));
+
+            // Gờ phân tầng kiến trúc (Horizontal Molding Trim tại Y = 4m)
+            GameObject trim = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            trim.name = "Facade_Molding_Trim";
+            trim.transform.SetParent(facadeRoot.transform, false);
+            trim.transform.localPosition = new Vector3(0, 4.0f, facadeZ + 0.06f);
+            trim.transform.localScale = new Vector3(8.0f, 0.25f, 0.12f);
+            ApplyMaterial(trim, "Mat_ConcreteTrim", new Color(0.85f, 0.84f, 0.80f));
+
+            // 3. Hai ô cửa sổ 3D tầng 2 (Urban Windows)
+            SpawnModel(urbanFolder, "window-wide-type-a.fbx", new Vector3(-2.2f, 5.0f, facadeZ + 0.05f), Quaternion.identity, facadeRoot, 2.0f);
+            SpawnModel(urbanFolder, "window-wide-type-a.fbx", new Vector3(2.2f, 5.0f, facadeZ + 0.05f), Quaternion.identity, facadeRoot, 2.0f);
+
+            // 4. Khung trụ cửa ra vào (Entrance Pillars & Lintel)
+            GameObject pillarLeft = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            pillarLeft.name = "Door_Pillar_Left";
+            pillarLeft.transform.SetParent(facadeRoot.transform, false);
+            pillarLeft.transform.localPosition = new Vector3(-0.82f, 1.25f, facadeZ + 0.04f);
+            pillarLeft.transform.localScale = new Vector3(0.16f, 2.5f, 0.1f);
+            ApplyMaterial(pillarLeft, "Mat_ConcreteTrim", new Color(0.85f, 0.84f, 0.80f));
+
+            GameObject pillarRight = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            pillarRight.name = "Door_Pillar_Right";
+            pillarRight.transform.SetParent(facadeRoot.transform, false);
+            pillarRight.transform.localPosition = new Vector3(0.82f, 1.25f, facadeZ + 0.04f);
+            pillarRight.transform.localScale = new Vector3(0.16f, 2.5f, 0.1f);
+            ApplyMaterial(pillarRight, "Mat_ConcreteTrim", new Color(0.85f, 0.84f, 0.80f));
+
+            GameObject lintel = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            lintel.name = "Door_Lintel";
+            lintel.transform.SetParent(facadeRoot.transform, false);
+            lintel.transform.localPosition = new Vector3(0, 2.55f, facadeZ + 0.04f);
+            lintel.transform.localScale = new Vector3(1.8f, 0.16f, 0.1f);
+            ApplyMaterial(lintel, "Mat_ConcreteTrim", new Color(0.85f, 0.84f, 0.80f));
+
+            // Mái che nhỏ trên cửa ra vào (Entrance Awning)
+            SpawnModel(urbanFolder, "detail-awning-wide.fbx", new Vector3(0, 2.75f, facadeZ + 0.35f), Quaternion.identity, facadeRoot, 1.6f);
+
+            // Đèn hiên trước cửa nhà
+            GameObject porchLamp = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(1.15f, 2.7f, facadeZ + 0.1f), Quaternion.Euler(0, 180, 0), facadeRoot, 1.5f);
+            if (porchLamp != null)
+            {
+                GameObject pl = new GameObject("PorchLight");
+                pl.transform.SetParent(porchLamp.transform, false);
+                pl.transform.localPosition = new Vector3(0, 1.5f, 0.5f);
+                Light l = pl.AddComponent<Light>();
+                l.type = LightType.Point;
+                l.color = new Color(1f, 0.9f, 0.7f);
+                l.intensity = 15f;
+                l.range = 8f;
+                dnc.streetLamps.Add(l);
+            }
 
             // 11. DEALER Ngoài hẻm
             GameObject dealerAnchor = new GameObject("Dealer_Anchor");
@@ -688,6 +777,50 @@ namespace RentIsDue.Editor
                     EditorUtility.SetDirty(mat);
                 }
 
+                rend.sharedMaterial = mat;
+            }
+        }
+
+        private static void ApplyTexturedMaterial(GameObject obj, string matName, string texturePath, Color fallbackColor, Vector2 tiling)
+        {
+            Renderer rend = obj.GetComponent<Renderer>();
+            if (rend != null)
+            {
+                string folder = "Assets/Materials/Environment";
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                string matPath = $"{folder}/{matName}.mat";
+                Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+
+                if (mat == null)
+                {
+                    Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+                    if (shader == null) shader = Shader.Find("Standard");
+                    if (shader == null) shader = Shader.Find("Diffuse");
+
+                    mat = new Material(shader);
+                    AssetDatabase.CreateAsset(mat, matPath);
+                }
+
+                Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+                if (tex != null)
+                {
+                    mat.mainTexture = tex;
+                    if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", tex);
+                    mat.mainTextureScale = tiling;
+                    if (mat.HasProperty("_BaseMap")) mat.SetTextureScale("_BaseMap", tiling);
+                    mat.color = Color.white;
+                    if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", Color.white);
+                }
+                else
+                {
+                    mat.color = fallbackColor;
+                    if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", fallbackColor);
+                }
+                EditorUtility.SetDirty(mat);
                 rend.sharedMaterial = mat;
             }
         }
