@@ -26,8 +26,9 @@ namespace RentIsDue.Editor
                 GameObject glow = GameObject.Find("Window_Sun_Glow");
                 GameObject porch = GameObject.Find("PorchLight");
                 GameObject gate = GameObject.Find("Alley_End_SecurityGate");
+                GameObject backdrop = GameObject.Find("Distant_Skyline_Block");
 
-                if (glow != null || porch != null || gate == null)
+                if (glow != null || porch != null || gate == null || backdrop == null)
                 {
                     Debug.Log("<color=yellow>[RoomSceneBuilder] Đang tự động nâng cấp Cổng An Ninh Cuối Hẻm, Skyline Thành Phố & Cửa Sổ Mới...</color>");
                     BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
@@ -341,157 +342,151 @@ namespace RentIsDue.Editor
             float urbanScale = 4f; 
             float step = 4f; 
             
-            float zStart = halfD + (step / 2f); // Bắt đầu chính xác từ mép tường Bắc của phòng (halfD)
-            float alleyLength = 20f;
-            float zEnd = zStart + alleyLength;
+            float zStart = halfD + (step / 2f); // Bắt đầu từ mép tường Bắc của phòng (halfD)
+            float alleyPlayableLength = 20f;
+            float zGate = zStart + alleyPlayableLength; // Vị trí Cổng Sắt An Ninh
+            float avenueLength = 20f;                  // Đoạn đại lộ tiếp diễn phía sau cổng
+            float zStreetEnd = zGate + avenueLength;
 
-            for (float z = zStart; z <= zEnd; z += step)
+            // 1. TẠO TOÀN BỘ ĐƯỜNG VÀ 2 DÃY NHÀ LIỀN MẠCH (TỪ TRONG HẺM RA NGOÀI ĐẠI LỘ - KHÔNG GẬP GHỀNH, KHÔNG HỞ ĐƯỜNG)
+            for (float z = zStart; z <= zStreetEnd; z += step)
             {
-                // Đường và 2 bên vỉa hè được tạo liền mạch bằng 1 model xoay 90 độ (vừa khít 8m giữa 2 dãy tường):
+                // Mặt đường asphalt + 2 vỉa hè (rộng khít 8m)
                 SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
                 
-                // Tường trái: Tầng 1 (Y = 0, cao 4m) và Tầng 2 (Y = 4, cao 4m), xếp chồng khít 100% không trùng mặt mesh gây nhấp nháy
+                // Dãy nhà bên trái (Tầng 1 cao 4m + Tầng 2 cao 4m, nối dài liên tục suốt con phố)
                 SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(-6f, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(-6f, 4f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a-window.fbx",  new Vector3(-6f, 4f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
                 
-                // Tường phải: Tầng 1 (Y = 0, cao 4m) và Tầng 2 (Y = 4, cao 4m)
-                SpawnModel(urbanFolder, "wall-b-garage.fbx", new Vector3(6f, 0, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(6f, 4f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
+                // Dãy nhà bên phải (Tầng 1 cao 4m + Tầng 2 cao 4m, nối dài liên tục suốt con phố)
+                SpawnModel(urbanFolder, "wall-b-garage.fbx",  new Vector3(6f, 0, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a-window.fbx",  new Vector3(6f, 4f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
             }
 
-            // === CỔNG SẮT AN NINH CUỐI HẺM & CẦU VƯỢT KIẾN TRÚC (PHƯƠNG ÁN 3) ===
-            float zEndGate = zEnd + (step / 2f);
+            // 2. TÒA NHÀ CHẮN NGANG CUỐI ĐẠI LỘ (T-JUNCTION CROSS-STREET BACKDROP)
+            // Bịt kín hoàn toàn điểm cuối của đại lộ xa, không để lộ bất kỳ khoảng hở hay chân map nào
+            float zBackdrop = zStreetEnd + (step / 2f);
+            for (float x = -6f; x <= 6f; x += 4f)
+            {
+                // Tầng 1 (Y = 0m)
+                SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(x, 0, zBackdrop), Quaternion.identity, alleyRoot, urbanScale);
+                // Tầng 2 (Y = 4m)
+                SpawnModel(urbanFolder, "wall-a-window.fbx",  new Vector3(x, 4f, zBackdrop), Quaternion.identity, alleyRoot, urbanScale);
+                // Tầng 3 (Y = 8m)
+                SpawnModel(urbanFolder, "wall-a-window.fbx",  new Vector3(x, 8f, zBackdrop), Quaternion.identity, alleyRoot, urbanScale);
+                // Mái nhà chi tiết (Y = 12m)
+                SpawnModel(urbanFolder, "wall-a-roof-detailed.fbx", new Vector3(x, 12f, zBackdrop), Quaternion.identity, alleyRoot, urbanScale);
+            }
+
+            // Khối cao ốc sừng sững phía sau tòa nhà chắn ngang (tạo chiều sâu chân trời thành phố)
+            GameObject skylineBackdrop = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            skylineBackdrop.name = "Distant_Skyline_Block";
+            skylineBackdrop.transform.SetParent(alleyRoot.transform, false);
+            skylineBackdrop.transform.localPosition = new Vector3(0, 14.0f, zBackdrop + 4.0f);
+            skylineBackdrop.transform.localScale = new Vector3(20.0f, 28.0f, 8.0f);
+            ApplyTexturedMaterial(skylineBackdrop, "Mat_FacadeBrick", "Assets/Models_Item/FBX format/Textures/wall.png", new Color(0.35f, 0.20f, 0.16f), new Vector2(5f, 5f));
+
+            // 3. CỔNG SẮT AN NINH VÀ CẦU VƯỢT (NGAY TẠI RANH GIỚI zGate)
             GameObject gateRoot = new GameObject("Alley_End_SecurityGate");
             gateRoot.transform.SetParent(alleyRoot.transform, false);
 
-            // 1. Tầng 2 (Y = 4m đến 8m): Cầu Vượt Đô Thị Bịt Kín Khoảng Trời Hở (Overpass Skyway)
+            // Cầu vượt tầng 2 (Y = 4m đến 8m)
             GameObject overpass = GameObject.CreatePrimitive(PrimitiveType.Cube);
             overpass.name = "Alley_Overpass_Skyway";
             overpass.transform.SetParent(gateRoot.transform, false);
-            overpass.transform.localPosition = new Vector3(0, 6.0f, zEndGate);
+            overpass.transform.localPosition = new Vector3(0, 6.0f, zGate);
             overpass.transform.localScale = new Vector3(8.0f, 4.0f, 0.4f);
             ApplyTexturedMaterial(overpass, "Mat_FacadeBrick", "Assets/Models_Item/FBX format/Textures/wall.png", new Color(0.6f, 0.28f, 0.22f), new Vector2(3.0f, 1f));
 
-            // Dầm thép / Xà ngang bê tông đỡ cầu vượt tại Y = 4m
+            // Dầm bê tông đỡ cầu vượt tại Y = 4m
             GameObject overpassBeam = GameObject.CreatePrimitive(PrimitiveType.Cube);
             overpassBeam.name = "Overpass_Support_Beam";
             overpassBeam.transform.SetParent(gateRoot.transform, false);
-            overpassBeam.transform.localPosition = new Vector3(0, 4.0f, zEndGate);
+            overpassBeam.transform.localPosition = new Vector3(0, 4.0f, zGate);
             overpassBeam.transform.localScale = new Vector3(8.2f, 0.25f, 0.5f);
             ApplyMaterial(overpassBeam, "Mat_ConcreteTrim", new Color(0.85f, 0.84f, 0.80f));
 
-            // Cửa sổ 3D trên cầu vượt nhìn ra con hẻm
-            SpawnModel(urbanFolder, "window-wide-type-a.fbx", new Vector3(-2.2f, 5.5f, zEndGate - 0.22f), Quaternion.Euler(0, 180, 0), gateRoot, 1.8f);
-            SpawnModel(urbanFolder, "window-wide-type-a.fbx", new Vector3(2.2f, 5.5f, zEndGate - 0.22f), Quaternion.Euler(0, 180, 0), gateRoot, 1.8f);
+            // Cửa sổ 3D trên cầu vượt nhìn xuống
+            SpawnModel(urbanFolder, "window-wide-type-a.fbx", new Vector3(-2.2f, 5.5f, zGate - 0.22f), Quaternion.Euler(0, 180, 0), gateRoot, 1.8f);
+            SpawnModel(urbanFolder, "window-wide-type-a.fbx", new Vector3(2.2f, 5.5f, zGate - 0.22f), Quaternion.Euler(0, 180, 0), gateRoot, 1.8f);
 
-            // 2. Tầng 1 (Y = 0 đến 4m): Cổng Sắt An Ninh Kiên Cố (Tall Iron Security Gate)
+            // Cổng Sắt An Ninh Kiên Cố (Y = 0 đến 4m)
             Color ironGateColor = new Color(0.18f, 0.18f, 0.18f);
             Color concreteColor = new Color(0.85f, 0.84f, 0.80f);
 
-            // 3 Trụ cổng bê tông (Trái -4m, Giữa 0m, Phải +4m)
+            // 3 Trụ cổng bê tông
             GameObject postLeft = GameObject.CreatePrimitive(PrimitiveType.Cube);
             postLeft.name = "Gate_Post_Left";
             postLeft.transform.SetParent(gateRoot.transform, false);
-            postLeft.transform.localPosition = new Vector3(-4.0f, 2.0f, zEndGate);
+            postLeft.transform.localPosition = new Vector3(-4.0f, 2.0f, zGate);
             postLeft.transform.localScale = new Vector3(0.4f, 4.0f, 0.4f);
             ApplyMaterial(postLeft, "Mat_ConcreteTrim", concreteColor);
 
             GameObject postCenter = GameObject.CreatePrimitive(PrimitiveType.Cube);
             postCenter.name = "Gate_Post_Center";
             postCenter.transform.SetParent(gateRoot.transform, false);
-            postCenter.transform.localPosition = new Vector3(0, 2.0f, zEndGate);
+            postCenter.transform.localPosition = new Vector3(0, 2.0f, zGate);
             postCenter.transform.localScale = new Vector3(0.35f, 4.0f, 0.35f);
             ApplyMaterial(postCenter, "Mat_ConcreteTrim", concreteColor);
 
             GameObject postRight = GameObject.CreatePrimitive(PrimitiveType.Cube);
             postRight.name = "Gate_Post_Right";
             postRight.transform.SetParent(gateRoot.transform, false);
-            postRight.transform.localPosition = new Vector3(4.0f, 2.0f, zEndGate);
+            postRight.transform.localPosition = new Vector3(4.0f, 2.0f, zGate);
             postRight.transform.localScale = new Vector3(0.4f, 4.0f, 0.4f);
             ApplyMaterial(postRight, "Mat_ConcreteTrim", concreteColor);
 
-            // Các thanh xà ngang của cổng sắt (Top, Mid, Bottom Rail)
+            // Các thanh xà ngang của cổng
             float[] railHeights = new float[] { 0.15f, 1.9f, 3.85f };
             foreach (float rh in railHeights)
             {
-                // Cánh trái (-4m đến 0m)
                 GameObject railL = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 railL.name = $"Gate_Rail_Left_{rh:F1}";
                 railL.transform.SetParent(gateRoot.transform, false);
-                railL.transform.localPosition = new Vector3(-2.0f, rh, zEndGate);
+                railL.transform.localPosition = new Vector3(-2.0f, rh, zGate);
                 railL.transform.localScale = new Vector3(3.8f, 0.10f, 0.08f);
                 ApplyMaterial(railL, "Mat_MetalRim", ironGateColor, 0.3f);
 
-                // Cánh phải (0m đến +4m)
                 GameObject railR = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 railR.name = $"Gate_Rail_Right_{rh:F1}";
                 railR.transform.SetParent(gateRoot.transform, false);
-                railR.transform.localPosition = new Vector3(2.0f, rh, zEndGate);
+                railR.transform.localPosition = new Vector3(2.0f, rh, zGate);
                 railR.transform.localScale = new Vector3(3.8f, 0.10f, 0.08f);
                 ApplyMaterial(railR, "Mat_MetalRim", ironGateColor, 0.3f);
             }
 
-            // Các thanh nan sắt đứng (Vertical Iron Bars - cách nhau 0.35m)
+            // Nan sắt đứng cách nhau 0.35m
             for (float x = -3.8f; x <= 3.8f; x += 0.35f)
             {
-                if (Mathf.Abs(x) < 0.2f) continue; // Chừa khe giữa 2 cánh cổng
+                if (Mathf.Abs(x) < 0.2f) continue;
                 GameObject bar = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 bar.name = $"Gate_Bar_{x:F2}";
                 bar.transform.SetParent(gateRoot.transform, false);
-                bar.transform.localPosition = new Vector3(x, 2.0f, zEndGate);
+                bar.transform.localPosition = new Vector3(x, 2.0f, zGate);
                 bar.transform.localScale = new Vector3(0.06f, 3.8f, 0.06f);
                 ApplyMaterial(bar, "Mat_MetalRim", ironGateColor, 0.3f);
             }
 
-            // Hộp khóa xích ở giữa cổng (Central Chain Lockbox)
+            // Hộp khóa xích ở giữa cổng
             GameObject lockBox = GameObject.CreatePrimitive(PrimitiveType.Cube);
             lockBox.name = "Gate_Center_Lock";
             lockBox.transform.SetParent(gateRoot.transform, false);
-            lockBox.transform.localPosition = new Vector3(0, 1.9f, zEndGate - 0.05f);
+            lockBox.transform.localPosition = new Vector3(0, 1.9f, zGate - 0.05f);
             lockBox.transform.localScale = new Vector3(0.45f, 0.35f, 0.15f);
             ApplyMaterial(lockBox, "Mat_MetalRim", new Color(0.35f, 0.30f, 0.20f), 0.6f);
 
-            // 3. HẬU CẢNH THÀNH PHỐ XA (DISTANT CITY SKYLINE BACKDROP)
-            // Đoạn đường tiếp diễn phía sau cánh cổng
-            SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, zEndGate + 4f), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
-            SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, zEndGate + 8f), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
-            SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, zEndGate + 12f), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
+            // 4. ĐÈN ĐƯỜNG NGOÀI ĐẠI LỘ
+            SpawnModel(urbanFolder, "detail-light-double.fbx", new Vector3(-3.5f, 0, zGate + 6f), Quaternion.identity, alleyRoot, 3.0f);
+            SpawnModel(urbanFolder, "detail-light-double.fbx", new Vector3(3.5f, 0, zGate + 6f), Quaternion.identity, alleyRoot, 3.0f);
+            SpawnModel(urbanFolder, "detail-light-double.fbx", new Vector3(-3.5f, 0, zGate + 14f), Quaternion.identity, alleyRoot, 3.0f);
+            SpawnModel(urbanFolder, "detail-light-double.fbx", new Vector3(3.5f, 0, zGate + 14f), Quaternion.identity, alleyRoot, 3.0f);
 
-            // 2 Cột đèn đường đôi thắp sáng đại lộ phía sau cổng
-            SpawnModel(urbanFolder, "detail-light-double.fbx", new Vector3(-4.5f, 0, zEndGate + 5f), Quaternion.identity, alleyRoot, 3.0f);
-            SpawnModel(urbanFolder, "detail-light-double.fbx", new Vector3(4.5f, 0, zEndGate + 5f), Quaternion.identity, alleyRoot, 3.0f);
-
-            // Các tòa cao ốc thành phố xa (Skyline Tower Blocks)
-            // Tòa tháp trái (cao 20m)
-            GameObject towerL = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            towerL.name = "Skyline_Tower_Left";
-            towerL.transform.SetParent(alleyRoot.transform, false);
-            towerL.transform.localPosition = new Vector3(-12.0f, 10.0f, zEndGate + 16f);
-            towerL.transform.localScale = new Vector3(10.0f, 20.0f, 10.0f);
-            ApplyTexturedMaterial(towerL, "Mat_FacadeBrick", "Assets/Models_Item/FBX format/Textures/wall.png", new Color(0.45f, 0.25f, 0.20f), new Vector2(4f, 4f));
-
-            // Tòa tháp phải (cao 24m)
-            GameObject towerR = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            towerR.name = "Skyline_Tower_Right";
-            towerR.transform.SetParent(alleyRoot.transform, false);
-            towerR.transform.localPosition = new Vector3(12.0f, 12.0f, zEndGate + 18f);
-            towerR.transform.localScale = new Vector3(10.0f, 24.0f, 10.0f);
-            ApplyTexturedMaterial(towerR, "Mat_FacadeBrick", "Assets/Models_Item/FBX format/Textures/wall.png", new Color(0.45f, 0.25f, 0.20f), new Vector2(4f, 5f));
-
-            // Tòa cao ốc trung tâm phía chân trời (cao 30m)
-            GameObject towerCenter = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            towerCenter.name = "Skyline_Tower_Center";
-            towerCenter.transform.SetParent(alleyRoot.transform, false);
-            towerCenter.transform.localPosition = new Vector3(0, 15.0f, zEndGate + 28f);
-            towerCenter.transform.localScale = new Vector3(16.0f, 30.0f, 12.0f);
-            ApplyMaterial(towerCenter, "Mat_ConcreteTrim", new Color(0.35f, 0.38f, 0.42f));
-
-            // 4. Trần che bớt sáng (kéo dài liên tục từ đầu phòng đến tận chân cầu vượt cuối hẻm)
+            // 5. TRẦN HẺM (CHỈ PHỦ PHẦN TRONG HẺM TỪ PHÒNG ĐẾN CỔNG)
             GameObject alleyCeiling = GameObject.CreatePrimitive(PrimitiveType.Plane);
             alleyCeiling.name = "Alley_Ceiling";
             alleyCeiling.transform.SetParent(alleyRoot.transform, false);
-            alleyCeiling.transform.localPosition = new Vector3(0, 8f, (zStart + zEndGate) / 2f);
-            float ceilingLength = (zEndGate - zStart) / 10f;
+            alleyCeiling.transform.localPosition = new Vector3(0, 8f, (zStart + zGate) / 2f);
+            float ceilingLength = (zGate - zStart) / 10f;
             alleyCeiling.transform.localScale = new Vector3(1.5f, 1f, ceilingLength);
             alleyCeiling.transform.localRotation = Quaternion.Euler(180, 0, 0);
             ApplyMaterial(alleyCeiling, "Mat_AlleyFloor", new Color(0.05f, 0.05f, 0.05f));
