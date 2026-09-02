@@ -688,10 +688,10 @@ namespace RentIsDue.Editor
             CreateWall("Wall_West", "Mat_Room_Wall", new Vector3(-halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, vintageWallSide);
             CreateWall("Wall_East", "Mat_Room_Wall", new Vector3(halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, vintageWallSide);
 
-            // TƯỜNG NAM (KHOÉT KHUNG CỬA SỔ LỚN ĐÓN NẮNG)
-            float windowWidth = 6.0f;
-            float windowHeight = 2.4f;
-            float windowBottomY = 1.0f;
+            // TƯỜNG NAM (CỬA SỔ RETRO VINTAGE 3 Ô KÍNH ĐÓN NẮNG)
+            float windowWidth = 3.6f;
+            float windowHeight = 1.8f;
+            float windowBottomY = 0.9f;
 
             // Phần tường dưới cửa sổ
             CreateWall("Wall_South_Bottom", "Mat_Room_Wall", new Vector3(0, windowBottomY / 2f, -halfD), new Vector3(width, windowBottomY, 0.3f), parent, vintageWall);
@@ -742,17 +742,78 @@ namespace RentIsDue.Editor
             bbEast.transform.localScale = new Vector3(0.03f, 0.12f, depth);
             ApplyMaterial(bbEast, "Mat_Baseboard", baseboardWood);
 
-            // Kính Cửa Sổ Trong Suốt
+            // === HỆ THỐNG CỬA SỔ RETRO VINTAGE (FRAME, SILL, MULLIONS & GLASS) ===
+            GameObject windowRoot = new GameObject("Retro_Window_Assembly");
+            windowRoot.transform.SetParent(parent.transform, false);
+
+            float winCenterY = windowBottomY + (windowHeight / 2f);
+            float winZ = -halfD;
+            Color woodColor = baseboardWood;
+
+            // 1. Kính Cửa Sổ Trong Suốt
             GameObject windowGlass = GameObject.CreatePrimitive(PrimitiveType.Cube);
             windowGlass.name = "Window_Glass_Pane";
-            windowGlass.transform.SetParent(parent.transform, false);
-            windowGlass.transform.localPosition = new Vector3(0, windowBottomY + (windowHeight / 2f), -halfD);
-            windowGlass.transform.localScale = new Vector3(windowWidth, windowHeight, 0.04f);
-            ApplyMaterial(windowGlass, "Mat_Window_Glass", new Color(0.80f, 0.92f, 1.0f, 0.3f));
+            windowGlass.transform.SetParent(windowRoot.transform, false);
+            windowGlass.transform.localPosition = new Vector3(0, winCenterY, winZ);
+            windowGlass.transform.localScale = new Vector3(windowWidth, windowHeight, 0.02f);
+            ApplyMaterial(windowGlass, "Mat_Window_Glass", new Color(0.85f, 0.93f, 1.0f, 0.22f), 0.9f);
 
-            // Khung cửa sổ mỹ thuật
-            GameObject windowFrame = SpawnModel(urbanFolder, "window-wide-type-a.fbx", new Vector3(0, windowBottomY + (windowHeight / 2f) - 0.2f, -halfD + 0.05f), Quaternion.identity, parent, 1.2f);
-            if (windowFrame != null) EnsureCollider(windowFrame);
+            // 2. Bậu Cửa Sổ Gỗ (Window Sill) - Nhô ra trong phòng 16cm
+            GameObject windowSill = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            windowSill.name = "Window_Sill";
+            windowSill.transform.SetParent(windowRoot.transform, false);
+            windowSill.transform.localPosition = new Vector3(0, windowBottomY, winZ + 0.16f);
+            windowSill.transform.localScale = new Vector3(windowWidth + 0.30f, 0.08f, 0.26f);
+            ApplyMaterial(windowSill, "Mat_Baseboard", woodColor, 0.15f);
+
+            // 3. Khung Viền Nẹp Gỗ Bao Quanh Cửa Sổ (Window Casing Trim)
+            GameObject trimLeft = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            trimLeft.name = "Window_Trim_Left";
+            trimLeft.transform.SetParent(windowRoot.transform, false);
+            trimLeft.transform.localPosition = new Vector3(-windowWidth / 2f - 0.05f, winCenterY, winZ + 0.16f);
+            trimLeft.transform.localScale = new Vector3(0.12f, windowHeight + 0.1f, 0.06f);
+            ApplyMaterial(trimLeft, "Mat_Baseboard", woodColor, 0.15f);
+
+            GameObject trimRight = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            trimRight.name = "Window_Trim_Right";
+            trimRight.transform.SetParent(windowRoot.transform, false);
+            trimRight.transform.localPosition = new Vector3(windowWidth / 2f + 0.05f, winCenterY, winZ + 0.16f);
+            trimRight.transform.localScale = new Vector3(0.12f, windowHeight + 0.1f, 0.06f);
+            ApplyMaterial(trimRight, "Mat_Baseboard", woodColor, 0.15f);
+
+            GameObject trimTop = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            trimTop.name = "Window_Trim_Top";
+            trimTop.transform.SetParent(windowRoot.transform, false);
+            trimTop.transform.localPosition = new Vector3(0, windowBottomY + windowHeight + 0.05f, winZ + 0.16f);
+            trimTop.transform.localScale = new Vector3(windowWidth + 0.28f, 0.10f, 0.06f);
+            ApplyMaterial(trimTop, "Mat_Baseboard", woodColor, 0.15f);
+
+            // 4. Các Nan Gỗ Chia Ô Kính Mỹ Thuật (3-Bay Classic Window Mullions & Transoms)
+            // 2 Nan dọc chia cửa sổ thành 3 cánh (mỗi cánh 1.2m)
+            GameObject mullion1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            mullion1.name = "Window_Mullion_1";
+            mullion1.transform.SetParent(windowRoot.transform, false);
+            mullion1.transform.localPosition = new Vector3(-0.6f, winCenterY, winZ + 0.03f);
+            mullion1.transform.localScale = new Vector3(0.06f, windowHeight, 0.05f);
+            ApplyMaterial(mullion1, "Mat_Baseboard", woodColor, 0.15f);
+
+            GameObject mullion2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            mullion2.name = "Window_Mullion_2";
+            mullion2.transform.SetParent(windowRoot.transform, false);
+            mullion2.transform.localPosition = new Vector3(0.6f, winCenterY, winZ + 0.03f);
+            mullion2.transform.localScale = new Vector3(0.06f, windowHeight, 0.05f);
+            ApplyMaterial(mullion2, "Mat_Baseboard", woodColor, 0.15f);
+
+            // 1 Nan ngang chia đố cửa
+            GameObject transom = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            transom.name = "Window_Transom";
+            transom.transform.SetParent(windowRoot.transform, false);
+            transom.transform.localPosition = new Vector3(0, windowBottomY + (windowHeight * 0.55f), winZ + 0.03f);
+            transom.transform.localScale = new Vector3(windowWidth, 0.05f, 0.05f);
+            ApplyMaterial(transom, "Mat_Baseboard", woodColor, 0.15f);
+
+            // 5. Chậu cây nhỏ trên bậu cửa sổ đón nắng (Decorative Plant on Sill)
+            SpawnModel(modelsFolder, "plantSmall1.fbx", new Vector3(1.1f, windowBottomY + 0.04f, winZ + 0.16f), Quaternion.Euler(0, 45, 0), windowRoot, 0.35f);
 
             // Trần nhà
             GameObject ceiling = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -760,7 +821,7 @@ namespace RentIsDue.Editor
             ceiling.transform.SetParent(parent.transform, false);
             ceiling.transform.localPosition = new Vector3(0, height + 0.15f, 0);
             ceiling.transform.localScale = new Vector3(width, 0.3f, depth);
-            ApplyMaterial(ceiling, "Mat_Room_Ceiling", vintageCeiling);
+            ApplyMaterial(ceiling, "Mat_Room_Ceiling", vintageCeiling, 0.0f);
         }
 
         private static void SetupNaturalSunlight(GameObject parent, float southZ, float wallHeight)
@@ -784,23 +845,11 @@ namespace RentIsDue.Editor
                 sunLight.type = LightType.Directional;
             }
 
-            // Góc chiếu xiên từ ngoài cửa sổ vào phòng (Tia nắng ấm áp ban ngày)
+            // Góc chiếu xiên từ ngoài cửa sổ vào phòng (Tia nắng ấm áp ban ngày, không tạo lóa điểm)
             sunLight.transform.rotation = Quaternion.Euler(28f, 25f, 0f);
             sunLight.color = new Color(1.0f, 0.95f, 0.84f); // Ánh nắng vàng ấm tự nhiên
             sunLight.intensity = 1.35f;
             sunLight.shadows = LightShadows.Soft;
-
-            // Đèn viền hắt sáng từ cửa sổ (Window Glow Light)
-            GameObject windowGlow = new GameObject("Window_Sun_Glow");
-            windowGlow.transform.SetParent(parent.transform, false);
-            windowGlow.transform.localPosition = new Vector3(0, 2.2f, southZ + 0.8f);
-
-            Light glow = windowGlow.AddComponent<Light>();
-            glow.type = LightType.Point;
-            glow.color = new Color(1.0f, 0.92f, 0.80f);
-            glow.intensity = 8.0f;
-            glow.range = 14.0f;
-            glow.shadows = LightShadows.None;
         }
 
         private static void CreateWall(string name, string matName, Vector3 pos, Vector3 size, GameObject parent, Color wallColor, float smoothness = 0.0f)
