@@ -8,6 +8,17 @@ namespace RentIsDue.Gameplay
     {
         private bool isOpen = false;
 
+        private Vector3 closedPos;
+        private Quaternion closedRot;
+        private bool isInit = false;
+
+        private void Awake()
+        {
+            closedPos = transform.localPosition;
+            closedRot = transform.localRotation;
+            isInit = true;
+        }
+
         public bool CanInteract(PlayerInteractor player)
         {
             return true;
@@ -20,20 +31,26 @@ namespace RentIsDue.Gameplay
 
         public void Interact(PlayerInteractor player)
         {
+            if (!isInit)
+            {
+                closedPos = transform.localPosition;
+                closedRot = transform.localRotation;
+                isInit = true;
+            }
+
             isOpen = !isOpen;
             
             if (isOpen)
             {
-                // Mở cửa: Xoay đi 90 độ và tắt collider để đi qua dễ hơn (hoặc giữ collider nếu xoay chuẩn)
+                // Mở cửa: Xoay đi 90 độ và nép sát tường trái
                 transform.localRotation = Quaternion.Euler(0, 90, 0);
-                // Dịch sang mép tường để không chắn đường (vì tâm cube nằm ở giữa)
-                transform.localPosition += new Vector3(-0.75f, 0, 0.75f);
+                transform.localPosition = closedPos + new Vector3(-0.75f, 0, 0.75f);
             }
             else
             {
-                // Đóng cửa
-                transform.localRotation = Quaternion.identity;
-                transform.localPosition -= new Vector3(-0.75f, 0, 0.75f);
+                // Đóng cửa: Trở về vị trí và góc ban đầu
+                transform.localRotation = closedRot;
+                transform.localPosition = closedPos;
             }
         }
     }

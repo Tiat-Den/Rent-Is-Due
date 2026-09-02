@@ -303,22 +303,21 @@ namespace RentIsDue.Editor
             alleyRoot.AddComponent<RentIsDue.Audio.StreetAmbiencePlayer>();
 
             // === SÀN HẺM & TƯỜNG (MODULAR) ===
-            // Kích thước thật của 1 module ở scale 1 là 1m x 1m.
-            // Nên với urbanScale = 4f, mỗi block sẽ dài 4m. Tâm (pivot) nằm ở giữa.
+            // road-asphalt-straight khi xoay 90 độ (Euler(0, 90, 0)) có:
+            // - Bề rộng X = 8m (từ X = -4m đến X = +4m): bao gồm vỉa hè trái (2m), lòng đường (4m), vỉa hè phải (2m).
+            // - Chiều dài mỗi block Z = 4m (step = 4m).
+            // - Tâm (pivot) nằm ở chính giữa (0, 0, 0).
             float urbanScale = 4f; 
             float step = 4f; 
             
-            float zStart = halfD + (step / 2f); // Bắt đầu từ mép ngoài của phòng
+            float zStart = halfD + (step / 2f); // Bắt đầu chính xác từ mép tường Bắc của phòng (halfD)
             float alleyLength = 20f;
             float zEnd = zStart + alleyLength;
 
             for (float z = zStart; z <= zEnd; z += step)
             {
-                // Đường và vỉa hè
-                SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.identity, alleyRoot, urbanScale);
-                // Vỉa hè có pivot bị lệch, nên cần bù trừ Z để không đâm vào phòng
-                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(-2f, 0, z + 2f), Quaternion.identity, alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "road-asphalt-pavement.fbx", new Vector3(2f, 0, z - 2f), Quaternion.Euler(0, 180, 0), alleyRoot, urbanScale);
+                // Đường và 2 bên vỉa hè được tạo liền mạch bằng 1 model xoay 90 độ (vừa khít 8m giữa 2 dãy tường):
+                SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
                 
                 // Tường trái (X = -4)
                 SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(-4f, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
@@ -332,7 +331,7 @@ namespace RentIsDue.Editor
             }
 
             // Bít cuối hẻm (Không bít đầu hẻm vì đã nối vào phòng)
-            for (float x = -2f; x <= 2f; x += 2f)
+            for (float x = -2f; x <= 2f; x += 4f)
             {
                 SpawnModel(urbanFolder, "wall-fence.fbx", new Vector3(x, 0, zEnd + (step / 2f)), Quaternion.identity, alleyRoot, urbanScale);
             }
