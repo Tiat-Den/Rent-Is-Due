@@ -105,8 +105,8 @@ namespace RentIsDue.Player
                 }
             }
 
-            // 2. Dự phòng: Quét xung quanh bằng OverlapSphere nếu không trỏ thẳng
-            Collider[] colliders = Physics.OverlapSphere(transform.position, interactionRange, interactableLayer);
+            // 2. Dự phòng: Quét tầm gần bằng OverlapSphere nếu không trỏ thẳng (dễ nhặt đồ dưới chân)
+            Collider[] colliders = Physics.OverlapSphere(transform.position, 2.5f, interactableLayer);
             
             if (colliders.Length > 0)
             {
@@ -117,6 +117,14 @@ namespace RentIsDue.Player
                 {
                     if (col.transform == transform || col.transform.IsChildOf(transform) || col.transform.root == transform.root)
                         continue;
+
+                    // Chỉ tương tác với vật thể nằm ở phía trước mặt người chơi (không bắt vật sau lưng)
+                    if (cam != null)
+                    {
+                        Vector3 dirToCol = (col.bounds.center - cam.transform.position).normalized;
+                        if (Vector3.Dot(cam.transform.forward, dirToCol) < 0.15f)
+                            continue; // Bỏ qua nếu vật thể nằm phía sau lưng
+                    }
 
                     IInteractable interactable = col.GetComponent<IInteractable>() 
                                               ?? col.GetComponentInParent<IInteractable>()

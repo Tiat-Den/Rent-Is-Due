@@ -26,7 +26,18 @@ namespace RentIsDue.Gameplay
 
         public string GetInteractionText()
         {
-            return isOpen ? "[Đóng cửa]" : "[Mở cửa ra Hẻm]";
+            if (isOpen) return "[Đóng cửa]";
+
+            // Kiểm tra người chơi đang đứng trong phòng hay ngoài hẻm
+            Camera cam = Camera.main;
+            if (cam != null)
+            {
+                if (cam.transform.position.z >= transform.position.z)
+                {
+                    return "[Mở cửa vào Phòng]";
+                }
+            }
+            return "[Mở cửa ra Hẻm]";
         }
 
         public void Interact(PlayerInteractor player)

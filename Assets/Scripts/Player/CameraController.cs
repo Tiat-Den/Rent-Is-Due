@@ -36,6 +36,7 @@ namespace RentIsDue.Player
             if (cam != null)
             {
                 cam.fieldOfView = 80f;
+                cam.nearClipPlane = 0.05f; // Chống cắt chéo vật thể / tường khi áp sát
             }
 
             SetCursorState(true);

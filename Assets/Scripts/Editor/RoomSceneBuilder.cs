@@ -319,15 +319,15 @@ namespace RentIsDue.Editor
                 // Đường và 2 bên vỉa hè được tạo liền mạch bằng 1 model xoay 90 độ (vừa khít 8m giữa 2 dãy tường):
                 SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
                 
-                // Tường trái (X = -4)
-                SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(-4f, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(-4f, 2f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a.fbx", new Vector3(-4f, 4f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
+                // Tường trái (Tâm X = -6, dày 4m nên mặt trong áp sát đúng mép vỉa hè X = -4)
+                SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(-6f, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(-6f, 2f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a.fbx", new Vector3(-6f, 4f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
                 
-                // Tường phải (X = 4)
-                SpawnModel(urbanFolder, "wall-b-garage.fbx", new Vector3(4f, 0, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(4f, 2f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a.fbx", new Vector3(4f, 4f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
+                // Tường phải (Tâm X = +6, dày 4m nên mặt trong áp sát đúng mép vỉa hè X = +4)
+                SpawnModel(urbanFolder, "wall-b-garage.fbx", new Vector3(6f, 0, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(6f, 2f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a.fbx", new Vector3(6f, 4f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
             }
 
             // Bít cuối hẻm (Không bít đầu hẻm vì đã nối vào phòng)
@@ -340,8 +340,8 @@ namespace RentIsDue.Editor
             GameObject alleyCeiling = GameObject.CreatePrimitive(PrimitiveType.Plane);
             alleyCeiling.name = "Alley_Ceiling";
             alleyCeiling.transform.SetParent(alleyRoot.transform, false);
-            alleyCeiling.transform.localPosition = new Vector3(0, 8f, zStart + 8f);
-            alleyCeiling.transform.localScale = new Vector3(1f, 1f, 2f);
+            alleyCeiling.transform.localPosition = new Vector3(0, 8f, zStart + 10f);
+            alleyCeiling.transform.localScale = new Vector3(1.5f, 1f, 2.2f);
             alleyCeiling.transform.localRotation = Quaternion.Euler(180, 0, 0);
             ApplyMaterial(alleyCeiling, "Mat_AlleyFloor", new Color(0.05f, 0.05f, 0.05f));
 
