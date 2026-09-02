@@ -412,27 +412,28 @@ namespace RentIsDue.Editor
             GameObject intDoorFrame = new GameObject("Interior_Door_Frame");
             intDoorFrame.transform.SetParent(roomRoot.transform, false);
             float intFrameZ = halfD - 0.16f;
+            Color doorFrameWood = new Color(0.22f, 0.14f, 0.09f);
 
             GameObject intPillarL = GameObject.CreatePrimitive(PrimitiveType.Cube);
             intPillarL.name = "Int_Door_Pillar_L";
             intPillarL.transform.SetParent(intDoorFrame.transform, false);
             intPillarL.transform.localPosition = new Vector3(-0.82f, 1.25f, intFrameZ);
             intPillarL.transform.localScale = new Vector3(0.14f, 2.5f, 0.06f);
-            ApplyMaterial(intPillarL, "Mat_Baseboard", new Color(0.32f, 0.19f, 0.11f));
+            ApplyMaterial(intPillarL, "Mat_Baseboard", doorFrameWood, 0.1f);
 
             GameObject intPillarR = GameObject.CreatePrimitive(PrimitiveType.Cube);
             intPillarR.name = "Int_Door_Pillar_R";
             intPillarR.transform.SetParent(intDoorFrame.transform, false);
             intPillarR.transform.localPosition = new Vector3(0.82f, 1.25f, intFrameZ);
             intPillarR.transform.localScale = new Vector3(0.14f, 2.5f, 0.06f);
-            ApplyMaterial(intPillarR, "Mat_Baseboard", new Color(0.32f, 0.19f, 0.11f));
+            ApplyMaterial(intPillarR, "Mat_Baseboard", doorFrameWood, 0.1f);
 
             GameObject intLintel = GameObject.CreatePrimitive(PrimitiveType.Cube);
             intLintel.name = "Int_Door_Lintel";
             intLintel.transform.SetParent(intDoorFrame.transform, false);
             intLintel.transform.localPosition = new Vector3(0, 2.55f, intFrameZ);
             intLintel.transform.localScale = new Vector3(1.78f, 0.14f, 0.06f);
-            ApplyMaterial(intLintel, "Mat_Baseboard", new Color(0.32f, 0.19f, 0.11f));
+            ApplyMaterial(intLintel, "Mat_Baseboard", doorFrameWood, 0.1f);
 
             // === MẶT TIỀN TÒA NHÀ KHU PHỐ (ALLEY BUILDING ENTRANCE FACADE) ===
             // Biến mặt ngoài của phòng thành tầng 1 của tòa chung cư 2 tầng cao 8m đồng bộ với phố
@@ -507,21 +508,6 @@ namespace RentIsDue.Editor
 
             // Mái che nhỏ trên cửa ra vào (Entrance Awning)
             SpawnModel(urbanFolder, "detail-awning-wide.fbx", new Vector3(0, 2.75f, facadeZ + 0.35f), Quaternion.identity, facadeRoot, 1.6f);
-
-            // Đèn hiên trước cửa nhà
-            GameObject porchLamp = SpawnModel(urbanFolder, "detail-light-single.fbx", new Vector3(1.15f, 2.7f, facadeZ + 0.1f), Quaternion.Euler(0, 180, 0), facadeRoot, 1.5f);
-            if (porchLamp != null)
-            {
-                GameObject pl = new GameObject("PorchLight");
-                pl.transform.SetParent(porchLamp.transform, false);
-                pl.transform.localPosition = new Vector3(0, 1.5f, 0.5f);
-                Light l = pl.AddComponent<Light>();
-                l.type = LightType.Point;
-                l.color = new Color(1f, 0.9f, 0.7f);
-                l.intensity = 15f;
-                l.range = 8f;
-                dnc.streetLamps.Add(l);
-            }
 
             // 11. DEALER Ngoài hẻm
             GameObject dealerAnchor = new GameObject("Dealer_Anchor");
@@ -670,20 +656,20 @@ namespace RentIsDue.Editor
             float halfD = depth / 2f;
             float halfH = height / 2f;
 
-            // === PHONG CÁCH RETRO VINTAGE (HOÀI NIỆM) ===
-            Color vintageWall = new Color(0.93f, 0.90f, 0.83f);      // Vàng kem vani hoài niệm, ấm áp dịu mắt
-            Color vintageWallSide = new Color(0.91f, 0.87f, 0.80f);  // Vàng cát nhạt cho 2 vách bên
-            Color vintageFloor = new Color(0.42f, 0.28f, 0.18f);     // Sàn gỗ tếch nâu trầm cổ điển
-            Color vintageCeiling = new Color(0.96f, 0.95f, 0.92f);   // Trần trắng ngà ấm
-            Color baseboardWood = new Color(0.32f, 0.19f, 0.11f);    // Nẹp chỉ chân tường gỗ sẫm cổ điển
+            // === PHONG CÁCH RETRO VINTAGE (ĐỒNG BỘ VỚI CỬA ĐỎ BURGUNDY) ===
+            Color vintageWall = new Color(0.92f, 0.88f, 0.80f);      // Vàng kem cát ấm, tôn màu cửa đỏ
+            Color vintageWallSide = new Color(0.89f, 0.85f, 0.77f);  // Vàng cát nhạt cho 2 vách bên
+            Color vintageFloor = new Color(0.28f, 0.18f, 0.12f);     // Sàn gỗ óc chó nâu trầm ấm cúng
+            Color vintageCeiling = new Color(0.95f, 0.94f, 0.90f);   // Trần trắng ngà ấm không bị chói
+            Color baseboardWood = new Color(0.22f, 0.14f, 0.09f);    // Nẹp chỉ chân tường và khung cửa gỗ sẫm cổ điển
 
-            // Sàn nhà gỗ trầm
+            // Sàn nhà gỗ sẫm
             GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             floor.name = "Room_Floor";
             floor.transform.SetParent(parent.transform, false);
             floor.transform.localPosition = new Vector3(0, -0.15f, 0);
             floor.transform.localScale = new Vector3(width, 0.3f, depth);
-            ApplyMaterial(floor, "Mat_Room_Floor", vintageFloor);
+            ApplyMaterial(floor, "Mat_Room_Floor", vintageFloor, 0.12f);
 
             // Tường Bắc (Có khoét khung cửa ra hẻm)
             float doorW = 1.5f;
@@ -817,14 +803,14 @@ namespace RentIsDue.Editor
             glow.shadows = LightShadows.None;
         }
 
-        private static void CreateWall(string name, string matName, Vector3 pos, Vector3 size, GameObject parent, Color wallColor)
+        private static void CreateWall(string name, string matName, Vector3 pos, Vector3 size, GameObject parent, Color wallColor, float smoothness = 0.0f)
         {
             GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
             wall.name = name;
             wall.transform.SetParent(parent.transform, false);
             wall.transform.localPosition = pos;
             wall.transform.localScale = size;
-            ApplyMaterial(wall, matName, wallColor);
+            ApplyMaterial(wall, matName, wallColor, smoothness);
         }
 
         private static void ApplyMaterial(GameObject obj, string matName, Color color, float smoothness = 0.05f)
@@ -858,6 +844,7 @@ namespace RentIsDue.Editor
                 if (mat.HasProperty("_Glossiness")) mat.SetFloat("_Glossiness", smoothness);
                 if (mat.HasProperty("_Metallic")) mat.SetFloat("_Metallic", 0f);
                 EditorUtility.SetDirty(mat);
+                AssetDatabase.SaveAssets();
 
                 rend.sharedMaterial = mat;
             }
@@ -907,6 +894,7 @@ namespace RentIsDue.Editor
                 if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", smoothness);
                 if (mat.HasProperty("_Glossiness")) mat.SetFloat("_Glossiness", smoothness);
                 EditorUtility.SetDirty(mat);
+                AssetDatabase.SaveAssets();
                 rend.sharedMaterial = mat;
             }
         }
