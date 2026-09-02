@@ -682,6 +682,7 @@ namespace RentIsDue.Editor
 
         private static void CreateRoomShellWithWindow(GameObject parent, float width, float depth, float height, string urbanFolder)
         {
+            string modelsFolder = "Assets/Models/FBX format";
             float halfW = width / 2f;
             float halfD = depth / 2f;
             float halfH = height / 2f;
