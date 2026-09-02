@@ -319,15 +319,13 @@ namespace RentIsDue.Editor
                 // Đường và 2 bên vỉa hè được tạo liền mạch bằng 1 model xoay 90 độ (vừa khít 8m giữa 2 dãy tường):
                 SpawnModel(urbanFolder, "road-asphalt-straight.fbx", new Vector3(0, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
                 
-                // Tường trái (Tâm X = -6, dày 4m nên mặt trong áp sát đúng mép vỉa hè X = -4)
+                // Tường trái: Tầng 1 (Y = 0, cao 4m) và Tầng 2 (Y = 4, cao 4m), xếp chồng khít 100% không trùng mặt mesh gây nhấp nháy
                 SpawnModel(urbanFolder, "wall-a-painted.fbx", new Vector3(-6f, 0, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(-6f, 2f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a.fbx", new Vector3(-6f, 4f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(-6f, 4f, z), Quaternion.Euler(0, 90, 0), alleyRoot, urbanScale);
                 
-                // Tường phải (Tâm X = +6, dày 4m nên mặt trong áp sát đúng mép vỉa hè X = +4)
+                // Tường phải: Tầng 1 (Y = 0, cao 4m) và Tầng 2 (Y = 4, cao 4m)
                 SpawnModel(urbanFolder, "wall-b-garage.fbx", new Vector3(6f, 0, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(6f, 2f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
-                SpawnModel(urbanFolder, "wall-a.fbx", new Vector3(6f, 4f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
+                SpawnModel(urbanFolder, "wall-a-window.fbx", new Vector3(6f, 4f, z), Quaternion.Euler(0, -90, 0), alleyRoot, urbanScale);
             }
 
             // Bít cuối hẻm (Không bít đầu hẻm vì đã nối vào phòng)
