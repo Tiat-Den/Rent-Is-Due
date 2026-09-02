@@ -634,13 +634,20 @@ namespace RentIsDue.Editor
             float halfD = depth / 2f;
             float halfH = height / 2f;
 
-            // Sàn nhà dày
+            // === PHONG CÁCH RETRO VINTAGE (HOÀI NIỆM) ===
+            Color vintageWall = new Color(0.93f, 0.90f, 0.83f);      // Vàng kem vani hoài niệm, ấm áp dịu mắt
+            Color vintageWallSide = new Color(0.91f, 0.87f, 0.80f);  // Vàng cát nhạt cho 2 vách bên
+            Color vintageFloor = new Color(0.42f, 0.28f, 0.18f);     // Sàn gỗ tếch nâu trầm cổ điển
+            Color vintageCeiling = new Color(0.96f, 0.95f, 0.92f);   // Trần trắng ngà ấm
+            Color baseboardWood = new Color(0.32f, 0.19f, 0.11f);    // Nẹp chỉ chân tường gỗ sẫm cổ điển
+
+            // Sàn nhà gỗ trầm
             GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             floor.name = "Room_Floor";
             floor.transform.SetParent(parent.transform, false);
             floor.transform.localPosition = new Vector3(0, -0.15f, 0);
             floor.transform.localScale = new Vector3(width, 0.3f, depth);
-            ApplyMaterial(floor, "Mat_Room_Floor", new Color(0.32f, 0.25f, 0.20f));
+            ApplyMaterial(floor, "Mat_Room_Floor", vintageFloor);
 
             // Tường Bắc (Có khoét khung cửa ra hẻm)
             float doorW = 1.5f;
@@ -648,16 +655,16 @@ namespace RentIsDue.Editor
 
             // Phần tường trên cửa
             float topH = height - doorH;
-            CreateWall("Wall_North_Top", "Mat_Room_Wall", new Vector3(0, height - (topH / 2f), halfD), new Vector3(doorW, topH, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            CreateWall("Wall_North_Top", "Mat_Room_Wall", new Vector3(0, height - (topH / 2f), halfD), new Vector3(doorW, topH, 0.3f), parent, vintageWall);
 
             // Phần tường 2 bên cửa
             float sideW = (width - doorW) / 2f;
-            CreateWall("Wall_North_Left", "Mat_Room_Wall", new Vector3(-halfW + (sideW / 2f), halfH, halfD), new Vector3(sideW, height, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
-            CreateWall("Wall_North_Right", "Mat_Room_Wall", new Vector3(halfW - (sideW / 2f), halfH, halfD), new Vector3(sideW, height, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            CreateWall("Wall_North_Left", "Mat_Room_Wall", new Vector3(-halfW + (sideW / 2f), halfH, halfD), new Vector3(sideW, height, 0.3f), parent, vintageWall);
+            CreateWall("Wall_North_Right", "Mat_Room_Wall", new Vector3(halfW - (sideW / 2f), halfH, halfD), new Vector3(sideW, height, 0.3f), parent, vintageWall);
 
             // Tường Tây & Đông
-            CreateWall("Wall_West", "Mat_Room_Wall", new Vector3(-halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, new Color(0.82f, 0.80f, 0.76f));
-            CreateWall("Wall_East", "Mat_Room_Wall", new Vector3(halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, new Color(0.82f, 0.80f, 0.76f));
+            CreateWall("Wall_West", "Mat_Room_Wall", new Vector3(-halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, vintageWallSide);
+            CreateWall("Wall_East", "Mat_Room_Wall", new Vector3(halfW, halfH, 0), new Vector3(0.3f, height, depth), parent, vintageWallSide);
 
             // TƯỜNG NAM (KHOÉT KHUNG CỬA SỔ LỚN ĐÓN NẮNG)
             float windowWidth = 6.0f;
@@ -665,14 +672,53 @@ namespace RentIsDue.Editor
             float windowBottomY = 1.0f;
 
             // Phần tường dưới cửa sổ
-            CreateWall("Wall_South_Bottom", "Mat_Room_Wall", new Vector3(0, windowBottomY / 2f, -halfD), new Vector3(width, windowBottomY, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            CreateWall("Wall_South_Bottom", "Mat_Room_Wall", new Vector3(0, windowBottomY / 2f, -halfD), new Vector3(width, windowBottomY, 0.3f), parent, vintageWall);
             // Phần tường trên cửa sổ
             float topWallHeight = height - (windowBottomY + windowHeight);
-            CreateWall("Wall_South_Top", "Mat_Room_Wall", new Vector3(0, height - (topWallHeight / 2f), -halfD), new Vector3(width, topWallHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            CreateWall("Wall_South_Top", "Mat_Room_Wall", new Vector3(0, height - (topWallHeight / 2f), -halfD), new Vector3(width, topWallHeight, 0.3f), parent, vintageWall);
             // Phần tường 2 bên cửa sổ
             float sideWallWidth = (width - windowWidth) / 2f;
-            CreateWall("Wall_South_Left", "Mat_Room_Wall", new Vector3(-halfW + (sideWallWidth / 2f), windowBottomY + (windowHeight / 2f), -halfD), new Vector3(sideWallWidth, windowHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
-            CreateWall("Wall_South_Right", "Mat_Room_Wall", new Vector3(halfW - (sideWallWidth / 2f), windowBottomY + (windowHeight / 2f), -halfD), new Vector3(sideWallWidth, windowHeight, 0.3f), parent, new Color(0.88f, 0.86f, 0.82f));
+            CreateWall("Wall_South_Left", "Mat_Room_Wall", new Vector3(-halfW + (sideWallWidth / 2f), windowBottomY + (windowHeight / 2f), -halfD), new Vector3(sideWallWidth, windowHeight, 0.3f), parent, vintageWall);
+            CreateWall("Wall_South_Right", "Mat_Room_Wall", new Vector3(halfW - (sideWallWidth / 2f), windowBottomY + (windowHeight / 2f), -halfD), new Vector3(sideWallWidth, windowHeight, 0.3f), parent, vintageWall);
+
+            // === NẸP CHÂN TƯỜNG GỖ CỔ ĐIỂN (BASEBOARDS) ===
+            GameObject baseboardRoot = new GameObject("Room_Baseboards");
+            baseboardRoot.transform.SetParent(parent.transform, false);
+
+            GameObject bbNorthL = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            bbNorthL.name = "Baseboard_North_Left";
+            bbNorthL.transform.SetParent(baseboardRoot.transform, false);
+            bbNorthL.transform.localPosition = new Vector3(-halfW + (sideW / 2f), 0.06f, halfD - 0.16f);
+            bbNorthL.transform.localScale = new Vector3(sideW, 0.12f, 0.03f);
+            ApplyMaterial(bbNorthL, "Mat_Baseboard", baseboardWood);
+
+            GameObject bbNorthR = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            bbNorthR.name = "Baseboard_North_Right";
+            bbNorthR.transform.SetParent(baseboardRoot.transform, false);
+            bbNorthR.transform.localPosition = new Vector3(halfW - (sideW / 2f), 0.06f, halfD - 0.16f);
+            bbNorthR.transform.localScale = new Vector3(sideW, 0.12f, 0.03f);
+            ApplyMaterial(bbNorthR, "Mat_Baseboard", baseboardWood);
+
+            GameObject bbSouth = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            bbSouth.name = "Baseboard_South";
+            bbSouth.transform.SetParent(baseboardRoot.transform, false);
+            bbSouth.transform.localPosition = new Vector3(0, 0.06f, -halfD + 0.16f);
+            bbSouth.transform.localScale = new Vector3(width, 0.12f, 0.03f);
+            ApplyMaterial(bbSouth, "Mat_Baseboard", baseboardWood);
+
+            GameObject bbWest = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            bbWest.name = "Baseboard_West";
+            bbWest.transform.SetParent(baseboardRoot.transform, false);
+            bbWest.transform.localPosition = new Vector3(-halfW + 0.16f, 0.06f, 0);
+            bbWest.transform.localScale = new Vector3(0.03f, 0.12f, depth);
+            ApplyMaterial(bbWest, "Mat_Baseboard", baseboardWood);
+
+            GameObject bbEast = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            bbEast.name = "Baseboard_East";
+            bbEast.transform.SetParent(baseboardRoot.transform, false);
+            bbEast.transform.localPosition = new Vector3(halfW - 0.16f, 0.06f, 0);
+            bbEast.transform.localScale = new Vector3(0.03f, 0.12f, depth);
+            ApplyMaterial(bbEast, "Mat_Baseboard", baseboardWood);
 
             // Kính Cửa Sổ Trong Suốt
             GameObject windowGlass = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -692,7 +738,7 @@ namespace RentIsDue.Editor
             ceiling.transform.SetParent(parent.transform, false);
             ceiling.transform.localPosition = new Vector3(0, height + 0.15f, 0);
             ceiling.transform.localScale = new Vector3(width, 0.3f, depth);
-            ApplyMaterial(ceiling, "Mat_Room_Ceiling", new Color(0.92f, 0.92f, 0.92f));
+            ApplyMaterial(ceiling, "Mat_Room_Ceiling", vintageCeiling);
         }
 
         private static void SetupNaturalSunlight(GameObject parent, float southZ, float wallHeight)
