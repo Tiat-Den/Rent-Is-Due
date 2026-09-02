@@ -1,6 +1,7 @@
 using System.IO;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using RentIsDue.Core;
 using RentIsDue.Economy;
 using RentIsDue.Inventory;
@@ -14,10 +15,39 @@ namespace RentIsDue.Editor
     {
         private const string SAVED_ROOM_PREFAB_PATH = "Assets/Prefabs/Environments/SavedGiantRoom.prefab";
 
+        [InitializeOnLoadMethod]
+        private static void AutoUpdateWindowOnCompile()
+        {
+            EditorApplication.delayCall += () =>
+            {
+                if (Application.isPlaying) return;
+
+                // Tự động kiểm tra xem cảnh có chứa bóng đèn cũ Window_Sun_Glow hoặc PorchLight không
+                GameObject glow = GameObject.Find("Window_Sun_Glow");
+                GameObject porch = GameObject.Find("PorchLight");
+
+                if (glow != null || porch != null)
+                {
+                    Debug.Log("<color=yellow>[RoomSceneBuilder] Phát hiện Scene cũ còn bóng đèn chói -> Đang tự động nâng cấp sang Cửa Sổ Mới 3 Ô & Xóa Đèn Lóa...</color>");
+                    BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
+                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    Debug.Log("<color=green>[RoomSceneBuilder] Đã tự động cập nhật xong toàn bộ phòng, cửa sổ và bảng màu mới!</color>");
+                }
+            };
+        }
+
+        [MenuItem("Rent Is Due/🚀 XÂY LẠI PHÒNG (Cập Nhật Cửa Sổ & Mặt Tiền)", false, 1)]
         [MenuItem("Tools/🏠 Build Giant Room (25m x 20m - Siêu Rộng Rãi)")]
         public static void BuildGiantRoom()
         {
             BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        }
+
+        [MenuItem("Rent Is Due/🏠 Mở Bảng Room Builder Window", false, 2)]
+        public static void OpenRentIsDueWindow()
+        {
+            OpenWindow();
         }
 
         [MenuItem("Tools/💾 Save Current Room Layout as Custom Template")]
