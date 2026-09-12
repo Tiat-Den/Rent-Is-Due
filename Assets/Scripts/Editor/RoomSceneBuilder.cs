@@ -28,19 +28,21 @@ namespace RentIsDue.Editor
                 GameObject gate = GameObject.Find("Alley_End_SecurityGate");
                 GameObject backdrop = GameObject.Find("Distant_Skyline_Block");
                 GameObject dealerNpc = GameObject.Find("Dealer_NPC");
+                GameObject toolShopNpc = GameObject.Find("ToolShop_NPC");
                 Animator dealerAnim = dealerNpc != null ? dealerNpc.GetComponent<Animator>() : null;
                 bool isGiantScale = dealerNpc != null && dealerNpc.transform.localScale.x > 0.6f;
+                bool hasBuggyAnimator = dealerAnim != null;
 
-                if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null || dealerAnim == null || dealerAnim.runtimeAnimatorController == null || isGiantScale)
+                if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null || toolShopNpc == null || isGiantScale || hasBuggyAnimator)
                 {
-                    Debug.Log("<color=yellow>[RoomSceneBuilder] Đang tự động cấu hình Animation Idle và cân chỉnh kích thước chuẩn người 1.8m cho Dealer & Tool Shop...</color>");
+                    Debug.Log("<color=yellow>[RoomSceneBuilder] Đang tự động cấu hình NPC Người tỉ lệ 1.8m đứng tự nhiên cho Dealer & Tool Shop...</color>");
                     BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
                     if (!Application.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode)
                     {
                         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
                         EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
                     }
-                    Debug.Log("<color=green>[RoomSceneBuilder] Đã cấu hình xong Animation Idle và cân chỉnh kích thước NPC!</color>");
+                    Debug.Log("<color=green>[RoomSceneBuilder] Đã cấu hình xong NPC sạch sẽ và lưu Scene!</color>");
                 }
             };
         }
@@ -716,7 +718,9 @@ namespace RentIsDue.Editor
             {
                 dealerNPC.name = "Dealer_NPC";
                 ApplyCharacterSkin(dealerNPC, "Mat_Dealer_Skin", "Assets/Art/Characters/Textures/criminalMaleA.png");
-                ConfigureNPCAnimator(dealerNPC, characterFolder);
+                // Xóa bỏ Animator (tránh IK control của idle.fbx kéo xương văng ra ngoài không gian)
+                Animator da = dealerNPC.GetComponent<Animator>();
+                if (da != null) Object.DestroyImmediate(da);
 
                 // Thêm Rigidbody Kinematic để PhysX coi đây là vật thể hoạt hình, không gây va chạm nổ vật lý
                 Rigidbody rb = dealerNPC.AddComponent<Rigidbody>();
@@ -769,7 +773,10 @@ namespace RentIsDue.Editor
             {
                 toolShopNPC.name = "ToolShop_NPC";
                 ApplyCharacterSkin(toolShopNPC, "Mat_ToolShop_Skin", "Assets/Art/Characters/Textures/survivorMaleB.png");
-                ConfigureNPCAnimator(toolShopNPC, characterFolder);
+
+                // Xóa bỏ Animator (tránh IK control của idle.fbx kéo xương văng ra ngoài không gian)
+                Animator ta = toolShopNPC.GetComponent<Animator>();
+                if (ta != null) Object.DestroyImmediate(ta);
 
                 // Thêm Rigidbody Kinematic để PhysX coi đây là vật thể hoạt hình, không gây va chạm nổ vật lý
                 Rigidbody rb = toolShopNPC.AddComponent<Rigidbody>();
@@ -1431,29 +1438,6 @@ namespace RentIsDue.Editor
             {
                 r.sharedMaterial = mat;
             }
-        }
-
-        private static void ConfigureNPCAnimator(GameObject npc, string characterFolder)
-        {
-            if (npc == null) return;
-
-            RuntimeAnimatorController controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Art/Characters/Animations/NPC_Idle.controller");
-            Avatar avatar = null;
-            UnityEngine.Object[] assets = AssetDatabase.LoadAllAssetsAtPath($"{characterFolder}/characterMedium.fbx");
-            foreach (var obj in assets)
-            {
-                if (obj is Avatar av)
-                {
-                    avatar = av;
-                    break;
-                }
-            }
-
-            Animator anim = npc.GetComponent<Animator>();
-            if (anim == null) anim = npc.AddComponent<Animator>();
-            if (controller != null) anim.runtimeAnimatorController = controller;
-            if (avatar != null) anim.avatar = avatar;
-            anim.cullingMode = AnimatorCullingMode.AlwaysAnimate;
         }
     }
 }

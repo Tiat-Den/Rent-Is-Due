@@ -3,8 +3,9 @@ using UnityEngine;
 namespace RentIsDue.Gameplay
 {
     /// <summary>
-    /// Makes an NPC turn smoothly to face the Player when nearby, and returns to default forward orientation.
-    /// Plays skeletal Idle animation via Animator, with procedural arm rest fallback so characters never T-pose.
+    /// Makes an NPC stand naturally with relaxed arms (no T-pose),
+    /// breathe gently, and turn smoothly to face the Player when nearby.
+    /// Completely procedural - no Animator/IK bugs that distort the mesh or throw it into the void.
     /// </summary>
     [ExecuteAlways]
     public class NPCLookAtPlayer : MonoBehaviour
@@ -14,46 +15,72 @@ namespace RentIsDue.Gameplay
         public float noticeDistance = 4.0f;
         public float turnSpeed = 4.0f;
 
-        [Header("Procedural Fallback Pose")]
+        [Header("Procedural Stance")]
         public bool enforceNaturalArmPose = true;
 
         private Transform playerTransform;
         private Quaternion defaultRotation;
         private Vector3 initialLocalPos;
         private float bobSpeed = 2.0f;
-        private float bobAmount = 0.010f;
+        private float bobAmount = 0.015f;
 
-        private Animator npcAnimator;
         private Transform leftArm;
         private Transform rightArm;
         private Transform leftForeArm;
         private Transform rightForeArm;
 
+        private Quaternion initialLeftArmRot;
+        private Quaternion initialRightArmRot;
+        private Quaternion initialLeftForeArmRot;
+        private Quaternion initialRightForeArmRot;
+        private bool hasCachedBindPose = false;
+
         private void Awake()
         {
+            if (transform.localPosition != Vector3.zero) initialLocalPos = transform.localPosition;
+            defaultRotation = transform.rotation;
             CacheReferences();
+            CacheBindPose();
         }
 
         private void Start()
         {
             defaultRotation = transform.rotation;
-            initialLocalPos = transform.localPosition;
+            if (transform.localPosition != Vector3.zero) initialLocalPos = transform.localPosition;
             CacheReferences();
+            CacheBindPose();
             FindPlayer();
         }
 
         private void OnEnable()
         {
+            if (transform.localPosition != Vector3.zero) initialLocalPos = transform.localPosition;
+            defaultRotation = transform.rotation;
             CacheReferences();
+            CacheBindPose();
         }
 
         private void CacheReferences()
         {
-            if (npcAnimator == null) npcAnimator = GetComponent<Animator>();
             if (leftArm == null) leftArm = FindChildRecursive(transform, "LeftArm");
             if (rightArm == null) rightArm = FindChildRecursive(transform, "RightArm");
             if (leftForeArm == null) leftForeArm = FindChildRecursive(transform, "LeftForeArm");
             if (rightForeArm == null) rightForeArm = FindChildRecursive(transform, "RightForeArm");
+        }
+
+        private void CacheBindPose()
+        {
+            if (hasCachedBindPose) return;
+
+            if (leftArm != null) initialLeftArmRot = leftArm.localRotation;
+            if (rightArm != null) initialRightArmRot = rightArm.localRotation;
+            if (leftForeArm != null) initialLeftForeArmRot = leftForeArm.localRotation;
+            if (rightForeArm != null) initialRightForeArmRot = rightForeArm.localRotation;
+
+            if (leftArm != null && rightArm != null)
+            {
+                hasCachedBindPose = true;
+            }
         }
 
         private static Transform FindChildRecursive(Transform parent, string targetName)
@@ -92,12 +119,9 @@ namespace RentIsDue.Gameplay
                 if (playerTransform == null) return;
             }
 
-            // Subtle breathing idle motion when no animator is active or for ambient life
-            if (npcAnimator == null || !npcAnimator.isActiveAndEnabled || npcAnimator.runtimeAnimatorController == null)
-            {
-                float bob = Mathf.Sin(Time.time * bobSpeed) * bobAmount;
-                transform.localPosition = new Vector3(initialLocalPos.x, initialLocalPos.y + bob, initialLocalPos.z);
-            }
+            // Subtle breathing idle motion
+            float bob = Mathf.Sin(Time.time * bobSpeed) * bobAmount;
+            transform.localPosition = new Vector3(initialLocalPos.x, initialLocalPos.y + bob, initialLocalPos.z);
 
             // Distance to player
             Vector3 diff = playerTransform.position - transform.position;
@@ -118,26 +142,20 @@ namespace RentIsDue.Gameplay
 
         private void LateUpdate()
         {
-            // If Animator is not playing an animation clip (e.g. in Edit mode or if Animator controller is unassigned),
-            // procedurally lower arms to a natural resting stance instead of T-Pose bind pose.
-            bool isAnimatorRunning = Application.isPlaying && npcAnimator != null && npcAnimator.isActiveAndEnabled && npcAnimator.runtimeAnimatorController != null;
-            if (!isAnimatorRunning && enforceNaturalArmPose)
+            if (enforceNaturalArmPose && hasCachedBindPose)
             {
+                // Procedurally lower arms along the body so character never T-poses
                 if (leftArm != null)
                 {
-                    leftArm.localRotation = Quaternion.Euler(15f, 0f, -75f);
+                    leftArm.localRotation = initialLeftArmRot;
+                    leftArm.Rotate(transform.forward, -68f, Space.World);
+                    leftArm.Rotate(transform.right, 10f, Space.World);
                 }
                 if (rightArm != null)
                 {
-                    rightArm.localRotation = Quaternion.Euler(15f, 0f, 75f);
-                }
-                if (leftForeArm != null)
-                {
-                    leftForeArm.localRotation = Quaternion.Euler(0f, 0f, -15f);
-                }
-                if (rightForeArm != null)
-                {
-                    rightForeArm.localRotation = Quaternion.Euler(0f, 0f, 15f);
+                    rightArm.localRotation = initialRightArmRot;
+                    rightArm.Rotate(transform.forward, 68f, Space.World);
+                    rightArm.Rotate(transform.right, 10f, Space.World);
                 }
             }
         }
