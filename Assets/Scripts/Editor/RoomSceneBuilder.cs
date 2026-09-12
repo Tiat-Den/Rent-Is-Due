@@ -27,13 +27,14 @@ namespace RentIsDue.Editor
                 GameObject porch = GameObject.Find("PorchLight");
                 GameObject gate = GameObject.Find("Alley_End_SecurityGate");
                 GameObject backdrop = GameObject.Find("Distant_Skyline_Block");
+                GameObject dealerNpc = GameObject.Find("Dealer_NPC");
 
-                if (glow != null || porch != null || gate == null || backdrop == null)
+                if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null)
                 {
-                    Debug.Log("<color=yellow>[RoomSceneBuilder] Đang tự động nâng cấp Cổng An Ninh Cuối Hẻm, Skyline Thành Phố & Cửa Sổ Mới...</color>");
+                    Debug.Log("<color=yellow>[RoomSceneBuilder] Đang tự động nâng cấp NPC Người Cho Dealer & Tool Shop, Quầy Giao Dịch...</color>");
                     BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
                     EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-                    Debug.Log("<color=green>[RoomSceneBuilder] Đã tự động cập nhật xong toàn bộ hẻm và phòng!</color>");
+                    Debug.Log("<color=green>[RoomSceneBuilder] Đã tự động cập nhật xong toàn bộ NPC và phòng!</color>");
                 }
             };
         }
@@ -657,39 +658,121 @@ namespace RentIsDue.Editor
             // Mái che nhỏ trên cửa ra vào (Entrance Awning)
             SpawnModel(urbanFolder, "detail-awning-wide.fbx", new Vector3(0, 2.75f, facadeZ + 0.35f), Quaternion.identity, facadeRoot, 1.6f);
 
-            // 11. DEALER Ngoài hẻm
-            GameObject dealerAnchor = new GameObject("Dealer_Anchor");
+            // 11. DEALER STATION (Quầy Giao Dịch & NPC Người Thu Mua Ve Chai / Chợ Đen)
+            string characterFolder = "Assets/Art/Characters";
+            GameObject dealerAnchor = new GameObject("Dealer_Station");
             dealerAnchor.transform.SetParent(alleyRoot.transform, false);
-            dealerAnchor.transform.localPosition = new Vector3(2.5f, 0, zStart + 8f);
-            
-            GameObject dealerDesk = SpawnModel(modelsFolder, "bench.fbx", Vector3.zero, Quaternion.Euler(0, -45, 0), dealerAnchor, 0.35f);
-            if (dealerDesk != null)
+            dealerAnchor.transform.localPosition = new Vector3(2.8f, 0, zStart + 8f);
+
+            // A. Bàn quầy giao dịch gỗ chắc chắn (Trading Counter Desk)
+            GameObject dealerCounter = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            dealerCounter.name = "Dealer_Counter";
+            dealerCounter.transform.SetParent(dealerAnchor.transform, false);
+            dealerCounter.transform.localPosition = new Vector3(0, 0.45f, 0);
+            dealerCounter.transform.localScale = new Vector3(1.6f, 0.9f, 0.65f);
+            ApplyMaterial(dealerCounter, "Mat_Baseboard", new Color(0.22f, 0.14f, 0.09f), 0.15f);
+
+            // Đèn bàn ấm áp trên quầy
+            GameObject dealerLamp = SpawnModel(modelsFolder, "lampRoundTable.fbx", new Vector3(0.55f, 0.9f, 0), Quaternion.identity, dealerAnchor, 0.30f);
+            if (dealerLamp != null)
             {
-                EnsureCollider(dealerDesk);
-                dealerDesk.AddComponent<DealerInteractable>();
-                dealerDesk.AddComponent<RentIsDue.Gameplay.DailyOrderManager>();
+                GameObject dlObj = new GameObject("Lamp_Light");
+                dlObj.transform.SetParent(dealerLamp.transform, false);
+                dlObj.transform.localPosition = new Vector3(0, 0.8f, 0);
+                Light dl = dlObj.AddComponent<Light>();
+                dl.type = LightType.Point;
+                dl.color = new Color(1.0f, 0.88f, 0.65f);
+                dl.intensity = 5.0f;
+                dl.range = 3.5f;
+                dl.shadows = LightShadows.None;
             }
 
-            // 12. CỬA HÀNG ĐỒ NGHỀ (Tool Shop)
-            GameObject toolShopAnchor = new GameObject("ToolShop_Anchor");
+            // Sổ ghi chép đơn hàng và hòm đồ bên cạnh
+            SpawnModel(modelsFolder, "books.fbx", new Vector3(-0.45f, 0.9f, 0), Quaternion.Euler(0, 15, 0), dealerAnchor, 0.25f);
+            SpawnModel(modelsFolder, "cardboardBoxOpen.fbx", new Vector3(1.1f, 0, 0.3f), Quaternion.Euler(0, -20, 0), dealerAnchor, 0.35f);
+
+            // B. NPC Dealer (Model Người Kenney Low-Poly với Skin Criminal/Chợ Đen)
+            GameObject dealerNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0, 0.65f), Quaternion.Euler(0, -90, 0), dealerAnchor, 1.0f);
+            if (dealerNPC != null)
+            {
+                dealerNPC.name = "Dealer_NPC";
+                ApplyCharacterSkin(dealerNPC, "Mat_Dealer_Skin", "Assets/Art/Characters/Textures/criminalMaleA.png");
+
+                // Collider bao trọn nhân vật
+                CapsuleCollider col = dealerNPC.AddComponent<CapsuleCollider>();
+                col.center = new Vector3(0, 0.9f, 0);
+                col.height = 1.8f;
+                col.radius = 0.35f;
+
+                // Tương tác bán đồ và nhiệm vụ hàng ngày
+                dealerNPC.AddComponent<DealerInteractable>();
+                dealerNPC.AddComponent<RentIsDue.Gameplay.DailyOrderManager>();
+
+                // Hành vi tự xoay người nhìn Player khi Player lại gần
+                dealerNPC.AddComponent<RentIsDue.Gameplay.NPCLookAtPlayer>();
+            }
+
+            // Gắn tương tác vào cả mặt bàn để người chơi bấm vào bàn hay người Dealer đều mở giao dịch
+            EnsureCollider(dealerCounter);
+            dealerCounter.AddComponent<DealerInteractable>();
+            dealerCounter.AddComponent<RentIsDue.Gameplay.DailyOrderManager>();
+
+            // 12. CỬA HÀNG ĐỒ NGHỀ (Tool Shop Kiosk & NPC Thợ Cơ Khí)
+            GameObject toolShopAnchor = new GameObject("ToolShop_Station");
             toolShopAnchor.transform.SetParent(alleyRoot.transform, false);
-            toolShopAnchor.transform.localPosition = new Vector3(-3f, 0.5f, zStart + 8f);
-            
-            GameObject toolShop = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            toolShop.name = "Tool_Shop";
-            toolShop.transform.SetParent(toolShopAnchor.transform, false);
-            toolShop.transform.localPosition = Vector3.zero;
-            toolShop.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
-            ApplyMaterial(toolShop, "Mat_ToolShop", new Color(0.8f, 0.4f, 0.1f));
-            toolShop.AddComponent<RentIsDue.Shop.ToolShopInteractable>();
-            toolShop.AddComponent<RentIsDue.Shop.ToolShopManager>();
+            toolShopAnchor.transform.localPosition = new Vector3(-2.8f, 0, zStart + 8f);
+
+            // A. Bàn quầy thợ cơ khí / Workbench
+            GameObject toolCounter = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            toolCounter.name = "ToolShop_Workbench";
+            toolCounter.transform.SetParent(toolShopAnchor.transform, false);
+            toolCounter.transform.localPosition = new Vector3(0, 0.45f, 0);
+            toolCounter.transform.localScale = new Vector3(1.8f, 0.9f, 0.7f);
+            ApplyMaterial(toolCounter, "Mat_StorageWall", new Color(0.35f, 0.25f, 0.18f), 0.1f);
+
+            // Mái che phong cách ki-ốt nhỏ trên đầu quầy
+            SpawnModel(urbanFolder, "detail-awning-small.fbx", new Vector3(0, 2.3f, 0), Quaternion.identity, toolShopAnchor, 1.8f);
+
+            // Đồ nghề và hộp linh kiện trên quầy
+            SpawnModel(modelsFolder, "cardboardBoxClosed.fbx", new Vector3(-0.6f, 0.9f, 0), Quaternion.Euler(0, 10, 0), toolShopAnchor, 0.25f);
+            SpawnModel(modelsFolder, "toaster.fbx", new Vector3(0.55f, 0.9f, 0), Quaternion.identity, toolShopAnchor, 0.30f);
+
+            // B. NPC Chủ Tiệm Đồ Nghề (Model Người Kenney Low-Poly với Skin Survivor / Worker)
+            GameObject toolShopNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0, 0.65f), Quaternion.Euler(0, 90, 0), toolShopAnchor, 1.0f);
+            if (toolShopNPC != null)
+            {
+                toolShopNPC.name = "ToolShop_NPC";
+                ApplyCharacterSkin(toolShopNPC, "Mat_ToolShop_Skin", "Assets/Art/Characters/Textures/survivorMaleB.png");
+
+                // Collider bao trọn nhân vật
+                CapsuleCollider col = toolShopNPC.AddComponent<CapsuleCollider>();
+                col.center = new Vector3(0, 0.9f, 0);
+                col.height = 1.8f;
+                col.radius = 0.35f;
+
+                // Tương tác mở cửa hàng công cụ
+                toolShopNPC.AddComponent<RentIsDue.Shop.ToolShopInteractable>();
+                toolShopNPC.AddComponent<RentIsDue.Shop.ToolShopManager>();
+
+                // Hành vi tự xoay người nhìn Player khi Player lại gần
+                toolShopNPC.AddComponent<RentIsDue.Gameplay.NPCLookAtPlayer>();
+            }
+
+            // Gắn tương tác vào cả mặt bàn để người chơi bấm vào bàn hay người đều mở được shop
+            EnsureCollider(toolCounter);
+            toolCounter.AddComponent<RentIsDue.Shop.ToolShopInteractable>();
+            toolCounter.AddComponent<RentIsDue.Shop.ToolShopManager>();
 
             // 13. BÀN SỬA ĐỒ (Repair Bench)
             GameObject repairAnchor = new GameObject("Repair_Anchor");
             repairAnchor.transform.SetParent(alleyRoot.transform, false);
             repairAnchor.transform.localPosition = new Vector3(0, 0, zStart + 14f);
             
-            GameObject repairBenchAlley = SpawnModel(modelsFolder, "tableCoffee.fbx", Vector3.zero, Quaternion.identity, repairAnchor, 0.35f);
+            GameObject repairBenchAlley = SpawnModel(modelsFolder, "desk.fbx", Vector3.zero, Quaternion.identity, repairAnchor, 0.35f);
+            if (repairBenchAlley == null)
+            {
+                repairBenchAlley = SpawnModel(modelsFolder, "tableCoffee.fbx", Vector3.zero, Quaternion.identity, repairAnchor, 0.35f);
+            }
             if (repairBenchAlley != null)
             {
                 EnsureCollider(repairBenchAlley);
@@ -1252,6 +1335,49 @@ namespace RentIsDue.Editor
 
             EditorUtility.DisplayDialog("Item Models Linked", $"Successfully linked 3D Models to {linkedCount} ItemData assets!", "Great!");
             Debug.Log($"<color=green>[RoomSceneBuilder] Successfully linked {linkedCount} 3D Item Models!</color>");
+        }
+
+        private static void ApplyCharacterSkin(GameObject characterRoot, string matName, string texturePath)
+        {
+            if (characterRoot == null) return;
+
+            string folder = "Assets/Materials/Characters";
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            string matPath = $"{folder}/{matName}.mat";
+            Material mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+
+            if (mat == null)
+            {
+                Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+                if (shader == null) shader = Shader.Find("Standard");
+                if (shader == null) shader = Shader.Find("Diffuse");
+
+                mat = new Material(shader);
+                AssetDatabase.CreateAsset(mat, matPath);
+            }
+
+            Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+            if (tex != null)
+            {
+                mat.mainTexture = tex;
+                if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", tex);
+                mat.color = Color.white;
+                if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", Color.white);
+            }
+            if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", 0.05f);
+            if (mat.HasProperty("_Glossiness")) mat.SetFloat("_Glossiness", 0.05f);
+            EditorUtility.SetDirty(mat);
+            AssetDatabase.SaveAssets();
+
+            Renderer[] renderers = characterRoot.GetComponentsInChildren<Renderer>(true);
+            foreach (var r in renderers)
+            {
+                r.sharedMaterial = mat;
+            }
         }
     }
 }
