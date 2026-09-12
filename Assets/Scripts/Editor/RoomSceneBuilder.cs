@@ -29,17 +29,18 @@ namespace RentIsDue.Editor
                 GameObject backdrop = GameObject.Find("Distant_Skyline_Block");
                 GameObject dealerNpc = GameObject.Find("Dealer_NPC");
                 Animator dealerAnim = dealerNpc != null ? dealerNpc.GetComponent<Animator>() : null;
+                bool isGiantScale = dealerNpc != null && dealerNpc.transform.localScale.x > 0.6f;
 
-                if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null || dealerAnim == null || dealerAnim.runtimeAnimatorController == null)
+                if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null || dealerAnim == null || dealerAnim.runtimeAnimatorController == null || isGiantScale)
                 {
-                    Debug.Log("<color=yellow>[RoomSceneBuilder] Đang tự động cấu hình Animation Idle và nâng cấp NPC Người Cho Dealer & Tool Shop...</color>");
+                    Debug.Log("<color=yellow>[RoomSceneBuilder] Đang tự động cấu hình Animation Idle và cân chỉnh kích thước chuẩn người 1.8m cho Dealer & Tool Shop...</color>");
                     BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
                     if (!Application.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode)
                     {
                         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
                         EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
                     }
-                    Debug.Log("<color=green>[RoomSceneBuilder] Đã cấu hình xong Animation Idle và phòng!</color>");
+                    Debug.Log("<color=green>[RoomSceneBuilder] Đã cấu hình xong Animation Idle và cân chỉnh kích thước NPC!</color>");
                 }
             };
         }
@@ -709,18 +710,24 @@ namespace RentIsDue.Editor
             SpawnModel(urbanFolder, "detail-awning-small.fbx", new Vector3(0, 2.85f, -0.05f), Quaternion.identity, dealerAnchor, 1.8f);
 
             // B. NPC Dealer (Model Người Kenney Low-Poly với Skin Criminal/Chợ Đen)
-            GameObject dealerNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0, 0.65f), Quaternion.Euler(0, -90, 0), dealerAnchor, 1.0f);
+            // Kenney characterMedium có chiều cao gốc 3.76m. Scale 0.48f giúp nhân vật cao đúng chuẩn người thật 1.80m
+            GameObject dealerNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0, 0.65f), Quaternion.Euler(0, -90, 0), dealerAnchor, 0.48f);
             if (dealerNPC != null)
             {
                 dealerNPC.name = "Dealer_NPC";
                 ApplyCharacterSkin(dealerNPC, "Mat_Dealer_Skin", "Assets/Art/Characters/Textures/criminalMaleA.png");
                 ConfigureNPCAnimator(dealerNPC, characterFolder);
 
-                // Collider bao trọn nhân vật
+                // Thêm Rigidbody Kinematic để PhysX coi đây là vật thể hoạt hình, không gây va chạm nổ vật lý
+                Rigidbody rb = dealerNPC.AddComponent<Rigidbody>();
+                rb.isKinematic = true;
+
+                // Trigger CapsuleCollider bao trọn nhân vật (3.8m * 0.48 = 1.82m)
                 CapsuleCollider col = dealerNPC.AddComponent<CapsuleCollider>();
-                col.center = new Vector3(0, 0.9f, 0);
-                col.height = 1.8f;
-                col.radius = 0.35f;
+                col.isTrigger = true;
+                col.center = new Vector3(0, 1.9f, 0);
+                col.height = 3.8f;
+                col.radius = 0.75f;
 
                 // Tương tác bán đồ và nhiệm vụ hàng ngày
                 dealerNPC.AddComponent<DealerInteractable>();
@@ -756,18 +763,24 @@ namespace RentIsDue.Editor
             SpawnModel(modelsFolder, "toaster.fbx", new Vector3(0.55f, 0.9f, 0), Quaternion.identity, toolShopAnchor, 0.30f);
 
             // B. NPC Chủ Tiệm Đồ Nghề (Model Người Kenney Low-Poly với Skin Survivor / Worker)
-            GameObject toolShopNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0, 0.65f), Quaternion.Euler(0, 90, 0), toolShopAnchor, 1.0f);
+            // Kenney characterMedium có chiều cao gốc 3.76m. Scale 0.48f giúp nhân vật cao đúng chuẩn người thật 1.80m
+            GameObject toolShopNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0, 0.65f), Quaternion.Euler(0, 90, 0), toolShopAnchor, 0.48f);
             if (toolShopNPC != null)
             {
                 toolShopNPC.name = "ToolShop_NPC";
                 ApplyCharacterSkin(toolShopNPC, "Mat_ToolShop_Skin", "Assets/Art/Characters/Textures/survivorMaleB.png");
                 ConfigureNPCAnimator(toolShopNPC, characterFolder);
 
-                // Collider bao trọn nhân vật
+                // Thêm Rigidbody Kinematic để PhysX coi đây là vật thể hoạt hình, không gây va chạm nổ vật lý
+                Rigidbody rb = toolShopNPC.AddComponent<Rigidbody>();
+                rb.isKinematic = true;
+
+                // Trigger CapsuleCollider bao trọn nhân vật (3.8m * 0.48 = 1.82m)
                 CapsuleCollider col = toolShopNPC.AddComponent<CapsuleCollider>();
-                col.center = new Vector3(0, 0.9f, 0);
-                col.height = 1.8f;
-                col.radius = 0.35f;
+                col.isTrigger = true;
+                col.center = new Vector3(0, 1.9f, 0);
+                col.height = 3.8f;
+                col.radius = 0.75f;
 
                 // Tương tác mở cửa hàng công cụ
                 toolShopNPC.AddComponent<RentIsDue.Shop.ToolShopInteractable>();
@@ -1268,6 +1281,13 @@ namespace RentIsDue.Editor
 
         private static void EnsureCollider(GameObject obj)
         {
+            if (obj == null) return;
+            // Không tự ý thêm BoxCollider vào model nhân vật có SkinnedMeshRenderer (đã có collider riêng)
+            if (obj.GetComponentInChildren<SkinnedMeshRenderer>() != null)
+            {
+                return;
+            }
+
             Collider[] cols = obj.GetComponentsInChildren<Collider>();
             if (cols.Length == 0)
             {

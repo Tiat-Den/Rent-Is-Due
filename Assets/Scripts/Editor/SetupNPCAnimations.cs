@@ -105,8 +105,12 @@ namespace RentIsDue.Editor
             {
                 if (obj is AnimationClip clip && !clip.name.Contains("__preview__"))
                 {
-                    idleClip = clip;
-                    break;
+                    if (clip.name.ToLower().Contains("idle"))
+                    {
+                        idleClip = clip;
+                        break;
+                    }
+                    if (idleClip == null) idleClip = clip;
                 }
             }
             Debug.Log("[SetupNPCAnimations] Found AnimationClip: " + (idleClip != null ? idleClip.name : "null"));

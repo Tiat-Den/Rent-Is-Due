@@ -55,8 +55,9 @@ namespace RentIsDue.Player
         {
             if (controller == null) return;
 
-            // Cơ chế cứu nguy rơi vực (Void Fall Safeguard): Nếu nhân vật lỡ rơi khỏi sàn thì lập tức đưa về sàn phòng
-            if (transform.position.y < -5f)
+            // Cơ chế cứu nguy rơi vực / văng khỏi bản đồ (Map Safeguard):
+            // Nếu bị va chạm đẩy văng lên trời (> 12m), rơi xuống vực (< -5m) hoặc bay ra ngoài biên tường
+            if (transform.position.y < -5f || transform.position.y > 12f || Mathf.Abs(transform.position.x) > 28f || transform.position.z < -20f || transform.position.z > 65f)
             {
                 controller.enabled = false;
                 transform.position = new Vector3(0, 1.2f, 0);
