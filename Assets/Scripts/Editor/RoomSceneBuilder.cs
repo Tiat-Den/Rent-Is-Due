@@ -37,6 +37,7 @@ namespace RentIsDue.Editor
                     if (!Application.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode)
                     {
                         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                        EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
                     }
                     Debug.Log("<color=green>[RoomSceneBuilder] Đã cấu hình xong Animation Idle và phòng!</color>");
                 }
@@ -56,6 +57,7 @@ namespace RentIsDue.Editor
             if (!Application.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode)
             {
                 EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
             }
         }
 
@@ -804,11 +806,25 @@ namespace RentIsDue.Editor
             logger.AddComponent<PlaytestLogger>();
             logger.transform.SetParent(roomRoot.transform);
 
-            // 13. Đặt Player vào tâm phòng
+            // 13. Đặt Player vào tâm phòng an toàn (Y = 1.2m) và dọn dẹp collider thừa
             GameObject player = GameObject.Find("Player");
             if (player != null)
             {
-                player.transform.position = new Vector3(0, 1.0f, 0);
+                player.transform.position = new Vector3(0, 1.2f, 0);
+
+                // Gỡ bỏ CapsuleCollider thừa để không xung đột với CharacterController
+                Collider[] pCols = player.GetComponents<Collider>();
+                foreach (var c in pCols)
+                {
+                    if (!(c is CharacterController))
+                    {
+                        Undo.DestroyObjectImmediate(c);
+                    }
+                }
+                MeshRenderer mr = player.GetComponent<MeshRenderer>();
+                if (mr != null) Undo.DestroyObjectImmediate(mr);
+                MeshFilter mf = player.GetComponent<MeshFilter>();
+                if (mf != null) Undo.DestroyObjectImmediate(mf);
             }
 
             // 13. CỬA NHÀ KHO (Trong phòng chính)

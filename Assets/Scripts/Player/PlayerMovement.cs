@@ -16,9 +16,34 @@ namespace RentIsDue.Player
         private bool isGrounded;
         private StaminaSystem staminaSystem;
 
+        private void Awake()
+        {
+            // Gỡ bỏ hoàn toàn CapsuleCollider thừa trên Player để tránh xung đột vật lý với CharacterController
+            Collider[] colliders = GetComponents<Collider>();
+            foreach (var col in colliders)
+            {
+                if (!(col is CharacterController))
+                {
+                    Destroy(col);
+                }
+            }
+
+            // Gỡ bỏ MeshRenderer hình viên thuốc của Player để góc nhìn FPS trong suốt hoàn toàn
+            MeshRenderer mr = GetComponent<MeshRenderer>();
+            if (mr != null) Destroy(mr);
+            MeshFilter mf = GetComponent<MeshFilter>();
+            if (mf != null) Destroy(mf);
+        }
+
         private void Start()
         {
             controller = GetComponent<CharacterController>();
+            if (controller != null)
+            {
+                controller.skinWidth = 0.05f;
+                controller.minMoveDistance = 0f;
+            }
+
             staminaSystem = GetComponent<StaminaSystem>();
             if (staminaSystem == null)
             {
@@ -28,10 +53,22 @@ namespace RentIsDue.Player
 
         private void Update()
         {
+            if (controller == null) return;
+
+            // Cơ chế cứu nguy rơi vực (Void Fall Safeguard): Nếu nhân vật lỡ rơi khỏi sàn thì lập tức đưa về sàn phòng
+            if (transform.position.y < -5f)
+            {
+                controller.enabled = false;
+                transform.position = new Vector3(0, 1.2f, 0);
+                playerVelocity = Vector3.zero;
+                controller.enabled = true;
+                return;
+            }
+
             isGrounded = controller.isGrounded;
             if (isGrounded && playerVelocity.y < 0)
             {
-                playerVelocity.y = -2f; // Giữ lực đè nhẹ để bám đất
+                playerVelocity.y = -2f; // Giữ lực đè nhẹ để bám sàn chắc chắn
             }
 
             // Đọc phím di chuyển W, A, S, D
