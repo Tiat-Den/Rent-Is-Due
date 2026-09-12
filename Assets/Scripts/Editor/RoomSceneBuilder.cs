@@ -28,13 +28,14 @@ namespace RentIsDue.Editor
                 GameObject gate = GameObject.Find("Alley_End_SecurityGate");
                 GameObject backdrop = GameObject.Find("Distant_Skyline_Block");
                 GameObject dealerNpc = GameObject.Find("Dealer_NPC");
+                Animator dealerAnim = dealerNpc != null ? dealerNpc.GetComponent<Animator>() : null;
 
-                if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null)
+                if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null || dealerAnim == null || dealerAnim.runtimeAnimatorController == null)
                 {
-                    Debug.Log("<color=yellow>[RoomSceneBuilder] Đang tự động nâng cấp NPC Người Cho Dealer & Tool Shop, Quầy Giao Dịch...</color>");
-                    BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
+                    Debug.Log("<color=yellow>[RoomSceneBuilder] Đang tự động cấu hình Animation Idle và nâng cấp NPC Người Cho Dealer & Tool Shop...</color>");
+                    SetupNPCAnimations.Setup();
                     EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-                    Debug.Log("<color=green>[RoomSceneBuilder] Đã tự động cập nhật xong toàn bộ NPC và phòng!</color>");
+                    Debug.Log("<color=green>[RoomSceneBuilder] Đã cấu hình xong Animation Idle và phòng!</color>");
                 }
             };
         }
@@ -498,8 +499,8 @@ namespace RentIsDue.Editor
             SpawnModel(urbanFolder, "pallet.fbx",                 new Vector3(-2.5f, 0, zStart + 10f),   Quaternion.Euler(0,  45, 0), alleyRoot, 2.5f);
             SpawnModel(urbanFolder, "pallet-small.fbx",           new Vector3(-3f, 0.3f, zStart + 10.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 2.5f);
             SpawnModel(urbanFolder, "detail-bench.fbx",           new Vector3(-2.5f, 0, zStart + 2f),   Quaternion.Euler(0, 180, 0), alleyRoot, 3f);
-            SpawnModel(urbanFolder, "detail-awning-wide.fbx",     new Vector3(-3.5f, 2.2f, zStart + 11f), Quaternion.Euler(0, 90, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "detail-awning-wide.fbx",     new Vector3(3.5f,  2.2f, zStart + 11f), Quaternion.Euler(0, -90, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-awning-wide.fbx",     new Vector3(-3.5f, 3.6f, zStart + 16f), Quaternion.Euler(0, 90, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-awning-wide.fbx",     new Vector3(3.5f,  3.6f, zStart + 16f), Quaternion.Euler(0, -90, 0), alleyRoot, 2.5f);
             SpawnModel(urbanFolder, "detail-cables-type-a.fbx",   new Vector3(0,   4f,   zStart + 4f), Quaternion.Euler(0, 90, 0), alleyRoot, 3.0f);
             SpawnModel(urbanFolder, "scaffolding-structure.fbx",  new Vector3(-3f, 0, zStart + 14f), Quaternion.Euler(0, 90, 0), alleyRoot, 3.0f);
 
@@ -691,12 +692,16 @@ namespace RentIsDue.Editor
             SpawnModel(modelsFolder, "books.fbx", new Vector3(-0.45f, 0.9f, 0), Quaternion.Euler(0, 15, 0), dealerAnchor, 0.25f);
             SpawnModel(modelsFolder, "cardboardBoxOpen.fbx", new Vector3(1.1f, 0, 0.3f), Quaternion.Euler(0, -20, 0), dealerAnchor, 0.35f);
 
+            // Mái che phong cách ki-ốt nhỏ trên đầu quầy Dealer (cao 2.85m an toàn không chạm đầu)
+            SpawnModel(urbanFolder, "detail-awning-small.fbx", new Vector3(0, 2.85f, -0.05f), Quaternion.identity, dealerAnchor, 1.8f);
+
             // B. NPC Dealer (Model Người Kenney Low-Poly với Skin Criminal/Chợ Đen)
             GameObject dealerNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0, 0.65f), Quaternion.Euler(0, -90, 0), dealerAnchor, 1.0f);
             if (dealerNPC != null)
             {
                 dealerNPC.name = "Dealer_NPC";
                 ApplyCharacterSkin(dealerNPC, "Mat_Dealer_Skin", "Assets/Art/Characters/Textures/criminalMaleA.png");
+                ConfigureNPCAnimator(dealerNPC, characterFolder);
 
                 // Collider bao trọn nhân vật
                 CapsuleCollider col = dealerNPC.AddComponent<CapsuleCollider>();
@@ -730,8 +735,8 @@ namespace RentIsDue.Editor
             toolCounter.transform.localScale = new Vector3(1.8f, 0.9f, 0.7f);
             ApplyMaterial(toolCounter, "Mat_StorageWall", new Color(0.35f, 0.25f, 0.18f), 0.1f);
 
-            // Mái che phong cách ki-ốt nhỏ trên đầu quầy
-            SpawnModel(urbanFolder, "detail-awning-small.fbx", new Vector3(0, 2.3f, 0), Quaternion.identity, toolShopAnchor, 1.8f);
+            // Mái che phong cách ki-ốt nhỏ trên đầu quầy (cao 2.85m an toàn không chạm đầu)
+            SpawnModel(urbanFolder, "detail-awning-small.fbx", new Vector3(0, 2.85f, -0.05f), Quaternion.identity, toolShopAnchor, 1.8f);
 
             // Đồ nghề và hộp linh kiện trên quầy
             SpawnModel(modelsFolder, "cardboardBoxClosed.fbx", new Vector3(-0.6f, 0.9f, 0), Quaternion.Euler(0, 10, 0), toolShopAnchor, 0.25f);
@@ -743,6 +748,7 @@ namespace RentIsDue.Editor
             {
                 toolShopNPC.name = "ToolShop_NPC";
                 ApplyCharacterSkin(toolShopNPC, "Mat_ToolShop_Skin", "Assets/Art/Characters/Textures/survivorMaleB.png");
+                ConfigureNPCAnimator(toolShopNPC, characterFolder);
 
                 // Collider bao trọn nhân vật
                 CapsuleCollider col = toolShopNPC.AddComponent<CapsuleCollider>();
@@ -1378,6 +1384,29 @@ namespace RentIsDue.Editor
             {
                 r.sharedMaterial = mat;
             }
+        }
+
+        private static void ConfigureNPCAnimator(GameObject npc, string characterFolder)
+        {
+            if (npc == null) return;
+
+            RuntimeAnimatorController controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Art/Characters/Animations/NPC_Idle.controller");
+            Avatar avatar = null;
+            UnityEngine.Object[] assets = AssetDatabase.LoadAllAssetsAtPath($"{characterFolder}/characterMedium.fbx");
+            foreach (var obj in assets)
+            {
+                if (obj is Avatar av)
+                {
+                    avatar = av;
+                    break;
+                }
+            }
+
+            Animator anim = npc.GetComponent<Animator>();
+            if (anim == null) anim = npc.AddComponent<Animator>();
+            if (controller != null) anim.runtimeAnimatorController = controller;
+            if (avatar != null) anim.avatar = avatar;
+            anim.cullingMode = AnimatorCullingMode.AlwaysAnimate;
         }
     }
 }
