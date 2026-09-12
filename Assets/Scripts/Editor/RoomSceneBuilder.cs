@@ -20,7 +20,7 @@ namespace RentIsDue.Editor
         {
             EditorApplication.delayCall += () =>
             {
-                if (Application.isPlaying) return;
+                if (Application.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode) return;
 
                 // Tự động kiểm tra xem cảnh có chứa bóng đèn cũ Window_Sun_Glow hoặc PorchLight hoặc chưa có Cổng An Ninh cuối hẻm
                 GameObject glow = GameObject.Find("Window_Sun_Glow");
@@ -33,8 +33,11 @@ namespace RentIsDue.Editor
                 if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null || dealerAnim == null || dealerAnim.runtimeAnimatorController == null)
                 {
                     Debug.Log("<color=yellow>[RoomSceneBuilder] Đang tự động cấu hình Animation Idle và nâng cấp NPC Người Cho Dealer & Tool Shop...</color>");
-                    SetupNPCAnimations.Setup();
-                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
+                    if (!Application.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode)
+                    {
+                        EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    }
                     Debug.Log("<color=green>[RoomSceneBuilder] Đã cấu hình xong Animation Idle và phòng!</color>");
                 }
             };
@@ -44,8 +47,16 @@ namespace RentIsDue.Editor
         [MenuItem("Tools/🏠 Build Giant Room (25m x 20m - Siêu Rộng Rãi)")]
         public static void BuildGiantRoom()
         {
+            if (Application.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                Debug.LogWarning("[RoomSceneBuilder] Cannot rebuild room while in Play Mode.");
+                return;
+            }
             BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
-            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            if (!Application.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            }
         }
 
         [MenuItem("Rent Is Due/🏠 Mở Bảng Room Builder Window", false, 2)]

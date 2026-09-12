@@ -7,19 +7,15 @@ namespace RentIsDue.Editor
 {
     public static class SetupNPCAnimations
     {
-        private static bool hasRun = false;
-
-        [InitializeOnLoadMethod]
-        private static void AutoRun()
-        {
-            if (hasRun) return;
-            hasRun = true;
-            EditorApplication.delayCall += Setup;
-        }
-
         [MenuItem("Rent Is Due/Setup NPC Animations and Avatars")]
         public static void Setup()
         {
+            if (Application.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                Debug.LogWarning("[SetupNPCAnimations] Cannot run setup while in Play Mode.");
+                return;
+            }
+
             string charPath = "Assets/Art/Characters/characterMedium.fbx";
             string animPath = "Assets/Art/Characters/Animations/idle.fbx";
             string controllerDir = "Assets/Art/Characters/Animations";
@@ -138,8 +134,11 @@ namespace RentIsDue.Editor
                 Debug.Log("[SetupNPCAnimations] AnimatorController created and saved at: " + controllerPath);
             }
 
-            // 5. Rebuild Scene to update NPCs in the world
-            RoomSceneBuilder.BuildGiantRoom();
+            // 5. Rebuild Scene only if in Edit Mode
+            if (!Application.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                RoomSceneBuilder.BuildGiantRoom();
+            }
         }
     }
 }
