@@ -57,7 +57,11 @@ namespace RentIsDue.Gameplay
 
         private void Awake()
         {
-            if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+            if (Instance != null && Instance != this)
+            {
+                Destroy(this); // Only destroy duplicate component, NEVER the GameObject!
+                return;
+            }
             Instance = this;
         }
 

@@ -29,11 +29,10 @@ namespace RentIsDue.Editor
                 GameObject backdrop = GameObject.Find("Distant_Skyline_Block");
                 GameObject dealerNpc = GameObject.Find("Dealer_NPC");
                 GameObject toolShopNpc = GameObject.Find("ToolShop_NPC");
-                Animator dealerAnim = dealerNpc != null ? dealerNpc.GetComponent<Animator>() : null;
                 bool isGiantScale = dealerNpc != null && dealerNpc.transform.localScale.x > 0.6f;
-                bool hasBuggyAnimator = dealerAnim != null;
+                bool needsPlacementFix = dealerNpc != null && dealerNpc.transform.localPosition.z > 0.3f;
 
-                if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null || toolShopNpc == null || isGiantScale || hasBuggyAnimator)
+                if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null || toolShopNpc == null || isGiantScale || needsPlacementFix)
                 {
                     Debug.Log("<color=yellow>[RoomSceneBuilder] Đang tự động cấu hình NPC Người tỉ lệ 1.8m đứng tự nhiên cho Dealer & Tool Shop...</color>");
                     BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
@@ -510,10 +509,10 @@ namespace RentIsDue.Editor
             ApplyMaterial(alleyCeiling, "Mat_AlleyFloor", new Color(0.05f, 0.05f, 0.05f));
 
             // === TRANG TRÍ FBX ===
-            SpawnModel(urbanFolder, "detail-dumpster-open.fbx",   new Vector3(2.5f,  0, zStart + 10f),   Quaternion.Euler(0, -20, 0), alleyRoot, 3f);
-            SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(2.5f,  0, zStart + 12f), Quaternion.Euler(0, -5,  0), alleyRoot, 3f);
-            SpawnModel(urbanFolder, "pallet.fbx",                 new Vector3(-2.5f, 0, zStart + 10f),   Quaternion.Euler(0,  45, 0), alleyRoot, 2.5f);
-            SpawnModel(urbanFolder, "pallet-small.fbx",           new Vector3(-3f, 0.3f, zStart + 10.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "detail-dumpster-open.fbx",   new Vector3(2.8f,  0, zStart + 12f),   Quaternion.Euler(0, -20, 0), alleyRoot, 3f);
+            SpawnModel(urbanFolder, "detail-dumpster-closed.fbx", new Vector3(2.8f,  0, zStart + 14.5f), Quaternion.Euler(0, -5,  0), alleyRoot, 3f);
+            SpawnModel(urbanFolder, "pallet.fbx",                 new Vector3(-2.8f, 0, zStart + 13f),   Quaternion.Euler(0,  45, 0), alleyRoot, 2.5f);
+            SpawnModel(urbanFolder, "pallet-small.fbx",           new Vector3(-3.2f, 0.3f, zStart + 13.2f), Quaternion.Euler(0, 30, 0), alleyRoot, 2.5f);
             SpawnModel(urbanFolder, "detail-bench.fbx",           new Vector3(-2.5f, 0, zStart + 2f),   Quaternion.Euler(0, 180, 0), alleyRoot, 3f);
             SpawnModel(urbanFolder, "detail-awning-wide.fbx",     new Vector3(-3.5f, 3.6f, zStart + 16f), Quaternion.Euler(0, 90, 0), alleyRoot, 2.5f);
             SpawnModel(urbanFolder, "detail-awning-wide.fbx",     new Vector3(3.5f,  3.6f, zStart + 16f), Quaternion.Euler(0, -90, 0), alleyRoot, 2.5f);
@@ -711,22 +710,28 @@ namespace RentIsDue.Editor
             // Mái che phong cách ki-ốt nhỏ trên đầu quầy Dealer (cao 2.85m an toàn không chạm đầu)
             SpawnModel(urbanFolder, "detail-awning-small.fbx", new Vector3(0, 2.85f, -0.05f), Quaternion.identity, dealerAnchor, 1.8f);
 
+            // Đảm bảo pipeline Humanoid Avatar và Animation theo chuẩn Character Model Agent
+            Avatar charAvatar = SetupNPCAnimations.EnsureHumanoidAssets(out RuntimeAnimatorController npcAnimController);
+
             // B. NPC Dealer (Model Người Kenney Low-Poly với Skin Criminal/Chợ Đen)
-            // Kenney characterMedium có chiều cao gốc 3.76m. Scale 0.48f giúp nhân vật cao đúng chuẩn người thật 1.80m
-            GameObject dealerNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0, 0.65f), Quaternion.Euler(0, -90, 0), dealerAnchor, 0.48f);
+            // Kenney characterMedium có chiều cao gốc ~3.76m. Scale 0.48f giúp nhân vật cao chuẩn người thật 1.80m
+            // Đặt đứng phía sau quầy: Y = 0.45m để hai bàn chân đặt phẳng, chuẩn xác 100% trên mặt vỉa hè (Y = 0.20m), không bị lún
+            GameObject dealerNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0.45f, 0.70f), Quaternion.Euler(0, 180, 0), dealerAnchor, 0.48f);
             if (dealerNPC != null)
             {
                 dealerNPC.name = "Dealer_NPC";
                 ApplyCharacterSkin(dealerNPC, "Mat_Dealer_Skin", "Assets/Art/Characters/Textures/criminalMaleA.png");
-                // Xóa bỏ Animator (tránh IK control của idle.fbx kéo xương văng ra ngoài không gian)
-                Animator da = dealerNPC.GetComponent<Animator>();
-                if (da != null) Object.DestroyImmediate(da);
+                
+                // Tắt Animator để loại bỏ hoàn toàn thế T-pose của Mecanim bind-pose,
+                // nhường toàn quyền điều khiển dáng đứng tự nhiên cho NPCLookAtPlayer
+                Animator anim = dealerNPC.GetComponent<Animator>();
+                if (anim != null) anim.enabled = false;
 
                 // Thêm Rigidbody Kinematic để PhysX coi đây là vật thể hoạt hình, không gây va chạm nổ vật lý
                 Rigidbody rb = dealerNPC.AddComponent<Rigidbody>();
                 rb.isKinematic = true;
 
-                // Trigger CapsuleCollider bao trọn nhân vật (3.8m * 0.48 = 1.82m)
+                // Trigger CapsuleCollider bao trọn nhân vật
                 CapsuleCollider col = dealerNPC.AddComponent<CapsuleCollider>();
                 col.isTrigger = true;
                 col.center = new Vector3(0, 1.9f, 0);
@@ -737,7 +742,7 @@ namespace RentIsDue.Editor
                 dealerNPC.AddComponent<DealerInteractable>();
                 dealerNPC.AddComponent<RentIsDue.Gameplay.DailyOrderManager>();
 
-                // Hành vi tự xoay người nhìn Player khi Player lại gần
+                // Dáng đứng tự nhiên (bỏ T-pose), thở nhẹ và tự xoay người nhìn Player
                 dealerNPC.AddComponent<RentIsDue.Gameplay.NPCLookAtPlayer>();
             }
 
@@ -767,22 +772,24 @@ namespace RentIsDue.Editor
             SpawnModel(modelsFolder, "toaster.fbx", new Vector3(0.55f, 0.9f, 0), Quaternion.identity, toolShopAnchor, 0.30f);
 
             // B. NPC Chủ Tiệm Đồ Nghề (Model Người Kenney Low-Poly với Skin Survivor / Worker)
-            // Kenney characterMedium có chiều cao gốc 3.76m. Scale 0.48f giúp nhân vật cao đúng chuẩn người thật 1.80m
-            GameObject toolShopNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0, 0.65f), Quaternion.Euler(0, 90, 0), toolShopAnchor, 0.48f);
+            // Kenney characterMedium có chiều cao gốc ~3.76m. Scale 0.48f giúp nhân vật cao chuẩn người thật 1.80m
+            // Đặt đứng phía sau bàn thợ: Y = 0.45m để hai bàn chân đặt phẳng, chuẩn xác 100% trên mặt vỉa hè (Y = 0.20m), không bị lún
+            GameObject toolShopNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0.45f, 0.70f), Quaternion.Euler(0, 180, 0), toolShopAnchor, 0.48f);
             if (toolShopNPC != null)
             {
                 toolShopNPC.name = "ToolShop_NPC";
                 ApplyCharacterSkin(toolShopNPC, "Mat_ToolShop_Skin", "Assets/Art/Characters/Textures/survivorMaleB.png");
 
-                // Xóa bỏ Animator (tránh IK control của idle.fbx kéo xương văng ra ngoài không gian)
-                Animator ta = toolShopNPC.GetComponent<Animator>();
-                if (ta != null) Object.DestroyImmediate(ta);
+                // Tắt Animator để loại bỏ hoàn toàn thế T-pose của Mecanim bind-pose,
+                // nhường toàn quyền điều khiển dáng đứng tự nhiên cho NPCLookAtPlayer
+                Animator anim = toolShopNPC.GetComponent<Animator>();
+                if (anim != null) anim.enabled = false;
 
                 // Thêm Rigidbody Kinematic để PhysX coi đây là vật thể hoạt hình, không gây va chạm nổ vật lý
                 Rigidbody rb = toolShopNPC.AddComponent<Rigidbody>();
                 rb.isKinematic = true;
 
-                // Trigger CapsuleCollider bao trọn nhân vật (3.8m * 0.48 = 1.82m)
+                // Trigger CapsuleCollider bao trọn nhân vật
                 CapsuleCollider col = toolShopNPC.AddComponent<CapsuleCollider>();
                 col.isTrigger = true;
                 col.center = new Vector3(0, 1.9f, 0);
@@ -793,7 +800,7 @@ namespace RentIsDue.Editor
                 toolShopNPC.AddComponent<RentIsDue.Shop.ToolShopInteractable>();
                 toolShopNPC.AddComponent<RentIsDue.Shop.ToolShopManager>();
 
-                // Hành vi tự xoay người nhìn Player khi Player lại gần
+                // Dáng đứng tự nhiên (bỏ T-pose), thở nhẹ và tự xoay người nhìn Player
                 toolShopNPC.AddComponent<RentIsDue.Gameplay.NPCLookAtPlayer>();
             }
 
