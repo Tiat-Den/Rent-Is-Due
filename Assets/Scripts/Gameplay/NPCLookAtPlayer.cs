@@ -25,7 +25,6 @@ namespace RentIsDue.Gameplay
         private Quaternion defaultRotation;
 
         // Cached bone transforms
-        private Transform rootBone;
         private Transform spine;
         private Transform leftArm;
         private Transform rightArm;
@@ -93,7 +92,6 @@ namespace RentIsDue.Gameplay
         {
             if (hasCachedBones && leftArm != null && rightArm != null) return;
 
-            rootBone = FindChildRecursive(transform, "Root");
             spine = FindChildRecursive(transform, "Spine");
             leftArm = FindChildRecursive(transform, "LeftArm");
             rightArm = FindChildRecursive(transform, "RightArm");
@@ -102,12 +100,12 @@ namespace RentIsDue.Gameplay
 
             if (leftArm != null && rightArm != null)
             {
-                // Store standard bind rotations for characterMedium
-                bindRotLeftArm = Quaternion.Euler(-83.124f, 101.850f, -84.964f);
-                bindRotRightArm = Quaternion.Euler(13.066f, -152.237f, -3.131f);
-                bindRotLeftForeArm = Quaternion.Euler(5.369f, 1.410f, 0.691f);
-                bindRotRightForeArm = Quaternion.Euler(0.058f, -0.550f, 5.396f);
-                bindRotSpine = Quaternion.Euler(-6.999f, 0f, 0f);
+                // Capture authentic imported bind rotations directly from the model
+                bindRotLeftArm = leftArm.localRotation;
+                bindRotRightArm = rightArm.localRotation;
+                if (leftForeArm != null) bindRotLeftForeArm = leftForeArm.localRotation;
+                if (rightForeArm != null) bindRotRightForeArm = rightForeArm.localRotation;
+                if (spine != null) bindRotSpine = spine.localRotation;
                 hasCachedBones = true;
             }
         }
@@ -126,7 +124,7 @@ namespace RentIsDue.Gameplay
 
         private void EnforceScaleAndOrientation()
         {
-            // 1. NPC Root Transform: 0.48 scale (1.80m tall), standing on pavement (Y=0.45m behind counter)
+            // NPC Root Transform: 0.48 scale (1.80m tall), standing on pavement (Y=0.45m behind counter)
             Vector3 scale = transform.localScale;
             if (Mathf.Abs(scale.x - 0.48f) > 0.05f || Mathf.Abs(scale.y - 0.48f) > 0.05f || Mathf.Abs(scale.z - 0.48f) > 0.05f)
             {
@@ -143,18 +141,6 @@ namespace RentIsDue.Gameplay
             if (pos.y < 0.2f || pos.y > 0.8f || pos.z < 0.2f)
             {
                 transform.localPosition = new Vector3(0f, 0.45f, 0.70f);
-            }
-
-            // 2. Child Root bone: MUST be identity (scale 1, rot 0, pos 0) to prevent 100x giant scale
-            if (rootBone == null)
-            {
-                rootBone = FindChildRecursive(transform, "Root");
-            }
-            if (rootBone != null)
-            {
-                if (rootBone.localScale != Vector3.one) rootBone.localScale = Vector3.one;
-                if (rootBone.localPosition != Vector3.zero) rootBone.localPosition = Vector3.zero;
-                if (rootBone.localRotation != Quaternion.identity) rootBone.localRotation = Quaternion.identity;
             }
         }
 
@@ -216,31 +202,36 @@ namespace RentIsDue.Gameplay
                 if (!hasCachedBones) return;
             }
 
-            // 1. Subtle chest breathing
-            float breath = enableBreathing ? Mathf.Sin(time * 2.0f) * 1.5f : 0f;
-            if (spine != null)
+            // 1. Reset all bones to authentic bind pose before applying pose offsets
+            leftArm.localRotation = bindRotLeftArm;
+            rightArm.localRotation = bindRotRightArm;
+            if (leftForeArm != null) leftForeArm.localRotation = bindRotLeftForeArm;
+            if (rightForeArm != null) rightForeArm.localRotation = bindRotRightForeArm;
+            if (spine != null) spine.localRotation = bindRotSpine;
+
+            // 2. Subtle chest breathing
+            if (enableBreathing && spine != null)
             {
+                float breath = Mathf.Sin(time * 2.0f) * 1.5f;
                 spine.localRotation = bindRotSpine * Quaternion.Euler(breath, 0f, 0f);
             }
 
-            // 2. Left Arm: swing down ~80 degrees from horizontal T-pose along torso
-            Vector3 desiredLeftDir = new Vector3(0.12f, -0.98f, 0.08f).normalized;
-            Quaternion leftSwing = Quaternion.FromToRotation(Vector3.right, desiredLeftDir);
-            leftArm.localRotation = leftSwing * bindRotLeftArm;
-
-            // 3. Right Arm: swing down ~80 degrees from horizontal T-pose along torso
-            Vector3 desiredRightDir = new Vector3(-0.12f, -0.98f, 0.08f).normalized;
-            Quaternion rightSwing = Quaternion.FromToRotation(-Vector3.right, desiredRightDir);
-            rightArm.localRotation = rightSwing * bindRotRightArm;
-
-            // 4. Natural forearm elbow bend resting comfortably near the counter
+            // 3. Left Arm: rotate from horizontal T-pose to hanging naturally down along torso
             if (leftForeArm != null)
             {
-                leftForeArm.localRotation = bindRotLeftForeArm * Quaternion.Euler(0f, 0f, 22f);
+                Vector3 curLeftDir = (leftForeArm.position - leftArm.position).normalized;
+                Vector3 tgtLeftDir = (-transform.up * 0.94f + transform.forward * 0.12f + transform.right * 0.22f).normalized;
+                leftArm.rotation = Quaternion.FromToRotation(curLeftDir, tgtLeftDir) * leftArm.rotation;
+                leftForeArm.Rotate(transform.up, 20f, Space.World);
             }
+
+            // 4. Right Arm: rotate from horizontal T-pose to hanging naturally down along torso
             if (rightForeArm != null)
             {
-                rightForeArm.localRotation = bindRotRightForeArm * Quaternion.Euler(0f, 0f, -22f);
+                Vector3 curRightDir = (rightForeArm.position - rightArm.position).normalized;
+                Vector3 tgtRightDir = (-transform.up * 0.94f + transform.forward * 0.12f - transform.right * 0.22f).normalized;
+                rightArm.rotation = Quaternion.FromToRotation(curRightDir, tgtRightDir) * rightArm.rotation;
+                rightForeArm.Rotate(transform.up, -20f, Space.World);
             }
         }
     }
