@@ -722,14 +722,14 @@ namespace RentIsDue.Editor
                 dealerNPC.name = "Dealer_NPC";
                 ApplyCharacterSkin(dealerNPC, "Mat_Dealer_Skin", "Assets/Art/Characters/Textures/criminalMaleA.png");
                 
-                // Cấu hình Mecanim Animator chuẩn
+                // Mecanim Animator bị vô hiệu hóa để NPCLookAtPlayer.LateUpdate() SampleAnimation trực tiếp điều khiển idle breathing loop
                 Animator anim = dealerNPC.GetComponent<Animator>();
                 if (anim == null) anim = dealerNPC.AddComponent<Animator>();
                 if (charAvatar != null) anim.avatar = charAvatar;
                 if (npcAnimController != null) anim.runtimeAnimatorController = npcAnimController;
                 anim.applyRootMotion = false;
                 anim.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-                anim.enabled = true;
+                anim.enabled = false;
 
                 // Thêm Rigidbody Kinematic để PhysX coi đây là vật thể hoạt hình, không gây va chạm nổ vật lý
                 Rigidbody rb = dealerNPC.AddComponent<Rigidbody>();
@@ -791,14 +791,14 @@ namespace RentIsDue.Editor
                 toolShopNPC.name = "ToolShop_NPC";
                 ApplyCharacterSkin(toolShopNPC, "Mat_ToolShop_Skin", "Assets/Art/Characters/Textures/survivorMaleB.png");
 
-                // Cấu hình Mecanim Animator chuẩn
+                // Mecanim Animator bị vô hiệu hóa để NPCLookAtPlayer.LateUpdate() SampleAnimation trực tiếp điều khiển idle breathing loop
                 Animator anim = toolShopNPC.GetComponent<Animator>();
                 if (anim == null) anim = toolShopNPC.AddComponent<Animator>();
                 if (charAvatar != null) anim.avatar = charAvatar;
                 if (npcAnimController != null) anim.runtimeAnimatorController = npcAnimController;
                 anim.applyRootMotion = false;
                 anim.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-                anim.enabled = true;
+                anim.enabled = false;
 
                 // Thêm Rigidbody Kinematic để PhysX coi đây là vật thể hoạt hình, không gây va chạm nổ vật lý
                 Rigidbody rb = toolShopNPC.AddComponent<Rigidbody>();

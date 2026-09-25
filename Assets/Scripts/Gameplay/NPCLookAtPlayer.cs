@@ -26,12 +26,14 @@ namespace RentIsDue.Gameplay
         {
             EnforceScaleAndOrientation();
             defaultRotation = transform.rotation;
+            DisableMecanimAnimator();
             EnsureIdleClip();
         }
 
         private void OnEnable()
         {
             EnforceScaleAndOrientation();
+            DisableMecanimAnimator();
             EnsureIdleClip();
             if (idleClip != null)
             {
@@ -43,6 +45,7 @@ namespace RentIsDue.Gameplay
         private void OnValidate()
         {
             EnforceScaleAndOrientation();
+            DisableMecanimAnimator();
             EnsureIdleClip();
         }
 #endif
@@ -66,6 +69,17 @@ namespace RentIsDue.Gameplay
             if (transform.localPosition.y < 0.2f || transform.localPosition.y > 0.8f)
             {
                 transform.localPosition = new Vector3(0f, 0.45f, 0.70f);
+            }
+        }
+
+        private void DisableMecanimAnimator()
+        {
+            // Generic rig Mecanim animator causes T-pose and overrides bone sampling.
+            // Disabling the component allows native SampleAnimation to drive curves smoothly.
+            Animator anim = GetComponent<Animator>();
+            if (anim != null && anim.enabled)
+            {
+                anim.enabled = false;
             }
         }
 
@@ -99,19 +113,20 @@ namespace RentIsDue.Gameplay
                 }
             }
 #endif
-
-            // If Animator has no controller, disable it to prevent it resetting to T-pose every frame
-            if (anim != null && anim.runtimeAnimatorController == null)
-            {
-                anim.enabled = false;
-            }
         }
 
         private void Start()
         {
             EnforceScaleAndOrientation();
             defaultRotation = transform.rotation;
+            DisableMecanimAnimator();
             EnsureIdleClip();
+
+            if (idleClip != null)
+            {
+                idleClip.SampleAnimation(gameObject, 0f);
+            }
+
             if (Application.isPlaying)
             {
                 FindPlayer();
@@ -133,21 +148,7 @@ namespace RentIsDue.Gameplay
 
         private void Update()
         {
-            // 1. Sample authentic idle animation clip if Animator is not active or in Edit Mode
-            if (idleClip != null)
-            {
-                Animator anim = GetComponent<Animator>();
-                bool animatorActive = (anim != null && anim.enabled && anim.runtimeAnimatorController != null && Application.isPlaying);
-                if (!animatorActive)
-                {
-                    float clipTime = (Application.isPlaying && idleClip.length > 0f)
-                        ? (Time.time % idleClip.length)
-                        : 0f;
-                    idleClip.SampleAnimation(gameObject, clipTime);
-                }
-            }
-
-            // 2. Player tracking (Horizontal Yaw only)
+            // Player tracking (Horizontal Yaw only)
             if (!Application.isPlaying) return;
 
             if (playerTransform == null)
@@ -169,6 +170,21 @@ namespace RentIsDue.Gameplay
             {
                 // Smoothly return to default counter-facing direction
                 transform.rotation = Quaternion.Slerp(transform.rotation, defaultRotation, Time.deltaTime * (turnSpeed * 0.6f));
+            }
+        }
+
+        private void LateUpdate()
+        {
+            // Always sample authentic Kenney idle animation clip in LateUpdate to guarantee:
+            // 1. In Play Mode: continuous breathing and idle movement loop
+            // 2. In Edit Mode: static resting stance (frame 0) with relaxed arms down along torso
+            // 3. Absolute immunity to T-pose (nothing can overwrite this post-update)
+            if (idleClip != null)
+            {
+                float clipTime = (Application.isPlaying && idleClip.length > 0f)
+                    ? (Time.time % idleClip.length)
+                    : 0f;
+                idleClip.SampleAnimation(gameObject, clipTime);
             }
         }
     }
