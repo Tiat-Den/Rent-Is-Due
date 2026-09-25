@@ -31,8 +31,10 @@ namespace RentIsDue.Editor
                 GameObject toolShopNpc = GameObject.Find("ToolShop_NPC");
                 bool isGiantScale = dealerNpc != null && dealerNpc.transform.localScale.x > 0.6f;
                 bool needsPlacementFix = dealerNpc != null && (dealerNpc.transform.localPosition.y < 0.40f || dealerNpc.transform.localPosition.z > 1.2f);
+                bool isPrefabInstance = dealerNpc != null && PrefabUtility.IsPartOfPrefabInstance(dealerNpc);
+                bool isMissingSmr = dealerNpc != null && dealerNpc.GetComponentInChildren<SkinnedMeshRenderer>(true) == null;
 
-                if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null || toolShopNpc == null || isGiantScale || needsPlacementFix)
+                if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null || toolShopNpc == null || isGiantScale || needsPlacementFix || isPrefabInstance || isMissingSmr)
                 {
                     Debug.Log("<color=yellow>[RoomSceneBuilder] Đang tự động cấu hình NPC Người tỉ lệ 1.8m đứng tự nhiên cho Dealer & Tool Shop...</color>");
                     BuildRoomInternal("Giant Room (25m x 20m)", 25f, 20f, 4.5f);
@@ -1459,6 +1461,11 @@ namespace RentIsDue.Editor
             foreach (var r in renderers)
             {
                 r.sharedMaterial = mat;
+                r.enabled = true;
+                if (r is SkinnedMeshRenderer smr)
+                {
+                    smr.updateWhenOffscreen = true;
+                }
             }
         }
     }

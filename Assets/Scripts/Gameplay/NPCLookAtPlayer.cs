@@ -4,8 +4,8 @@ namespace RentIsDue.Gameplay
 {
     /// <summary>
     /// Controls NPC scale, shopkeeper stance (relaxed arms, breathing), and player tracking.
-    /// Eliminates T-pose by procedurally rotating arms down along the torso from bind pose,
-    /// and safeguards the NPC against scale explosion and orientation flips in both Edit and Play mode.
+    /// Eliminates T-pose by procedurally rotating arms down along the torso from immutable bind pose constants,
+    /// and safeguards the NPC against scale explosion, offscreen culling, and orientation flips.
     /// </summary>
     [ExecuteAlways]
     public class NPCLookAtPlayer : MonoBehaviour
@@ -21,6 +21,13 @@ namespace RentIsDue.Gameplay
         [Header("Stance & Breathing")]
         public bool enableBreathing = true;
 
+        // Immutable Pristine Bind Rotations from Kenney characterMedium.fbx
+        private static readonly Quaternion BindRotLeftArm = Quaternion.Euler(-83.12f, 101.85f, -84.96f);
+        private static readonly Quaternion BindRotRightArm = Quaternion.Euler(13.07f, -152.24f, -3.13f);
+        private static readonly Quaternion BindRotLeftForeArm = Quaternion.Euler(5.37f, 1.41f, 0.69f);
+        private static readonly Quaternion BindRotRightForeArm = Quaternion.Euler(0.06f, -0.55f, 5.40f);
+        private static readonly Quaternion BindRotSpine = Quaternion.Euler(-7.00f, 0f, 0f);
+
         private Transform playerTransform;
         private Quaternion defaultRotation;
 
@@ -30,14 +37,7 @@ namespace RentIsDue.Gameplay
         private Transform rightArm;
         private Transform leftForeArm;
         private Transform rightForeArm;
-
-        // Bind pose rotations
         private bool hasCachedBones = false;
-        private Quaternion bindRotSpine = Quaternion.identity;
-        private Quaternion bindRotLeftArm = Quaternion.identity;
-        private Quaternion bindRotRightArm = Quaternion.identity;
-        private Quaternion bindRotLeftForeArm = Quaternion.identity;
-        private Quaternion bindRotRightForeArm = Quaternion.identity;
 
         private void Awake()
         {
@@ -45,6 +45,7 @@ namespace RentIsDue.Gameplay
             defaultRotation = transform.rotation;
             DisableMecanimAnimator();
             CacheBones();
+            EnsureRenderersVisible();
         }
 
         private void OnEnable()
@@ -52,6 +53,7 @@ namespace RentIsDue.Gameplay
             EnforceScaleAndOrientation();
             DisableMecanimAnimator();
             CacheBones();
+            EnsureRenderersVisible();
             ApplyNaturalStance(0f);
         }
 
@@ -61,6 +63,7 @@ namespace RentIsDue.Gameplay
             EnforceScaleAndOrientation();
             DisableMecanimAnimator();
             CacheBones();
+            EnsureRenderersVisible();
             ApplyNaturalStance(0f);
         }
 #endif
@@ -71,6 +74,7 @@ namespace RentIsDue.Gameplay
             defaultRotation = transform.rotation;
             DisableMecanimAnimator();
             CacheBones();
+            EnsureRenderersVisible();
             ApplyNaturalStance(0f);
 
             if (Application.isPlaying)
@@ -88,6 +92,19 @@ namespace RentIsDue.Gameplay
             }
         }
 
+        private void EnsureRenderersVisible()
+        {
+            var rends = GetComponentsInChildren<Renderer>(true);
+            foreach (var r in rends)
+            {
+                if (!r.enabled) r.enabled = true;
+                if (r is SkinnedMeshRenderer smr)
+                {
+                    smr.updateWhenOffscreen = true; // Absolute guarantee against bounding box culling
+                }
+            }
+        }
+
         private void CacheBones()
         {
             if (hasCachedBones && leftArm != null && rightArm != null) return;
@@ -98,16 +115,7 @@ namespace RentIsDue.Gameplay
             leftForeArm = FindChildRecursive(transform, "LeftForeArm");
             rightForeArm = FindChildRecursive(transform, "RightForeArm");
 
-            if (leftArm != null && rightArm != null)
-            {
-                // Capture authentic imported bind rotations directly from the model
-                bindRotLeftArm = leftArm.localRotation;
-                bindRotRightArm = rightArm.localRotation;
-                if (leftForeArm != null) bindRotLeftForeArm = leftForeArm.localRotation;
-                if (rightForeArm != null) bindRotRightForeArm = rightForeArm.localRotation;
-                if (spine != null) bindRotSpine = spine.localRotation;
-                hasCachedBones = true;
-            }
+            hasCachedBones = (leftArm != null && rightArm != null);
         }
 
         private static Transform FindChildRecursive(Transform parent, string targetName)
@@ -137,10 +145,13 @@ namespace RentIsDue.Gameplay
                 transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
             }
 
-            Vector3 pos = transform.localPosition;
-            if (pos.y < 0.2f || pos.y > 0.8f || pos.z < 0.2f)
+            if (transform.parent != null)
             {
-                transform.localPosition = new Vector3(0f, 0.45f, 0.70f);
+                Vector3 pos = transform.localPosition;
+                if (pos.y < 0.2f || pos.y > 0.8f || pos.z < 0.2f)
+                {
+                    transform.localPosition = new Vector3(0f, 0.45f, 0.70f);
+                }
             }
         }
 
@@ -202,18 +213,18 @@ namespace RentIsDue.Gameplay
                 if (!hasCachedBones) return;
             }
 
-            // 1. Reset all bones to authentic bind pose before applying pose offsets
-            leftArm.localRotation = bindRotLeftArm;
-            rightArm.localRotation = bindRotRightArm;
-            if (leftForeArm != null) leftForeArm.localRotation = bindRotLeftForeArm;
-            if (rightForeArm != null) rightForeArm.localRotation = bindRotRightForeArm;
-            if (spine != null) spine.localRotation = bindRotSpine;
+            // 1. Reset all bones to authentic immutable bind pose before applying pose offsets
+            leftArm.localRotation = BindRotLeftArm;
+            rightArm.localRotation = BindRotRightArm;
+            if (leftForeArm != null) leftForeArm.localRotation = BindRotLeftForeArm;
+            if (rightForeArm != null) rightForeArm.localRotation = BindRotRightForeArm;
+            if (spine != null) spine.localRotation = BindRotSpine;
 
             // 2. Subtle chest breathing
             if (enableBreathing && spine != null)
             {
                 float breath = Mathf.Sin(time * 2.0f) * 1.5f;
-                spine.localRotation = bindRotSpine * Quaternion.Euler(breath, 0f, 0f);
+                spine.localRotation = BindRotSpine * Quaternion.Euler(breath, 0f, 0f);
             }
 
             // 3. Left Arm: rotate from horizontal T-pose to hanging naturally down along torso
@@ -221,8 +232,11 @@ namespace RentIsDue.Gameplay
             {
                 Vector3 curLeftDir = (leftForeArm.position - leftArm.position).normalized;
                 Vector3 tgtLeftDir = (-transform.up * 0.94f + transform.forward * 0.12f + transform.right * 0.22f).normalized;
-                leftArm.rotation = Quaternion.FromToRotation(curLeftDir, tgtLeftDir) * leftArm.rotation;
-                leftForeArm.Rotate(transform.up, 20f, Space.World);
+                if (curLeftDir.sqrMagnitude > 0.1f && tgtLeftDir.sqrMagnitude > 0.1f)
+                {
+                    leftArm.rotation = Quaternion.FromToRotation(curLeftDir, tgtLeftDir) * leftArm.rotation;
+                }
+                leftForeArm.localRotation = BindRotLeftForeArm * Quaternion.Euler(0f, 0f, 22f);
             }
 
             // 4. Right Arm: rotate from horizontal T-pose to hanging naturally down along torso
@@ -230,8 +244,11 @@ namespace RentIsDue.Gameplay
             {
                 Vector3 curRightDir = (rightForeArm.position - rightArm.position).normalized;
                 Vector3 tgtRightDir = (-transform.up * 0.94f + transform.forward * 0.12f - transform.right * 0.22f).normalized;
-                rightArm.rotation = Quaternion.FromToRotation(curRightDir, tgtRightDir) * rightArm.rotation;
-                rightForeArm.Rotate(transform.up, -20f, Space.World);
+                if (curRightDir.sqrMagnitude > 0.1f && tgtRightDir.sqrMagnitude > 0.1f)
+                {
+                    rightArm.rotation = Quaternion.FromToRotation(curRightDir, tgtRightDir) * rightArm.rotation;
+                }
+                rightForeArm.localRotation = BindRotRightForeArm * Quaternion.Euler(0f, 0f, -22f);
             }
         }
     }
