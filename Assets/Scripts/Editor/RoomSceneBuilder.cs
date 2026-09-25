@@ -30,7 +30,7 @@ namespace RentIsDue.Editor
                 GameObject dealerNpc = GameObject.Find("Dealer_NPC");
                 GameObject toolShopNpc = GameObject.Find("ToolShop_NPC");
                 bool isGiantScale = dealerNpc != null && dealerNpc.transform.localScale.x > 0.6f;
-                bool needsPlacementFix = dealerNpc != null && dealerNpc.transform.localPosition.z > 0.3f;
+                bool needsPlacementFix = dealerNpc != null && (dealerNpc.transform.localPosition.y < 0.40f || dealerNpc.transform.localPosition.z > 1.2f);
 
                 if (glow != null || porch != null || gate == null || backdrop == null || dealerNpc == null || toolShopNpc == null || isGiantScale || needsPlacementFix)
                 {
@@ -711,7 +711,7 @@ namespace RentIsDue.Editor
             SpawnModel(urbanFolder, "detail-awning-small.fbx", new Vector3(0, 2.85f, -0.05f), Quaternion.identity, dealerAnchor, 1.8f);
 
             // Đảm bảo pipeline Humanoid Avatar và Animation theo chuẩn Character Model Agent
-            Avatar charAvatar = SetupNPCAnimations.EnsureHumanoidAssets(out RuntimeAnimatorController npcAnimController);
+            Avatar charAvatar = SetupNPCAnimations.EnsureHumanoidAssets(out RuntimeAnimatorController npcAnimController, out AnimationClip npcIdleClip);
 
             // B. NPC Dealer (Model Người Kenney Low-Poly với Skin Criminal/Chợ Đen)
             // Kenney characterMedium có chiều cao gốc ~3.76m. Scale 0.48f giúp nhân vật cao chuẩn người thật 1.80m
@@ -722,10 +722,14 @@ namespace RentIsDue.Editor
                 dealerNPC.name = "Dealer_NPC";
                 ApplyCharacterSkin(dealerNPC, "Mat_Dealer_Skin", "Assets/Art/Characters/Textures/criminalMaleA.png");
                 
-                // Tắt Animator để loại bỏ hoàn toàn thế T-pose của Mecanim bind-pose,
-                // nhường toàn quyền điều khiển dáng đứng tự nhiên cho NPCLookAtPlayer
+                // Cấu hình Mecanim Animator chuẩn
                 Animator anim = dealerNPC.GetComponent<Animator>();
-                if (anim != null) anim.enabled = false;
+                if (anim == null) anim = dealerNPC.AddComponent<Animator>();
+                if (charAvatar != null) anim.avatar = charAvatar;
+                if (npcAnimController != null) anim.runtimeAnimatorController = npcAnimController;
+                anim.applyRootMotion = false;
+                anim.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                anim.enabled = true;
 
                 // Thêm Rigidbody Kinematic để PhysX coi đây là vật thể hoạt hình, không gây va chạm nổ vật lý
                 Rigidbody rb = dealerNPC.AddComponent<Rigidbody>();
@@ -742,8 +746,15 @@ namespace RentIsDue.Editor
                 dealerNPC.AddComponent<DealerInteractable>();
                 dealerNPC.AddComponent<RentIsDue.Gameplay.DailyOrderManager>();
 
-                // Dáng đứng tự nhiên (bỏ T-pose), thở nhẹ và tự xoay người nhìn Player
-                dealerNPC.AddComponent<RentIsDue.Gameplay.NPCLookAtPlayer>();
+                // Dáng đứng tự nhiên, hoạt ảnh thở chân thực và tự xoay người nhìn Player
+                var lookAt = dealerNPC.AddComponent<RentIsDue.Gameplay.NPCLookAtPlayer>();
+                lookAt.idleClip = npcIdleClip;
+
+                // Sample trực tiếp animation tại frame 0 để model có dáng chuẩn ngay trong Edit Mode (Scene view)
+                if (npcIdleClip != null)
+                {
+                    npcIdleClip.SampleAnimation(dealerNPC, 0f);
+                }
             }
 
             // Gắn tương tác vào cả mặt bàn để người chơi bấm vào bàn hay người Dealer đều mở giao dịch
@@ -780,10 +791,14 @@ namespace RentIsDue.Editor
                 toolShopNPC.name = "ToolShop_NPC";
                 ApplyCharacterSkin(toolShopNPC, "Mat_ToolShop_Skin", "Assets/Art/Characters/Textures/survivorMaleB.png");
 
-                // Tắt Animator để loại bỏ hoàn toàn thế T-pose của Mecanim bind-pose,
-                // nhường toàn quyền điều khiển dáng đứng tự nhiên cho NPCLookAtPlayer
+                // Cấu hình Mecanim Animator chuẩn
                 Animator anim = toolShopNPC.GetComponent<Animator>();
-                if (anim != null) anim.enabled = false;
+                if (anim == null) anim = toolShopNPC.AddComponent<Animator>();
+                if (charAvatar != null) anim.avatar = charAvatar;
+                if (npcAnimController != null) anim.runtimeAnimatorController = npcAnimController;
+                anim.applyRootMotion = false;
+                anim.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                anim.enabled = true;
 
                 // Thêm Rigidbody Kinematic để PhysX coi đây là vật thể hoạt hình, không gây va chạm nổ vật lý
                 Rigidbody rb = toolShopNPC.AddComponent<Rigidbody>();
@@ -800,8 +815,15 @@ namespace RentIsDue.Editor
                 toolShopNPC.AddComponent<RentIsDue.Shop.ToolShopInteractable>();
                 toolShopNPC.AddComponent<RentIsDue.Shop.ToolShopManager>();
 
-                // Dáng đứng tự nhiên (bỏ T-pose), thở nhẹ và tự xoay người nhìn Player
-                toolShopNPC.AddComponent<RentIsDue.Gameplay.NPCLookAtPlayer>();
+                // Dáng đứng tự nhiên, hoạt ảnh thở chân thực và tự xoay người nhìn Player
+                var lookAt = toolShopNPC.AddComponent<RentIsDue.Gameplay.NPCLookAtPlayer>();
+                lookAt.idleClip = npcIdleClip;
+
+                // Sample trực tiếp animation tại frame 0 để model có dáng chuẩn ngay trong Edit Mode (Scene view)
+                if (npcIdleClip != null)
+                {
+                    npcIdleClip.SampleAnimation(toolShopNPC, 0f);
+                }
             }
 
             // Gắn tương tác vào cả mặt bàn để người chơi bấm vào bàn hay người đều mở được shop

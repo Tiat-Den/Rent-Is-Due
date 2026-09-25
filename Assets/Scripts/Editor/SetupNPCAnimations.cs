@@ -89,7 +89,13 @@ namespace RentIsDue.Editor
 
         public static Avatar EnsureHumanoidAssets(out RuntimeAnimatorController controller)
         {
+            return EnsureHumanoidAssets(out controller, out _);
+        }
+
+        public static Avatar EnsureHumanoidAssets(out RuntimeAnimatorController controller, out AnimationClip outIdleClip)
+        {
             controller = null;
+            outIdleClip = null;
 
             // 1. Configure characterMedium.fbx as Generic
             ModelImporter charImporter = AssetImporter.GetAtPath(CharacterPath) as ModelImporter;
@@ -240,6 +246,7 @@ namespace RentIsDue.Editor
             }
 
             controller = animController;
+            outIdleClip = idleClip;
             return charAvatar;
         }
     }
