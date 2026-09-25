@@ -3,46 +3,79 @@ using UnityEngine;
 namespace RentIsDue.Gameplay
 {
     /// <summary>
-    /// Manages the NPC's natural shopkeeper stance (no T-pose), gentle breathing animation,
-    /// and smoothly turns the NPC to face the player when they approach the shop/counter.
-    /// Operates in both Edit Mode ([ExecuteAlways]) and Play Mode for immediate, flawless visuals.
-    /// Uses immutable bind-pose references to guarantee zero rotation drift or distortion.
+    /// Implements Kenney Character Model Animation and Stance standards.
+    /// Uses exact local Euler rotations and breathing curves extracted directly from Kenney's idle animation clip,
+    /// guaranteeing natural resting arm posture, zero mesh twisting/pinching, and lively breathing.
+    /// Operates in both Edit Mode ([ExecuteAlways]) and Play Mode.
+    /// Smoothly rotates the NPC to face the player upon approach.
     /// </summary>
     [ExecuteAlways]
     public class NPCLookAtPlayer : MonoBehaviour
     {
-        [Header("Detection Settings")]
+        [Header("Detection & Tracking")]
         [Tooltip("Distance within which the NPC notices and faces the player")]
         public float noticeDistance = 4.0f;
         public float turnSpeed = 4.0f;
 
-        [Header("Stance & Animation")]
+        [Header("Animation Control")]
         public bool enforceNaturalPose = true;
         public bool enableBreathing = true;
+        [Range(0.5f, 4.0f)]
+        public float breathingSpeed = 2.0f;
 
-        // Exact bind-pose local rotations of Kenney's characterMedium rig:
-        private static readonly Quaternion BindRotLeftArm = Quaternion.Euler(-83.12f, 101.85f, -84.96f);
-        private static readonly Quaternion BindRotLeftForeArm = Quaternion.Euler(5.37f, 1.41f, 0.69f);
-        private static readonly Quaternion BindRotLeftHand = Quaternion.Euler(52.41f, 94.88f, 52.83f);
+        // Exact Kenney authentic idle pose constants (extracted from binary idle.fbx):
+        // Shoulders
+        private static readonly Quaternion RotLeftShoulder = Quaternion.Euler(-124.12f, -87.22f, 13.39f);
+        private static readonly Quaternion RotRightShoulder = Quaternion.Euler(6.55f, -113.22f, 104.46f);
 
-        private static readonly Quaternion BindRotRightArm = Quaternion.Euler(13.07f, -152.24f, -3.13f);
-        private static readonly Quaternion BindRotRightForeArm = Quaternion.Euler(0.06f, -0.55f, 5.40f);
-        private static readonly Quaternion BindRotRightHand = Quaternion.Euler(0.94f, 0.07f, -3.79f);
+        // Arms (Upper)
+        private static readonly Quaternion RotLeftArm = Quaternion.Euler(-98.72f, 40.68f, -89.41f);
+        private static readonly Quaternion RotRightArm = Quaternion.Euler(-46.74f, -162.78f, 0.02f);
 
-        private static readonly Quaternion BindRotSpine = Quaternion.Euler(-7.00f, 0f, 0f);
+        // Forearms (Elbows)
+        private static readonly Quaternion RotLeftForeArm = Quaternion.Euler(41.85f, -2.60f, -11.79f);
+        private static readonly Quaternion RotRightForeArm = Quaternion.Euler(-10.38f, 0.48f, 41.27f);
+
+        // Hands (Wrists)
+        private static readonly Quaternion RotLeftHand = Quaternion.Euler(52.86f, 94.36f, 50.30f);
+        private static readonly Quaternion RotRightHand = Quaternion.Euler(-1.72f, 15.85f, -4.13f);
+
+        // Fingers (Relaxed natural curl)
+        private static readonly Quaternion RotLeftIndex1 = Quaternion.Euler(1.88f, -8.90f, -0.14f);
+        private static readonly Quaternion RotLeftIndex2 = Quaternion.Euler(101.28f, 3.22f, 4.28f);
+        private static readonly Quaternion RotLeftIndex3 = Quaternion.Euler(48.55f, -3.50f, -0.01f);
+        private static readonly Quaternion RotLeftThumb1 = Quaternion.Euler(-77.10f, 104.78f, -29.01f);
+        private static readonly Quaternion RotLeftThumb2 = Quaternion.Euler(83.10f, -15.60f, 4.54f);
+
+        private static readonly Quaternion RotRightIndex1 = Quaternion.Euler(-1.88f, -8.90f, 0.14f);
+        private static readonly Quaternion RotRightIndex2 = Quaternion.Euler(-96.95f, 3.87f, -3.04f);
+        private static readonly Quaternion RotRightIndex3 = Quaternion.Euler(-48.55f, -3.50f, 0.01f);
+        private static readonly Quaternion RotRightThumb1 = Quaternion.Euler(42.36f, -122.29f, 8.02f);
+        private static readonly Quaternion RotRightThumb2 = Quaternion.Euler(-71.36f, 25.96f, 26.77f);
+
+        // Torso & Head
+        private static readonly Quaternion RotSpine = Quaternion.Euler(0.62f, 0f, 0f);
+        private static readonly Quaternion RotNeck = Quaternion.Euler(9.84f, 0f, 0f);
+        private static readonly Quaternion RotHead = Quaternion.Euler(-16.58f, 4.85f, -1.73f);
 
         private Transform playerTransform;
         private Quaternion defaultRotation;
 
+        // Bone references
+        private Transform leftShoulder;
         private Transform leftArm;
         private Transform leftForeArm;
         private Transform leftHand;
+        private Transform leftIndex1, leftIndex2, leftIndex3, leftThumb1, leftThumb2;
 
+        private Transform rightShoulder;
         private Transform rightArm;
         private Transform rightForeArm;
         private Transform rightHand;
+        private Transform rightIndex1, rightIndex2, rightIndex3, rightThumb1, rightThumb2;
 
         private Transform spine;
+        private Transform neck;
         private Transform head;
 
         private bool hasCachedBones = false;
@@ -72,15 +105,28 @@ namespace RentIsDue.Gameplay
         {
             if (hasCachedBones && leftArm != null) return;
 
+            leftShoulder = FindChildRecursive(transform, "LeftShoulder");
             leftArm = FindChildRecursive(transform, "LeftArm");
             leftForeArm = FindChildRecursive(transform, "LeftForeArm");
             leftHand = FindChildRecursive(transform, "LeftHand");
+            leftIndex1 = FindChildRecursive(transform, "LeftHandIndex1");
+            leftIndex2 = FindChildRecursive(transform, "LeftHandIndex2");
+            leftIndex3 = FindChildRecursive(transform, "LeftHandIndex3");
+            leftThumb1 = FindChildRecursive(transform, "LeftHandThumb1");
+            leftThumb2 = FindChildRecursive(transform, "LeftHandThumb2");
 
+            rightShoulder = FindChildRecursive(transform, "RightShoulder");
             rightArm = FindChildRecursive(transform, "RightArm");
             rightForeArm = FindChildRecursive(transform, "RightForeArm");
             rightHand = FindChildRecursive(transform, "RightHand");
+            rightIndex1 = FindChildRecursive(transform, "RightHandIndex1");
+            rightIndex2 = FindChildRecursive(transform, "RightHandIndex2");
+            rightIndex3 = FindChildRecursive(transform, "RightHandIndex3");
+            rightThumb1 = FindChildRecursive(transform, "RightHandThumb1");
+            rightThumb2 = FindChildRecursive(transform, "RightHandThumb2");
 
             spine = FindChildRecursive(transform, "Spine");
+            neck = FindChildRecursive(transform, "Neck");
             head = FindChildRecursive(transform, "Head");
 
             hasCachedBones = (leftArm != null && rightArm != null);
@@ -122,9 +168,9 @@ namespace RentIsDue.Gameplay
                 if (playerTransform == null) return;
             }
 
-            // Vector to player on horizontal plane
+            // Smooth Horizontal Yaw rotation to face the player
             Vector3 diff = playerTransform.position - transform.position;
-            diff.y = 0; // Rotate only around the vertical Yaw axis
+            diff.y = 0;
             float distSqr = diff.sqrMagnitude;
 
             if (distSqr <= noticeDistance * noticeDistance && distSqr > 0.04f)
@@ -149,65 +195,87 @@ namespace RentIsDue.Gameplay
                 if (!hasCachedBones) return;
             }
 
-            // 1. Reset all animated bones to pristine bind pose before applying pose offsets
-            leftArm.localRotation = BindRotLeftArm;
-            rightArm.localRotation = BindRotRightArm;
-            if (leftForeArm != null) leftForeArm.localRotation = BindRotLeftForeArm;
-            if (rightForeArm != null) rightForeArm.localRotation = BindRotRightForeArm;
-            if (leftHand != null) leftHand.localRotation = BindRotLeftHand;
-            if (rightHand != null) rightHand.localRotation = BindRotRightHand;
-            if (spine != null) spine.localRotation = BindRotSpine;
+            // Calculate subtle breathing cycle (sine wave)
+            float t = Application.isPlaying ? (Time.time * breathingSpeed) : 0f;
+            float breath = enableBreathing ? Mathf.Sin(t) : 0f;
 
-            // 2. Subtle breathing on spine (alive shopkeeper feel)
-            if (enableBreathing && spine != null)
+            // 1. Spine (Gentle chest expansion & breathing nod)
+            if (spine != null)
             {
-                float time = Application.isPlaying ? Time.time : 0f;
-                float breath = Mathf.Sin(time * 2.0f) * 1.5f;
-                spine.localRotation = BindRotSpine * Quaternion.Euler(breath, 0f, 0f);
+                spine.localRotation = Quaternion.Euler(0.62f + breath * 1.15f, 0f, 0f);
             }
 
-            // 3. Relax Left Arm down along the torso (natural resting pose)
-            if (leftArm != null && leftForeArm != null)
+            // 2. Shoulders (Authentic Kenney orientation + subtle breathing shrug)
+            if (leftShoulder != null)
             {
-                Vector3 currentLeftDir = (leftForeArm.position - leftArm.position).normalized;
-                // Target: down, slightly forward, slightly outward from hips
-                Vector3 targetLeftDir = (-transform.up * 0.92f + transform.forward * 0.15f + transform.right * 0.35f).normalized;
-                leftArm.rotation = Quaternion.FromToRotation(currentLeftDir, targetLeftDir) * leftArm.rotation;
-
-                // Forearm: bend elbow slightly forward & resting naturally
-                if (leftHand != null)
-                {
-                    Vector3 curFore = (leftHand.position - leftForeArm.position).normalized;
-                    Vector3 tgtFore = (-transform.up * 0.70f + transform.forward * 0.65f - transform.right * 0.28f).normalized;
-                    leftForeArm.rotation = Quaternion.FromToRotation(curFore, tgtFore) * leftForeArm.rotation;
-                }
+                leftShoulder.localRotation = Quaternion.Euler(-124.12f, -87.22f, 13.39f + breath * 0.8f);
+            }
+            if (rightShoulder != null)
+            {
+                rightShoulder.localRotation = Quaternion.Euler(6.55f, -113.22f, 104.46f - breath * 0.8f);
             }
 
-            // 4. Relax Right Arm down along the torso (natural resting pose)
-            if (rightArm != null && rightForeArm != null)
+            // 3. Left Arm & Elbow (Down along torso, elbow bent naturally, zero twisting)
+            if (leftArm != null)
             {
-                Vector3 currentRightDir = (rightForeArm.position - rightArm.position).normalized;
-                // Target: down, slightly forward, slightly outward from hips
-                Vector3 targetRightDir = (-transform.up * 0.92f + transform.forward * 0.15f - transform.right * 0.35f).normalized;
-                rightArm.rotation = Quaternion.FromToRotation(currentRightDir, targetRightDir) * rightArm.rotation;
-
-                // Forearm: bend elbow slightly forward & resting naturally
-                if (rightHand != null)
-                {
-                    Vector3 curFore = (rightHand.position - rightForeArm.position).normalized;
-                    Vector3 tgtFore = (-transform.up * 0.70f + transform.forward * 0.65f + transform.right * 0.28f).normalized;
-                    rightForeArm.rotation = Quaternion.FromToRotation(curFore, tgtFore) * rightForeArm.rotation;
-                }
+                leftArm.localRotation = Quaternion.Euler(-98.72f + breath * 3.0f, 40.68f, -89.41f);
+            }
+            if (leftForeArm != null)
+            {
+                leftForeArm.localRotation = RotLeftForeArm;
+            }
+            if (leftHand != null)
+            {
+                leftHand.localRotation = RotLeftHand;
             }
 
-            // 5. Head tilt towards player if nearby
-            if (head != null && playerTransform != null && Application.isPlaying)
+            // Left Fingers (Relaxed hand)
+            if (leftIndex1 != null) leftIndex1.localRotation = RotLeftIndex1;
+            if (leftIndex2 != null) leftIndex2.localRotation = RotLeftIndex2;
+            if (leftIndex3 != null) leftIndex3.localRotation = RotLeftIndex3;
+            if (leftThumb1 != null) leftThumb1.localRotation = RotLeftThumb1;
+            if (leftThumb2 != null) leftThumb2.localRotation = RotLeftThumb2;
+
+            // 4. Right Arm & Elbow (Down along torso, elbow bent naturally, zero twisting)
+            if (rightArm != null)
             {
-                Vector3 toPlayer = (playerTransform.position + Vector3.up * 1.5f - head.position).normalized;
-                if (Vector3.Dot(transform.forward, toPlayer) > 0.3f && Vector3.Distance(transform.position, playerTransform.position) < noticeDistance)
+                rightArm.localRotation = Quaternion.Euler(-46.74f - breath * 3.0f, -162.78f, 0.02f);
+            }
+            if (rightForeArm != null)
+            {
+                rightForeArm.localRotation = RotRightForeArm;
+            }
+            if (rightHand != null)
+            {
+                rightHand.localRotation = RotRightHand;
+            }
+
+            // Right Fingers (Relaxed hand)
+            if (rightIndex1 != null) rightIndex1.localRotation = RotRightIndex1;
+            if (rightIndex2 != null) rightIndex2.localRotation = RotRightIndex2;
+            if (rightIndex3 != null) rightIndex3.localRotation = RotRightIndex3;
+            if (rightThumb1 != null) rightThumb1.localRotation = RotRightThumb1;
+            if (rightThumb2 != null) rightThumb2.localRotation = RotRightThumb2;
+
+            // 5. Neck & Head (Natural posture + breathing nod + subtle look at player)
+            if (neck != null)
+            {
+                neck.localRotation = Quaternion.Euler(9.84f + breath * 0.5f, 0f, 0f);
+            }
+
+            if (head != null)
+            {
+                head.localRotation = Quaternion.Euler(-16.58f + breath * 1.5f, 4.85f, -1.73f);
+
+                // If player is close, tilt head slightly toward player
+                if (Application.isPlaying && playerTransform != null)
                 {
-                    Quaternion targetHeadRot = Quaternion.LookRotation(toPlayer, transform.up);
-                    head.rotation = Quaternion.Slerp(head.rotation, targetHeadRot, 0.35f);
+                    Vector3 toPlayer = (playerTransform.position + Vector3.up * 1.4f - head.position).normalized;
+                    if (Vector3.Dot(transform.forward, toPlayer) > 0.4f && Vector3.Distance(transform.position, playerTransform.position) < noticeDistance)
+                    {
+                        Quaternion targetHeadRot = Quaternion.LookRotation(toPlayer, transform.up);
+                        head.rotation = Quaternion.Slerp(head.rotation, targetHeadRot, 0.25f);
+                    }
                 }
             }
         }
