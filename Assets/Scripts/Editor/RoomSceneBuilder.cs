@@ -719,6 +719,7 @@ namespace RentIsDue.Editor
             GameObject dealerNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0.45f, 0.70f), Quaternion.Euler(0, 180, 0), dealerAnchor, 0.48f);
             if (dealerNPC != null)
             {
+                PrefabUtility.UnpackPrefabInstance(dealerNPC, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
                 dealerNPC.name = "Dealer_NPC";
                 ApplyCharacterSkin(dealerNPC, "Mat_Dealer_Skin", "Assets/Art/Characters/Textures/criminalMaleA.png");
                 
@@ -788,6 +789,7 @@ namespace RentIsDue.Editor
             GameObject toolShopNPC = SpawnModel(characterFolder, "characterMedium.fbx", new Vector3(0, 0.45f, 0.70f), Quaternion.Euler(0, 180, 0), toolShopAnchor, 0.48f);
             if (toolShopNPC != null)
             {
+                PrefabUtility.UnpackPrefabInstance(toolShopNPC, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
                 toolShopNPC.name = "ToolShop_NPC";
                 ApplyCharacterSkin(toolShopNPC, "Mat_ToolShop_Skin", "Assets/Art/Characters/Textures/survivorMaleB.png");
 

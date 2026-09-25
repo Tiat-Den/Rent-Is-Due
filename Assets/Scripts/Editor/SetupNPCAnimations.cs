@@ -21,16 +21,7 @@ namespace RentIsDue.Editor
 
         static SetupNPCAnimations()
         {
-            EditorApplication.delayCall += () =>
-            {
-                if (Application.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode) return;
-                if (!SessionState.GetBool("NPC_Final_Pose_And_Height_Fix_V5", false))
-                {
-                    SessionState.SetBool("NPC_Final_Pose_And_Height_Fix_V5", true);
-                    Setup();
-                }
-                ValidateCharacterSetup();
-            };
+            // Do NOT automatically rebuild scene on domain reload
         }
 
         [MenuItem("Rent Is Due/Setup NPC Animations and Avatars")]
