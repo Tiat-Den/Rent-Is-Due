@@ -750,12 +750,7 @@ namespace RentIsDue.Editor
                 // Dáng đứng tự nhiên, hoạt ảnh thở chân thực và tự xoay người nhìn Player
                 var lookAt = dealerNPC.AddComponent<RentIsDue.Gameplay.NPCLookAtPlayer>();
                 lookAt.idleClip = npcIdleClip;
-
-                // Sample trực tiếp animation tại frame 0 để model có dáng chuẩn ngay trong Edit Mode (Scene view)
-                if (npcIdleClip != null)
-                {
-                    npcIdleClip.SampleAnimation(dealerNPC, 0f);
-                }
+                lookAt.enableBreathing = true;
             }
 
             // Gắn tương tác vào cả mặt bàn để người chơi bấm vào bàn hay người Dealer đều mở giao dịch
@@ -820,12 +815,7 @@ namespace RentIsDue.Editor
                 // Dáng đứng tự nhiên, hoạt ảnh thở chân thực và tự xoay người nhìn Player
                 var lookAt = toolShopNPC.AddComponent<RentIsDue.Gameplay.NPCLookAtPlayer>();
                 lookAt.idleClip = npcIdleClip;
-
-                // Sample trực tiếp animation tại frame 0 để model có dáng chuẩn ngay trong Edit Mode (Scene view)
-                if (npcIdleClip != null)
-                {
-                    npcIdleClip.SampleAnimation(toolShopNPC, 0f);
-                }
+                lookAt.enableBreathing = true;
             }
 
             // Gắn tương tác vào cả mặt bàn để người chơi bấm vào bàn hay người đều mở được shop

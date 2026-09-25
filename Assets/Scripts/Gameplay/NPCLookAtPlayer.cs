@@ -10,6 +10,9 @@ namespace RentIsDue.Gameplay
     [ExecuteAlways]
     public class NPCLookAtPlayer : MonoBehaviour
     {
+        [Header("Animation (Optional)")]
+        public AnimationClip idleClip;
+
         [Header("Player Tracking")]
         [Tooltip("Distance within which the NPC notices and faces the player")]
         public float noticeDistance = 4.0f;
