@@ -24,12 +24,14 @@ namespace RentIsDue.Gameplay
 
         private void Awake()
         {
+            EnforceScaleAndOrientation();
             defaultRotation = transform.rotation;
             EnsureIdleClip();
         }
 
         private void OnEnable()
         {
+            EnforceScaleAndOrientation();
             EnsureIdleClip();
             if (idleClip != null)
             {
@@ -40,9 +42,32 @@ namespace RentIsDue.Gameplay
 #if UNITY_EDITOR
         private void OnValidate()
         {
+            EnforceScaleAndOrientation();
             EnsureIdleClip();
         }
 #endif
+
+        private void EnforceScaleAndOrientation()
+        {
+            // Safeguard against FBX default unit scale (100) turning NPC into a giant
+            if (transform.localScale.x > 0.6f || transform.localScale.x < 0.3f)
+            {
+                transform.localScale = Vector3.one * 0.48f;
+            }
+
+            // Safeguard against FBX default -90 X rotation flipping character flat on its back
+            Vector3 euler = transform.localEulerAngles;
+            if (Mathf.Abs(Mathf.DeltaAngle(euler.x, 0f)) > 10f || Mathf.Abs(Mathf.DeltaAngle(euler.z, 0f)) > 10f)
+            {
+                transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+            }
+
+            // Safeguard height: feet rest on pavement (local Y = 0.45m)
+            if (transform.localPosition.y < 0.2f || transform.localPosition.y > 0.8f)
+            {
+                transform.localPosition = new Vector3(0f, 0.45f, 0.70f);
+            }
+        }
 
         private void EnsureIdleClip()
         {
@@ -84,6 +109,7 @@ namespace RentIsDue.Gameplay
 
         private void Start()
         {
+            EnforceScaleAndOrientation();
             defaultRotation = transform.rotation;
             EnsureIdleClip();
             if (Application.isPlaying)

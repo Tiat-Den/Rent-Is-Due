@@ -1288,6 +1288,7 @@ namespace RentIsDue.Editor
             instance.transform.localPosition = pos;
             instance.transform.localRotation = rot;
             instance.transform.localScale = scale;
+            PrefabUtility.RecordPrefabInstancePropertyModifications(instance.transform);
 
             // Bỏ hiệu ứng LOD (Level Of Detail) gây biến dạng model khi zoom out
             LODGroup[] lodGroups = instance.GetComponentsInChildren<LODGroup>();
